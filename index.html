@@ -40,7 +40,20 @@
   th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); }
   th { color: var(--muted); font-weight: 500; font-size: .85rem; text-transform: uppercase; }
   td.num, th.num { text-align: right; }
-  tr:first-child td { color: var(--accent); font-weight: 600; }
+  #tabella-classifica tr:first-child td { color: var(--accent); font-weight: 600; }
+  .card h3 { margin: 0 0 8px; font-size: 1.05rem; color: var(--accent); }
+  .card h4 { margin: 16px 0 6px; font-size: .95rem; }
+  .card p { margin: 6px 0; }
+  .card ul, .card ol { margin: 6px 0; padding-left: 22px; }
+  .card li { margin: 3px 0; }
+  .scroll { overflow-x: auto; margin: 10px 0; }
+  .tab-reg { background: var(--bg); font-size: .9rem; }
+  .tab-reg th, .tab-reg td { padding: 7px 10px; white-space: nowrap; }
+  .formula { background: var(--bg); border-left: 3px solid var(--accent); padding: 8px 12px; font-family: ui-monospace, monospace; font-size: .9rem; }
+  .esempio { color: var(--muted); font-style: italic; }
+  .indice { columns: 2; column-gap: 24px; }
+  @media (max-width: 520px) { .indice { columns: 1; } }
+  [id^="reg-"] { scroll-margin-top: 70px; }
   a { color: var(--accent); }
   .aggiornato { color: var(--muted); font-size: .85rem; text-align: center; margin-top: 24px; }
   .errore { background: #3a1e22; border-color: #6b2e36; }
@@ -59,7 +72,8 @@
   <button data-sezione="classifica">Classifica</button>
   <button data-sezione="eventi">Eventi</button>
   <button data-sezione="decklist">Decklist</button>
-  <button data-sezione="info">Regole e contatti</button>
+  <button data-sezione="regolamento">Regolamento</button>
+  <button data-sezione="contatti">Contatti</button>
 </nav>
 
 <main>
@@ -77,8 +91,9 @@
   </section>
 
   <section id="eventi"><h2>Prossimi eventi</h2><div id="lista-eventi"></div></section>
-  <section id="decklist"><h2>Decklist dei tornei</h2><div id="lista-decklist"></div></section>
-  <section id="info"><h2>Regole e contatti</h2><div id="contenuto-info"></div></section>
+  <section id="decklist"><h2>Decklist dei vincitori</h2><div id="lista-decklist"></div></section>
+  <section id="regolamento"><h2>Regolamento</h2><div id="contenuto-regolamento"></div></section>
+  <section id="contatti"><h2>Contatti</h2><div id="contenuto-contatti"></div></section>
 
   <p class="aggiornato" id="aggiornato"></p>
 </main>
@@ -124,11 +139,37 @@
         <div class="meta">${esc(k.torneo)} · ${esc(k.piazzamento)}</div>
         ${k.link ? `<a href="${esc(k.link)}" target="_blank" rel="noopener">Vedi lista</a>` : ""}</div>`).join("");
 
-      document.getElementById("contenuto-info").innerHTML = `
-        <div class="card"><strong>Regole della lega</strong>
-        <ul>${d.regole.map(r => `<li>${esc(r)}</li>`).join("")}</ul></div>
-        <div class="card"><strong>Contatti</strong>
-        <ul>${d.contatti.map(c => `<li>${esc(c.nome)}: ${c.link ? `<a href="${esc(c.link)}" target="_blank" rel="noopener">${esc(c.testo)}</a>` : esc(c.testo)}</li>`).join("")}</ul></div>`;
+      // Regolamento: ogni "blocco" viene disegnato in base al suo tipo
+      const lista = voci => voci.map(v => `<li>${esc(v)}</li>`).join("");
+      const blocco = b => {
+        switch (b.tipo) {
+          case "paragrafo":      return `<p>${esc(b.testo)}</p>`;
+          case "sottotitolo":    return `<h4>${esc(b.testo)}</h4>`;
+          case "elenco":         return `<ul>${lista(b.voci)}</ul>`;
+          case "elencoNumerato": return `<ol>${lista(b.voci)}</ol>`;
+          case "formula":        return `<p class="formula">${esc(b.testo)}</p>`;
+          case "esempio":        return `<p class="esempio"><strong>Esempio:</strong> ${esc(b.testo)}</p>`;
+          case "tabella":        return `<div class="scroll"><table class="tab-reg">
+            <thead><tr>${b.intestazioni.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead>
+            <tbody>${b.righe.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody>
+            </table></div>`;
+          default: return "";
+        }
+      };
+      const reg = d.regole;
+      document.getElementById("contenuto-regolamento").innerHTML = `
+        <div class="card"><strong>${esc(reg.titolo)}</strong>
+          <div class="meta">Stagione ${esc(reg.stagione)} · aggiornato il ${esc(reg.ultimoAggiornamento)}</div>
+          <ol class="indice">${reg.sezioni.map(s => `<li><a href="#reg-${esc(s.id)}">${esc(s.titolo)}</a></li>`).join("")}</ol>
+        </div>
+        ${reg.sezioni.map(s => `
+          <div class="card" id="reg-${esc(s.id)}">
+            <h3>${s.numero}. ${esc(s.titolo)}</h3>
+            ${s.blocchi.map(blocco).join("")}
+          </div>`).join("")}`;
+
+      document.getElementById("contenuto-contatti").innerHTML = `
+        <div class="card"><ul>${d.contatti.map(c => `<li>${esc(c.nome)}: ${c.link ? `<a href="${esc(c.link)}" target="_blank" rel="noopener">${esc(c.testo)}</a>` : esc(c.testo)}</li>`).join("")}</ul></div>`;
 
       document.getElementById("aggiornato").textContent = "Ultimo aggiornamento: " + dataIt(d.ultimoAggiornamento);
     })
@@ -136,7 +177,8 @@
       document.getElementById("lista-news").innerHTML = `
         <div class="card errore">Non riesco a leggere <strong>data.json</strong>.<br>
         Se hai aperto il file con un doppio clic dal computer è normale: il browser blocca la lettura
-        dei file locali. Online (GitHub Pages) funzionerà.</div>`;
+        dei file locali. Se invece sei online, probabilmente c'è un errore di sintassi nel file:
+        incollalo su jsonlint.com per trovarlo.</div>`;
     });
 </script>
 </body>

@@ -9,202 +9,197 @@
   ],
 
   "classifica": [
-    { "giocatore": "Test", "punti": 1, "vittorie": 1, "sconfitte": 1, "pareggi": 1 },
-
+    { "giocatore": "Test", "punti": 1, "vittorie": 1, "sconfitte": 1, "pareggi": 1 }
   ],
 
   "eventi": [
-    { "data": "2027-01-09", "ora": "13:30", "nome": "S1E1", "formato": "Premodern", "luogo": "Bar Milano, Soresina", "note": "Iscrizioni aperte, CAP 30 players" },
-   
+    { "data": "2027-01-09", "ora": "13:30", "nome": "S1E1", "formato": "Premodern", "luogo": "Bar Milano, Soresina", "note": "Iscrizioni aperte, CAP 30 players" }
   ],
 
-  "decklist vincitori": [
-    { "torneo": "S1E1", "giocatore": "Test", "mazzo": "Stasis", "piazzamento": "1° posto", "link": "" },
-    
+  "decklist": [
+    { "torneo": "S1E1", "giocatore": "Test", "mazzo": "Stasis", "piazzamento": "1° posto", "link": "" }
   ],
 
- {
-  "titolo": "Regolamento della Lega Premodern",
-  "stagione": "[2026/2027]",
-  "ultimoAggiornamento": "26 Ottobre 2026",
-  "sezioni": [
-    {
-      "id": "lega",
-      "numero": 1,
-      "titolo": "La lega",
-      "blocchi": [
-        { "tipo": "paragrafo", "testo": "La lega è un circuito di 6 tappe di Magic: The Gathering in formato Premodern, che si giocano pa Soresina dal mese di gennaio 2026 al mese di maggio 2026. Il calendario aggiornato è pubblicato su questo sito." },
-        { "tipo": "paragrafo", "testo": "Ogni tappa è un torneo a sé: chi partecipa guadagna punti per la classifica generale. Non serve iscriversi alla stagione: si entra in classifica dalla prima tappa giocata e si può partecipare a tutte le tappe o solo ad alcune." },
-        { "tipo": "paragrafo", "testo": "Quota di partecipazione a ciascuna tappa: 12€. Premi: SEZIONE IN ALLESTIMENTO." }
-      ]
-    },
-    {
-      "id": "formato",
-      "numero": 2,
-      "titolo": "Formato e mazzi",
-      "blocchi": [
-        { "tipo": "elenco", "voci": [
-          "Il formato è Premodern: sono ammesse le carte delle espansioni da Quarta Edizione a Flagello. Vale la lista delle carte bandite pubblicata su premodernmagic.com in vigore il giorno della tappa.",
-          "Mazzo di almeno 60 carte, sideboard di massimo 15. Al massimo 4 copie di ciascuna carta, terre base escluse.",
-          "Proxy e gold border: ammesse.",
-          "Lista del mazzo: richiesta per la top8."
-        ] }
-      ]
-    },
-    {
-      "id": "tappa",
-      "numero": 3,
-      "titolo": "Come si gioca una tappa",
-      "blocchi": [
-        { "tipo": "sottotitolo", "testo": "Svizzera" },
-        { "tipo": "paragrafo", "testo": "A ogni turno si affrontano giocatori con punteggi simili, e nessuno incontra due volte lo stesso avversario finché è possibile. Il primo turno è sorteggiato." },
-        { "tipo": "elenco", "voci": [
-          "Ogni incontro si gioca al meglio delle tre partite, in 50 minuti.",
-          "Con un numero dispari di presenti, un giocatore riceve il bye: non gioca e vince il turno 2-0. Il bye va all'ultimo in classifica che non l'ha ancora avuto."
-        ] },
-        { "tipo": "sottotitolo", "testo": "Turni e Top Cut" },
-        { "tipo": "paragrafo", "testo": "Si decidono in base ai presenti, di norma così:" },
-        { "tipo": "tabella",
-          "intestazioni": ["Presenti", "Turni di svizzera", "Top Cut"],
-          "righe": [
-            ["2", "1", "Nessuna"],
-            ["3-4", "2", "Nessuna"],
-            ["5-8", "3", "Nessuna"],
-            ["9-16", "5", "Top 4"],
-            ["17-32", "5", "Top 8"],
-            ["33-64", "6", "Top 8"]
-          ] },
-        { "tipo": "paragrafo", "testo": "L'organizzazione può modificarli, annunciandolo prima dell'inizio della tappa." },
-        { "tipo": "sottotitolo", "testo": "Top Cut" },
-        { "tipo": "paragrafo", "testo": "Al termine della svizzera, i primi 4 o 8 giocano a eliminazione diretta, al meglio delle tre partite, senza pareggi. Il 1° affronta l'ultimo qualificato, il 2° il penultimo e così via." },
-        { "tipo": "sottotitolo", "testo": "Classifica di tappa" },
-        { "tipo": "paragrafo", "testo": "Nella svizzera la vittoria vale 3 punti, il pareggio 1, la sconfitta 0, il bye 3. A parità di punti contano, nell'ordine, gli spareggi dei tornei ufficiali:" },
-        { "tipo": "elencoNumerato", "voci": [
-          "OMW%: percentuale media di incontri vinti dagli avversari affrontati.",
-          "GW%: percentuale di partite vinte.",
-          "OGW%: percentuale media di partite vinte dagli avversari affrontati."
-        ] },
-        { "tipo": "paragrafo", "testo": "Ogni percentuale ha un minimo del 33%, e il bye non conta tra gli avversari. Questi spareggi servono solo per la classifica di tappa e per l'accesso alla Top Cut, non per la classifica generale." }
-      ]
-    },
-    {
-      "id": "punti",
-      "numero": 4,
-      "titolo": "Punti di una tappa",
-      "blocchi": [
-        { "tipo": "tabella",
-          "intestazioni": ["Voce", "Punti lega"],
-          "righe": [
-            ["Partecipazione (almeno un turno giocato)", "+3"],
-            ["Ogni vittoria nella svizzera", "+3"],
-            ["Ogni pareggio o ID nella svizzera", "+1"],
-            ["Ogni sconfitta", "0"],
-            ["Bye", "+3"],
-            ["1° posto", "+5"],
-            ["2° posto", "+3"],
-            ["3°-4° posto", "+2"],
-            ["5°-8° posto", "+1"]
-          ] },
-        { "tipo": "formula", "testo": "Punti di tappa = partecipazione + punti della svizzera + bonus di piazzamento" },
-        { "tipo": "paragrafo", "testo": "Gli incontri della Top Cut non danno punti vittoria: contano solo attraverso il bonus di piazzamento." },
-        { "tipo": "esempio", "testo": "3 vittorie e 1 sconfitta in svizzera, poi vittoria della Top Cut: 3 + 9 + 5 = 17 punti." },
-        { "tipo": "sottotitolo", "testo": "Tappe senza Top Cut" },
-        { "tipo": "paragrafo", "testo": "I bonus di piazzamento si assegnano in base alla classifica finale della svizzera, solo alla metà alta dei partecipanti:" },
-        { "tipo": "tabella",
-          "intestazioni": ["Presenti", "Posizioni premiate"],
-          "righe": [
-            ["2-3", "1° (+5)"],
-            ["4-5", "1° (+5), 2° (+3)"],
-            ["6-7", "1° (+5), 2° (+3), 3° (+2)"],
-            ["8-15", "1° (+5), 2° (+3), 3°-4° (+2)"],
-            ["16 o più", "1° (+5), 2° (+3), 3°-4° (+2), 5°-8° (+1)"]
+  "regole": {
+    "titolo": "Regolamento della Lega Premodern",
+    "stagione": "[2026/2027]",
+    "ultimoAggiornamento": "26 Ottobre 2026",
+    "sezioni": [
+      {
+        "id": "lega",
+        "numero": 1,
+        "titolo": "La lega",
+        "blocchi": [
+          { "tipo": "paragrafo", "testo": "La lega è un circuito di 6 tappe di Magic: The Gathering in formato Premodern, che si giocano a Soresina dal mese di gennaio 2027 al mese di maggio 2027. Il calendario aggiornato è pubblicato su questo sito." },
+          { "tipo": "paragrafo", "testo": "Ogni tappa è un torneo a sé: chi partecipa guadagna punti per la classifica generale. Non serve iscriversi alla stagione: si entra in classifica dalla prima tappa giocata e si può partecipare a tutte le tappe o solo ad alcune." },
+          { "tipo": "paragrafo", "testo": "Quota di partecipazione a ciascuna tappa: 12€. Premi: SEZIONE IN ALLESTIMENTO." }
+        ]
+      },
+      {
+        "id": "formato",
+        "numero": 2,
+        "titolo": "Formato e mazzi",
+        "blocchi": [
+          { "tipo": "elenco", "voci": [
+            "Il formato è Premodern: sono ammesse le carte delle espansioni da Quarta Edizione a Flagello. Vale la lista delle carte bandite pubblicata su premodernmagic.com in vigore il giorno della tappa.",
+            "Mazzo di almeno 60 carte, sideboard di massimo 15. Al massimo 4 copie di ciascuna carta, terre base escluse.",
+            "Proxy e gold border: ammesse.",
+            "Lista del mazzo: richiesta per la top8."
           ] }
-      ]
-    },
-    {
-      "id": "generale",
-      "numero": 5,
-      "titolo": "Classifica generale",
-      "blocchi": [
-        { "tipo": "paragrafo", "testo": "I punti lordi sono la somma dei punti di tutte le tappe disputate. Una tappa a cui non si partecipa vale 0." },
-        { "tipo": "paragrafo", "testo": "Per ogni giocatore si scarta [1] tappa, quella con il risultato peggiore. Un'assenza vale 0 ed è quindi la prima a essere scartata." },
-        { "tipo": "formula", "testo": "Punti netti = punti lordi − punti della tappa scartata" },
-        { "tipo": "paragrafo", "testo": "La classifica ufficiale si basa sui punti netti. In pratica:" },
-        { "tipo": "elenco", "voci": [
-          "chi gioca tutte le tappe scarta la sua tappa peggiore;",
-          "chi ne salta una scarta l'assenza e non perde nulla;",
-          "chi ne salta due ne scarta una, e l'altra resta in classifica con 0 punti."
-        ] },
-        { "tipo": "paragrafo", "testo": "Lo scarto si applica dalla seconda tappa disputata in poi." },
-        { "tipo": "sottotitolo", "testo": "Esempio dopo quattro tappe" },
-        { "tipo": "tabella",
-          "intestazioni": ["Giocatore", "T1", "T2", "T3", "T4", "Lordi", "Scarto", "Netti"],
-          "righe": [
-            ["Bruno", "12", "10", "9", "14", "45", "−9", "36"],
-            ["Anna", "17", "assente", "11", "8", "36", "0", "36"]
+        ]
+      },
+      {
+        "id": "tappa",
+        "numero": 3,
+        "titolo": "Come si gioca una tappa",
+        "blocchi": [
+          { "tipo": "sottotitolo", "testo": "Svizzera" },
+          { "tipo": "paragrafo", "testo": "A ogni turno si affrontano giocatori con punteggi simili, e nessuno incontra due volte lo stesso avversario finché è possibile. Il primo turno è sorteggiato." },
+          { "tipo": "elenco", "voci": [
+            "Ogni incontro si gioca al meglio delle tre partite, in 50 minuti.",
+            "Con un numero dispari di presenti, un giocatore riceve il bye: non gioca e vince il turno 2-0. Il bye va all'ultimo in classifica che non l'ha ancora avuto."
           ] },
-        { "tipo": "paragrafo", "testo": "A parità di punti netti, Bruno è davanti perché ha più presenze." }
-      ]
-    },
-    {
-      "id": "spareggi",
-      "numero": 6,
-      "titolo": "Spareggi della classifica generale",
-      "blocchi": [
-        { "tipo": "paragrafo", "testo": "A parità di punti netti contano, nell'ordine:" },
-        { "tipo": "elencoNumerato", "voci": [
-          "numero di tappe giocate;",
-          "punti lordi;",
-          "ordine alfabetico."
-        ] }
-      ]
-    },
-    {
-      "id": "finale",
-      "numero": 7,
-      "titolo": "Fase finale",
-      "blocchi": [
-        { "tipo": "paragrafo", "testo": "A fine stagione i primi [8] della classifica generale accedono alla fase finale, che si gioca [data e formula]. Per qualificarsi serve almeno una presenza. Se un qualificato non può partecipare, il suo posto va [al primo dei non qualificati / a nessuno]." }
-      ]
-    },
-    {
-      "id": "casi",
-      "numero": 8,
-      "titolo": "Ritiri, ritardi e casi particolari",
-      "blocchi": [
-        { "tipo": "elenco", "voci": [
-          "Chi si ritira durante una tappa non viene più abbinato, ma conserva i punti ottenuti fino a quel momento.",
-          "Chi arriva in ritardo può essere iscritto dal turno successivo, partendo da 0 punti.",
-          "Chi non si presenta al tavolo entro [10] minuti dall'inizio del turno perde l'incontro.",
-          "Affrontare due volte lo stesso avversario è ammesso solo quando, con pochi presenti, è inevitabile.",
-          "I casi non previsti sono decisi dall'organizzazione, ispirandosi alle regole dei tornei ufficiali di Magic."
-        ] }
-      ]
-    },
-    {
-      "id": "comportamento",
-      "numero": 9,
-      "titolo": "Comportamento",
-      "blocchi": [
-        { "tipo": "paragrafo", "testo": "Si gioca con correttezza e rispetto verso avversari, organizzazione e luogo che ci ospita. Ognuno comunica chiaramente le proprie azioni di gioco e segnala subito gli errori, anche a proprio svantaggio. Comportamenti scorretti possono portare alla perdita dell'incontro, alla squalifica dalla tappa o all'esclusione dalla lega." }
-      ]
-    },
-    {
-      "id": "info",
-      "numero": 10,
-      "titolo": "Classifiche, contestazioni e modifiche",
-      "blocchi": [
-        { "tipo": "elenco", "voci": [
-          "Le classifiche sono pubblicate su questo sito [entro X giorni dalla tappa].",
-          "Gli errori nei risultati vanno segnalati a [contatto] entro [7] giorni dalla pubblicazione; poi la classifica è definitiva.",
-          "L'organizzazione può modificare il regolamento durante la stagione, dandone comunicazione su questo sito. I punteggi già assegnati non cambiano."
-        ] }
-      ]
-    }
-  ]
-}
-    
-  ],
+          { "tipo": "sottotitolo", "testo": "Turni e Top Cut" },
+          { "tipo": "paragrafo", "testo": "Si decidono in base ai presenti, di norma così:" },
+          { "tipo": "tabella",
+            "intestazioni": ["Presenti", "Turni di svizzera", "Top Cut"],
+            "righe": [
+              ["2", "1", "Nessuna"],
+              ["3-4", "2", "Nessuna"],
+              ["5-8", "3", "Nessuna"],
+              ["9-16", "5", "Top 4"],
+              ["17-32", "5", "Top 8"],
+              ["33-64", "6", "Top 8"]
+            ] },
+          { "tipo": "paragrafo", "testo": "L'organizzazione può modificarli, annunciandolo prima dell'inizio della tappa." },
+          { "tipo": "sottotitolo", "testo": "Top Cut" },
+          { "tipo": "paragrafo", "testo": "Al termine della svizzera, i primi 4 o 8 giocano a eliminazione diretta, al meglio delle tre partite, senza pareggi. Il 1° affronta l'ultimo qualificato, il 2° il penultimo e così via." },
+          { "tipo": "sottotitolo", "testo": "Classifica di tappa" },
+          { "tipo": "paragrafo", "testo": "Nella svizzera la vittoria vale 3 punti, il pareggio 1, la sconfitta 0, il bye 3. A parità di punti contano, nell'ordine, gli spareggi dei tornei ufficiali:" },
+          { "tipo": "elencoNumerato", "voci": [
+            "OMW%: percentuale media di incontri vinti dagli avversari affrontati.",
+            "GW%: percentuale di partite vinte.",
+            "OGW%: percentuale media di partite vinte dagli avversari affrontati."
+          ] },
+          { "tipo": "paragrafo", "testo": "Ogni percentuale ha un minimo del 33%, e il bye non conta tra gli avversari. Questi spareggi servono solo per la classifica di tappa e per l'accesso alla Top Cut, non per la classifica generale." }
+        ]
+      },
+      {
+        "id": "punti",
+        "numero": 4,
+        "titolo": "Punti di una tappa",
+        "blocchi": [
+          { "tipo": "tabella",
+            "intestazioni": ["Voce", "Punti lega"],
+            "righe": [
+              ["Partecipazione (almeno un turno giocato)", "+3"],
+              ["Ogni vittoria nella svizzera", "+3"],
+              ["Ogni pareggio o ID nella svizzera", "+1"],
+              ["Ogni sconfitta", "0"],
+              ["Bye", "+3"],
+              ["1° posto", "+5"],
+              ["2° posto", "+3"],
+              ["3°-4° posto", "+2"],
+              ["5°-8° posto", "+1"]
+            ] },
+          { "tipo": "formula", "testo": "Punti di tappa = partecipazione + punti della svizzera + bonus di piazzamento" },
+          { "tipo": "paragrafo", "testo": "Gli incontri della Top Cut non danno punti vittoria: contano solo attraverso il bonus di piazzamento." },
+          { "tipo": "esempio", "testo": "3 vittorie e 1 sconfitta in svizzera, poi vittoria della Top Cut: 3 + 9 + 5 = 17 punti." },
+          { "tipo": "sottotitolo", "testo": "Tappe senza Top Cut" },
+          { "tipo": "paragrafo", "testo": "I bonus di piazzamento si assegnano in base alla classifica finale della svizzera, solo alla metà alta dei partecipanti:" },
+          { "tipo": "tabella",
+            "intestazioni": ["Presenti", "Posizioni premiate"],
+            "righe": [
+              ["2-3", "1° (+5)"],
+              ["4-5", "1° (+5), 2° (+3)"],
+              ["6-7", "1° (+5), 2° (+3), 3° (+2)"],
+              ["8-15", "1° (+5), 2° (+3), 3°-4° (+2)"],
+              ["16 o più", "1° (+5), 2° (+3), 3°-4° (+2), 5°-8° (+1)"]
+            ] }
+        ]
+      },
+      {
+        "id": "generale",
+        "numero": 5,
+        "titolo": "Classifica generale",
+        "blocchi": [
+          { "tipo": "paragrafo", "testo": "I punti lordi sono la somma dei punti di tutte le tappe disputate. Una tappa a cui non si partecipa vale 0." },
+          { "tipo": "paragrafo", "testo": "Per ogni giocatore si scarta [1] tappa, quella con il risultato peggiore. Un'assenza vale 0 ed è quindi la prima a essere scartata." },
+          { "tipo": "formula", "testo": "Punti netti = punti lordi − punti della tappa scartata" },
+          { "tipo": "paragrafo", "testo": "La classifica ufficiale si basa sui punti netti. In pratica:" },
+          { "tipo": "elenco", "voci": [
+            "chi gioca tutte le tappe scarta la sua tappa peggiore;",
+            "chi ne salta una scarta l'assenza e non perde nulla;",
+            "chi ne salta due ne scarta una, e l'altra resta in classifica con 0 punti."
+          ] },
+          { "tipo": "paragrafo", "testo": "Lo scarto si applica dalla seconda tappa disputata in poi." },
+          { "tipo": "sottotitolo", "testo": "Esempio dopo quattro tappe" },
+          { "tipo": "tabella",
+            "intestazioni": ["Giocatore", "T1", "T2", "T3", "T4", "Lordi", "Scarto", "Netti"],
+            "righe": [
+              ["Bruno", "12", "10", "9", "14", "45", "−9", "36"],
+              ["Anna", "17", "assente", "11", "8", "36", "0", "36"]
+            ] },
+          { "tipo": "paragrafo", "testo": "A parità di punti netti, Bruno è davanti perché ha più presenze." }
+        ]
+      },
+      {
+        "id": "spareggi",
+        "numero": 6,
+        "titolo": "Spareggi della classifica generale",
+        "blocchi": [
+          { "tipo": "paragrafo", "testo": "A parità di punti netti contano, nell'ordine:" },
+          { "tipo": "elencoNumerato", "voci": [
+            "numero di tappe giocate;",
+            "punti lordi;",
+            "ordine alfabetico."
+          ] }
+        ]
+      },
+      {
+        "id": "finale",
+        "numero": 7,
+        "titolo": "Fase finale",
+        "blocchi": [
+          { "tipo": "paragrafo", "testo": "A fine stagione i primi [8] della classifica generale accedono alla fase finale, che si gioca [data e formula]. Per qualificarsi serve almeno una presenza. Se un qualificato non può partecipare, il suo posto va [al primo dei non qualificati / a nessuno]." }
+        ]
+      },
+      {
+        "id": "casi",
+        "numero": 8,
+        "titolo": "Ritiri, ritardi e casi particolari",
+        "blocchi": [
+          { "tipo": "elenco", "voci": [
+            "Chi si ritira durante una tappa non viene più abbinato, ma conserva i punti ottenuti fino a quel momento.",
+            "Chi arriva in ritardo può essere iscritto dal turno successivo, partendo da 0 punti.",
+            "Chi non si presenta al tavolo entro [10] minuti dall'inizio del turno perde l'incontro.",
+            "Affrontare due volte lo stesso avversario è ammesso solo quando, con pochi presenti, è inevitabile.",
+            "I casi non previsti sono decisi dall'organizzazione, ispirandosi alle regole dei tornei ufficiali di Magic."
+          ] }
+        ]
+      },
+      {
+        "id": "comportamento",
+        "numero": 9,
+        "titolo": "Comportamento",
+        "blocchi": [
+          { "tipo": "paragrafo", "testo": "Si gioca con correttezza e rispetto verso avversari, organizzazione e luogo che ci ospita. Ognuno comunica chiaramente le proprie azioni di gioco e segnala subito gli errori, anche a proprio svantaggio. Comportamenti scorretti possono portare alla perdita dell'incontro, alla squalifica dalla tappa o all'esclusione dalla lega." }
+        ]
+      },
+      {
+        "id": "info",
+        "numero": 10,
+        "titolo": "Classifiche, contestazioni e modifiche",
+        "blocchi": [
+          { "tipo": "elenco", "voci": [
+            "Le classifiche sono pubblicate su questo sito [entro X giorni dalla tappa].",
+            "Gli errori nei risultati vanno segnalati a [contatto] entro [7] giorni dalla pubblicazione; poi la classifica è definitiva.",
+            "L'organizzazione può modificare il regolamento durante la stagione, dandone comunicazione su questo sito. I punteggi già assegnati non cambiano."
+          ] }
+        ]
+      }
+    ]
+  },
 
   "contatti": [
     { "nome": "Gruppo della lega", "testo": "Unisciti su WhatsApp o contattaci su Instagram", "link": "link.instagram" },
