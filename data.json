@@ -1,0 +1,39 @@
+{
+  "nomeLega": "Lega Magic del Giovedì",
+  "sottotitolo": "Classifica, eventi e decklist della nostra community",
+  "ultimoAggiornamento": "2026-10-26",
+
+  "news": [
+    { "data": "2026-10-24", "titolo": "Si chiude la tappa di ottobre", "testo": "Grazie a tutti i 12 partecipanti! Classifica aggiornata." },
+    { "data": "2026-10-10", "titolo": "Benvenuti sul sito", "testo": "Qui trovate sempre classifica, prossimi tornei e decklist." }
+  ],
+
+  "classifica": [
+    { "giocatore": "Marco", "punti": 18, "vittorie": 6, "sconfitte": 1, "pareggi": 0 },
+    { "giocatore": "Giulia", "punti": 15, "vittorie": 5, "sconfitte": 2, "pareggi": 0 },
+    { "giocatore": "Davide", "punti": 13, "vittorie": 4, "sconfitte": 2, "pareggi": 1 },
+    { "giocatore": "Sara", "punti": 10, "vittorie": 3, "sconfitte": 3, "pareggi": 1 },
+    { "giocatore": "Andrea", "punti": 6, "vittorie": 2, "sconfitte": 5, "pareggi": 0 }
+  ],
+
+  "eventi": [
+    { "data": "2026-11-05", "ora": "20:30", "nome": "Tappa di novembre", "formato": "Premodern", "luogo": "Negozio XYZ, Via Esempio 1", "note": "Iscrizioni entro le 20:15" },
+    { "data": "2026-11-19", "ora": "20:30", "nome": "Torneo amichevole", "formato": "Pauper", "luogo": "Negozio XYZ, Via Esempio 1", "note": "" }
+  ],
+
+  "decklist": [
+    { "torneo": "Tappa di ottobre", "giocatore": "Marco", "mazzo": "Burn", "piazzamento": "1° posto", "link": "" },
+    { "torneo": "Tappa di ottobre", "giocatore": "Giulia", "mazzo": "Elves", "piazzamento": "2° posto", "link": "" }
+  ],
+
+  "regole": [
+    "Vittoria 3 punti, pareggio 1, sconfitta 0.",
+    "Turni al meglio di tre partite, 50 minuti.",
+    "Banlist ufficiale del formato."
+  ],
+
+  "contatti": [
+    { "nome": "Gruppo della lega", "testo": "Unisciti su WhatsApp", "link": "" },
+    { "nome": "Organizzatore", "testo": "Luca", "link": "" }
+  ]
+}

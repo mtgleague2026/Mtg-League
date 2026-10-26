@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lega Magic</title>
+<style>
+  :root {
+    --bg: #14121a; --card: #1e1b26; --line: #2e2a3a;
+    --text: #ece8f4; --muted: #9a93ad; --accent: #d4a646;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.5;
+  }
+  header { padding: 28px 16px 8px; text-align: center; }
+  header h1 { margin: 0; font-size: 1.8rem; letter-spacing: .02em; }
+  header p { margin: 4px 0 0; color: var(--muted); }
+  nav {
+    display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
+    padding: 12px 16px; position: sticky; top: 0; background: var(--bg);
+    border-bottom: 1px solid var(--line); z-index: 1;
+  }
+  nav button {
+    background: none; border: 1px solid var(--line); color: var(--muted);
+    padding: 7px 14px; border-radius: 999px; cursor: pointer; font-size: .95rem;
+  }
+  nav button.attivo { border-color: var(--accent); color: var(--accent); }
+  main { max-width: 820px; margin: 0 auto; padding: 20px 16px 48px; }
+  section { display: none; }
+  section.attivo { display: block; }
+  h2 { font-size: 1.2rem; margin: 0 0 14px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 10px; padding: 14px 16px; margin-bottom: 10px;
+  }
+  .card .meta { color: var(--muted); font-size: .9rem; }
+  table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 10px; overflow: hidden; }
+  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 500; font-size: .85rem; text-transform: uppercase; }
+  td.num, th.num { text-align: right; }
+  tr:first-child td { color: var(--accent); font-weight: 600; }
+  a { color: var(--accent); }
+  .aggiornato { color: var(--muted); font-size: .85rem; text-align: center; margin-top: 24px; }
+  .errore { background: #3a1e22; border-color: #6b2e36; }
+  @media (max-width: 520px) { .nascondi-mobile { display: none; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1 id="titolo">Lega Magic</h1>
+  <p id="sottotitolo"></p>
+</header>
+
+<nav>
+  <button data-sezione="news" class="attivo">News</button>
+  <button data-sezione="classifica">Classifica</button>
+  <button data-sezione="eventi">Eventi</button>
+  <button data-sezione="decklist">Decklist</button>
+  <button data-sezione="info">Regole e contatti</button>
+</nav>
+
+<main>
+  <section id="news" class="attivo"><h2>Ultime novità</h2><div id="lista-news"></div></section>
+
+  <section id="classifica">
+    <h2>Classifica</h2>
+    <table>
+      <thead><tr>
+        <th>#</th><th>Giocatore</th><th class="num">Punti</th>
+        <th class="num nascondi-mobile">V-S-P</th>
+      </tr></thead>
+      <tbody id="tabella-classifica"></tbody>
+    </table>
+  </section>
+
+  <section id="eventi"><h2>Prossimi eventi</h2><div id="lista-eventi"></div></section>
+  <section id="decklist"><h2>Decklist dei tornei</h2><div id="lista-decklist"></div></section>
+  <section id="info"><h2>Regole e contatti</h2><div id="contenuto-info"></div></section>
+
+  <p class="aggiornato" id="aggiornato"></p>
+</main>
+
+<script>
+  // Navigazione tra le sezioni
+  document.querySelectorAll("nav button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("nav button, section").forEach(el => el.classList.remove("attivo"));
+      btn.classList.add("attivo");
+      document.getElementById(btn.dataset.sezione).classList.add("attivo");
+    });
+  });
+
+  // Evita che testo nei dati venga interpretato come HTML
+  const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const dataIt = d => new Date(d).toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "long" });
+
+  // Carica i dati da data.json e riempie le sezioni
+  fetch("data.json")
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById("titolo").textContent = d.nomeLega;
+      document.getElementById("sottotitolo").textContent = d.sottotitolo;
+      document.title = d.nomeLega;
+
+      document.getElementById("lista-news").innerHTML = d.news.map(n => `
+        <div class="card"><strong>${esc(n.titolo)}</strong>
+        <div class="meta">${dataIt(n.data)}</div><div>${esc(n.testo)}</div></div>`).join("");
+
+      const ordinata = [...d.classifica].sort((a, b) => b.punti - a.punti);
+      document.getElementById("tabella-classifica").innerHTML = ordinata.map((g, i) => `
+        <tr><td>${i + 1}</td><td>${esc(g.giocatore)}</td><td class="num">${g.punti}</td>
+        <td class="num nascondi-mobile">${g.vittorie}-${g.sconfitte}-${g.pareggi}</td></tr>`).join("");
+
+      document.getElementById("lista-eventi").innerHTML = d.eventi.map(e => `
+        <div class="card"><strong>${esc(e.nome)}</strong>
+        <div class="meta">${dataIt(e.data)} · ore ${esc(e.ora)} · ${esc(e.formato)}</div>
+        <div>${esc(e.luogo)}${e.note ? " — " + esc(e.note) : ""}</div></div>`).join("");
+
+      document.getElementById("lista-decklist").innerHTML = d.decklist.map(k => `
+        <div class="card"><strong>${esc(k.mazzo)}</strong> — ${esc(k.giocatore)}
+        <div class="meta">${esc(k.torneo)} · ${esc(k.piazzamento)}</div>
+        ${k.link ? `<a href="${esc(k.link)}" target="_blank" rel="noopener">Vedi lista</a>` : ""}</div>`).join("");
+
+      document.getElementById("contenuto-info").innerHTML = `
+        <div class="card"><strong>Regole della lega</strong>
+        <ul>${d.regole.map(r => `<li>${esc(r)}</li>`).join("")}</ul></div>
+        <div class="card"><strong>Contatti</strong>
+        <ul>${d.contatti.map(c => `<li>${esc(c.nome)}: ${c.link ? `<a href="${esc(c.link)}" target="_blank" rel="noopener">${esc(c.testo)}</a>` : esc(c.testo)}</li>`).join("")}</ul></div>`;
+
+      document.getElementById("aggiornato").textContent = "Ultimo aggiornamento: " + dataIt(d.ultimoAggiornamento);
+    })
+    .catch(() => {
+      document.getElementById("lista-news").innerHTML = `
+        <div class="card errore">Non riesco a leggere <strong>data.json</strong>.<br>
+        Se hai aperto il file con un doppio clic dal computer è normale: il browser blocca la lettura
+        dei file locali. Online (GitHub Pages) funzionerà.</div>`;
+    });
+</script>
+</body>
+</html>
