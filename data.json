@@ -1,17 +1,19 @@
 {
   "nomeLega": "Premodern della Terra di Mezzo",
   "sottotitolo": "Classifica, eventi e decklist della nostra community",
-  "ultimoAggiornamento": "2026-10-27",
+  "ultimoAggiornamento": "2026-10-28",
   "news": [
     {
       "data": "2026-10-24",
-      "titolo": "Con gennaio nascerà la lega premodern della Terra di Mezzo",
-      "testo": "Rimanete sintonizzati per tutti gli aggiornamenti"
+      "titolo": "Primi appuntamenti da gennaio 2027!",
+      "testo": "Rimanete sintonizzati per tutti gli aggiornamenti.",
+      "foto": []
     },
     {
       "data": "2026-10-10",
-      "titolo": "Benvenuti sul sito",
-      "testo": "Qui trovate sempre classifica, prossimi tornei e decklist."
+      "titolo": "Benvenuti sul sito della community Premodern 26015!",
+      "testo": "Qui trovate sempre classifica, prossimi tornei e decklist.",
+      "foto": []
     }
   ],
   "classifica": [
@@ -37,24 +39,17 @@
       "nome": "S1E1",
       "formato": "Premodern",
       "luogo": "In fase di sviluppo...",
-      "note": "Iscrizioni aperte, CAP 30 players"
-    },
-    {
-      "data": "2026-11-12",
-      "ora": "13:30",
-      "nome": "S0E1",
-      "formato": "Premodern",
-      "luogo": "Ci siamo quasi...",
-      "note": "Per info e iscrizioni scrivere a Edo"
+      "note": "Iscrizioni aperte da dicembre. Limite massimo di 30 player."
     }
   ],
   "decklist": [
     {
       "torneo": "S1E1",
-      "giocatore": "Edo",
-      "mazzo": "Stasis",
+      "giocatore": "Test_Edo",
+      "mazzo": "HFEB",
       "piazzamento": "1° posto",
-      "link": "www.mtgtop8.com"
+      "link": "www.mtgtop8.com",
+      "lista": "1 Akroma, Angel of Wrath\n1 Battlefield Scrounger\n4 Birds of Paradise\n1 Elvish Spirit Guide\n4 Hermit Druid\n1 Karmic Guide\n1 Palinchron\n1 Phyrexian Devourer\n1 Psychatog\n1 Squee, Goblin Nabob\n1 Triskelion\n2 Volrath's Shapeshifter\n4 Wall of Roots\n1 Krosan Reclamation\n4 Cabal Therapy\n1 Duress\n4 Unearth\n1 Animate Dead\n4 Survival of the Fittest\n4 City of Brass\n4 Gemstone Mine\n4 Llanowar Wastes\n3 Reflecting Pool\n1 Treva's Ruins\n1 Underground River\n1 Undiscovered Paradise\n4 Yavimaya Coast\nSideboard\n2 Duress\n1 Auramancer\n1 Blue Elemental Blast\n1 Crumble\n1 Enlightened Tutor\n1 Ghitu Slinger\n1 Monk Realist\n1 Naturalize\n2 Pyroclasm\n1 Ray of Revelation\n1 Uktabi Orangutan\n2 Xantid Swarm"
     }
   ],
   "regole": {
@@ -455,13 +450,13 @@
   },
   "contatti": [
     {
-      "nome": "Gruppo della lega",
-      "testo": "Unisciti su WhatsApp o contattaci su Instagram",
+      "nome": "Gruppo WhatsApp",
+      "testo": "Rimani in contatto con noi tramite WhatsApp al seguente link!",
       "link": ""
     },
     {
-      "nome": "Organizzatori",
-      "testo": "Luca e Edo",
+      "nome": "Instagram",
+      "testo": "Segui le ultime notizie anche su Instagram!",
       "link": ""
     }
   ]
