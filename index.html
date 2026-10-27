@@ -235,7 +235,7 @@
   const dataLunga = d => new Date(d).toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   const vuoto = testo => `<div class="card vuoto">${testo}</div>`;
 
-  fetch("data.json")
+  fetch("data.json?v=" + Date.now(), { cache: "no-store" })
     .then(r => r.json())
     .then(d => {
       document.getElementById("titolo").textContent = d.nomeLega;

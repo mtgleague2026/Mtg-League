@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Gestione sito</title>
+<link rel="icon" href="favicon.png">
+<style>
+  :root {
+    --bg: #0c0b0a; --card: #17140f; --card-2: #1f1a12; --line: #3a2f1d;
+    --text: #efe6d2; --muted: #a8997c; --gold: #d9b45a; --gold-hi: #f3d88e;
+    --brass: #a87b32; --ok: #7fbf7a; --err: #e07a6e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.45;
+  }
+  header {
+    display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+    border-bottom: 1px solid var(--line); max-width: 900px; margin: 0 auto;
+  }
+  header img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+  header h1 { font-size: 1.1rem; margin: 0; color: var(--gold); }
+  header .sub { color: var(--muted); font-size: .85rem; }
+  header a { margin-left: auto; color: var(--gold); font-size: .9rem; white-space: nowrap; }
+  main { max-width: 900px; margin: 0 auto; padding: 16px 16px 120px; }
+
+  .card {
+    background: linear-gradient(180deg, var(--card-2), var(--card));
+    border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px;
+  }
+  .card h2 { margin: 0 0 8px; font-size: 1rem; color: var(--gold); }
+  .muted { color: var(--muted); font-size: .88rem; }
+
+  label { display: block; font-size: .78rem; color: var(--muted); margin-bottom: 3px; letter-spacing: .02em; }
+  input, textarea {
+    width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--line);
+    border-radius: 8px; padding: 9px 10px; font: inherit; font-size: 16px;
+  }
+  input:focus, textarea:focus { outline: none; border-color: var(--gold); }
+  textarea { min-height: 70px; resize: vertical; }
+  .campi { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .campi .largo { grid-column: 1 / -1; }
+
+  button {
+    font: inherit; font-size: .9rem; cursor: pointer; border-radius: 8px; padding: 8px 14px;
+    border: 1px solid var(--line); background: var(--card-2); color: var(--text);
+  }
+  button:hover { border-color: var(--brass); }
+  button.primario {
+    background: linear-gradient(180deg, var(--gold-hi), var(--gold)); color: #1a1308;
+    border: none; font-weight: 600;
+  }
+  button.primario:disabled { opacity: .45; cursor: default; }
+  button.piccolo { padding: 5px 9px; font-size: .85rem; }
+  button.elimina:hover { border-color: var(--err); color: var(--err); }
+
+  .schede { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 14px; }
+  .schede button.attivo { border-color: var(--gold); color: var(--gold); }
+
+  .voce { position: relative; }
+  .voce .azioni { display: flex; gap: 6px; justify-content: flex-end; margin-top: 10px; }
+  .intesta { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .intesta h2 { margin: 0; }
+
+  /* Classifica in forma di tabella compatta */
+  .griglia { width: 100%; border-collapse: collapse; }
+  .griglia th { text-align: left; font-size: .75rem; color: var(--muted); font-weight: 500; padding: 0 4px 6px; }
+  .griglia td { padding: 3px 4px; }
+  .griglia input { padding: 7px 8px; }
+  .griglia .n { width: 60px; }
+  .griglia td:first-child input { min-width: 130px; }
+  .griglia input[type=number] { padding: 7px 4px; text-align: center; -moz-appearance: textfield; }
+  .griglia input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  @media (max-width: 520px) {
+    #stato { flex-basis: 100%; }
+    .barra button { flex: 1; }
+  }
+  .griglia td:last-child { width: 1%; white-space: nowrap; }
+
+  .barra {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 5;
+    background: rgba(12,11,10,.95); backdrop-filter: blur(8px); border-top: 1px solid var(--line);
+  }
+  .barra .dentro {
+    max-width: 900px; margin: 0 auto; padding: 12px 16px;
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  }
+  #stato { flex: 1; min-width: 180px; font-size: .9rem; color: var(--muted); }
+  #stato.ok { color: var(--ok); } #stato.err { color: var(--err); } #stato.mod { color: var(--gold-hi); }
+
+  .nascosto { display: none !important; }
+  .riga { display: flex; gap: 8px; align-items: end; flex-wrap: wrap; }
+  .riga > div { flex: 1; min-width: 200px; }
+  details summary { cursor: pointer; color: var(--gold); }
+  ol.passi li { margin: 4px 0; }
+  code { background: var(--bg); padding: 1px 5px; border-radius: 4px; border: 1px solid var(--line); font-size: .85em; }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="logo.jpg" alt="">
+  <div><h1>Gestione sito</h1><div class="sub" id="repo-label"></div></div>
+  <a href="./" target="_blank">Apri il sito ↗</a>
+</header>
+
+<main>
+  <!-- Accesso -->
+  <div class="card" id="box-token">
+    <h2>Accesso</h2>
+    <p class="muted" style="margin-top:0">Incolla qui il tuo token GitHub. Viene ricordato solo su questo browser e non finisce mai sul sito pubblico.</p>
+    <div class="riga">
+      <div><label for="token">Token GitHub</label><input id="token" type="password" placeholder="github_pat_…" autocomplete="off"></div>
+      <button class="primario" id="btn-accedi">Accedi</button>
+    </div>
+    <details style="margin-top:12px">
+      <summary>Impostazioni avanzate</summary>
+      <div class="campi" style="margin-top:10px">
+        <div><label for="owner">Utente GitHub</label><input id="owner"></div>
+        <div><label for="repo">Repository</label><input id="repo"></div>
+        <div><label for="branch">Branch</label><input id="branch" value="main"></div>
+      </div>
+    </details>
+  </div>
+
+  <div class="card nascosto" id="box-connesso">
+    <div class="intesta" style="margin:0">
+      <span class="muted">Collegato a GitHub ✓</span>
+      <span style="display:flex;gap:6px">
+        <button class="piccolo" id="btn-ricarica" title="Rilegge i dati da GitHub">Ricarica dati</button>
+        <button class="piccolo" id="btn-esci">Esci</button>
+      </span>
+    </div>
+  </div>
+
+  <div id="editor" class="nascosto">
+    <div class="schede" id="schede"></div>
+    <div id="pannello"></div>
+  </div>
+</main>
+
+<div class="barra">
+  <div class="dentro">
+    <span id="stato">Inserisci il token per iniziare.</span>
+    <button id="btn-scarica" class="nascosto" title="Scarica data.json da caricare a mano">Scarica data.json</button>
+    <button id="btn-pubblica" class="primario" disabled>Pubblica</button>
+  </div>
+</div>
+
+<script>
+/* ======================= Impostazioni e memoria locale ======================= */
+const mem = {
+  get: k => { try { return localStorage.getItem("admin_" + k); } catch { return null; } },
+  set: (k, v) => { try { localStorage.setItem("admin_" + k, v); } catch {} },
+  del: k => { try { localStorage.removeItem("admin_" + k); } catch {} },
+};
+const $ = id => document.getElementById(id);
+
+// Utente e repository si ricavano dall'indirizzo: utente.github.io/repository/
+const suGithub = location.hostname.endsWith(".github.io");
+$("owner").value  = mem.get("owner")  || (suGithub ? location.hostname.split(".")[0] : "");
+$("repo").value   = mem.get("repo")   || (suGithub ? location.pathname.split("/")[1] : "");
+$("branch").value = mem.get("branch") || "main";
+
+const cfg = () => ({ owner: $("owner").value.trim(), repo: $("repo").value.trim(), branch: $("branch").value.trim() || "main" });
+const aggiornaEtichetta = () => { const c = cfg(); $("repo-label").textContent = c.owner && c.repo ? `${c.owner} / ${c.repo}` : ""; };
+aggiornaEtichetta();
+
+/* ======================= Stato ======================= */
+let dati = null;        // contenuto di data.json
+let sha = null;         // versione del file su GitHub (serve per salvare)
+let modificato = false;
+let schedaAttiva = "news";
+
+function stato(testo, tipo = "") { const s = $("stato"); s.textContent = testo; s.className = tipo; }
+function segnaModificato() {
+  modificato = true;
+  $("btn-pubblica").disabled = false;
+  stato("Modifiche non ancora pubblicate", "mod");
+}
+window.addEventListener("beforeunload", e => { if (modificato) { e.preventDefault(); e.returnValue = ""; } });
+
+/* ======================= GitHub ======================= */
+const b64Encode = str => { const bytes = new TextEncoder().encode(str); let bin = ""; bytes.forEach(b => bin += String.fromCharCode(b)); return btoa(bin); };
+const b64Decode = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\n/g, "")), c => c.charCodeAt(0)));
+
+async function gh(metodo, corpo) {
+  const { owner, repo, branch } = cfg();
+  const url = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/data.json` + (metodo === "GET" ? `?ref=${encodeURIComponent(branch)}&t=${Date.now()}` : "");
+  const r = await fetch(url, {
+    method: metodo, cache: "no-store",
+    headers: {
+      "Authorization": "Bearer " + mem.get("token"),
+      "Accept": "application/vnd.github+json",
+      ...(corpo ? { "Content-Type": "application/json" } : {}),
+    },
+    body: corpo ? JSON.stringify(corpo) : undefined,
+  });
+  if (!r.ok) {
+    const msg = {
+      401: "Token non valido o scaduto. Creane uno nuovo ed esci/rientra.",
+      403: "Il token non ha il permesso di scrivere. Controlla che abbia «Contents: Read and write» su questo repository.",
+      404: "Repository o file data.json non trovato. Controlla le impostazioni avanzate e che il token abbia accesso a questo repository.",
+      409: "Il file è stato modificato da un'altra parte nel frattempo. Premi «Ricarica dati» e rifai la modifica.",
+      422: "GitHub ha rifiutato il salvataggio. Premi «Ricarica dati» e riprova.",
+    }[r.status] || `Errore GitHub (${r.status}).`;
+    throw new Error(msg);
+  }
+  return r.json();
+}
+
+async function carica() {
+  stato("Carico i dati da GitHub…");
+  try {
+    const f = await gh("GET");
+    sha = f.sha;
+    dati = JSON.parse(b64Decode(f.content));
+    ["news", "eventi", "classifica", "decklist", "contatti"].forEach(k => { if (!Array.isArray(dati[k])) dati[k] = []; });
+    modificato = false;
+    $("btn-pubblica").disabled = true;
+    $("box-token").classList.add("nascosto");
+    $("box-connesso").classList.remove("nascosto");
+    $("editor").classList.remove("nascosto");
+    $("btn-scarica").classList.remove("nascosto");
+    disegna();
+    stato("Dati caricati. Nessuna modifica in sospeso.", "ok");
+  } catch (e) {
+    stato(e.message, "err");
+  }
+}
+
+async function pubblica() {
+  $("btn-pubblica").disabled = true;
+  stato("Pubblico…");
+  try {
+    dati.ultimoAggiornamento = new Date().toLocaleDateString("sv-SE"); // formato AAAA-MM-GG
+    // rilegge la versione attuale per sicurezza
+    const attuale = await gh("GET");
+    if (attuale.sha !== sha) throw new Error("Il file su GitHub è cambiato da quando l'hai aperto. Premi «Ricarica dati» e rifai la modifica.");
+    const r = await gh("PUT", {
+      message: "Aggiornamento dal pannello di gestione",
+      content: b64Encode(JSON.stringify(dati, null, 2) + "\n"),
+      sha, branch: cfg().branch,
+    });
+    sha = r.content.sha;
+    modificato = false;
+    const ora = new Date().toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+    stato(`Pubblicato alle ${ora} ✓ Il sito si aggiorna entro 1-2 minuti.`, "ok");
+  } catch (e) {
+    $("btn-pubblica").disabled = false;
+    stato(e.message, "err");
+  }
+}
+
+/* ======================= Struttura delle sezioni ======================= */
+const oggi = () => new Date().toLocaleDateString("sv-SE");
+const SEZIONI = {
+  news: {
+    nome: "News", aggiungi: "Nuova news", inCima: true,
+    campi: [["data", "date", "Data"], ["titolo", "text", "Titolo", "largo"], ["testo", "textarea", "Testo", "largo"]],
+    nuovo: () => ({ data: oggi(), titolo: "", testo: "" }),
+    etichetta: v => v.titolo || "News senza titolo",
+  },
+  eventi: {
+    nome: "Eventi", aggiungi: "Nuovo evento",
+    campi: [["nome", "text", "Nome (es. S1E2)"], ["data", "date", "Data"], ["ora", "time", "Ora"], ["formato", "text", "Formato"],
+            ["luogo", "text", "Luogo", "largo"], ["note", "text", "Note", "largo"]],
+    nuovo: () => ({ data: oggi(), ora: "13:30", nome: "", formato: "Premodern", luogo: "Bar Milano, Soresina", note: "" }),
+  },
+  classifica: { nome: "Classifica", aggiungi: "Aggiungi giocatore" },
+  decklist: {
+    nome: "Decklist", aggiungi: "Nuova decklist", inCima: true,
+    campi: [["torneo", "text", "Torneo"], ["piazzamento", "text", "Piazzamento"], ["giocatore", "text", "Giocatore"],
+            ["mazzo", "text", "Mazzo"], ["link", "url", "Link alla lista (facoltativo)", "largo"]],
+    nuovo: () => ({ torneo: "", giocatore: "", mazzo: "", piazzamento: "1° posto", link: "" }),
+  },
+  contatti: {
+    nome: "Contatti", aggiungi: "Nuovo contatto",
+    campi: [["nome", "text", "Voce (es. Instagram)"], ["testo", "text", "Testo mostrato"], ["link", "url", "Link (facoltativo, con https://)", "largo"]],
+    nuovo: () => ({ nome: "", testo: "", link: "" }),
+  },
+  generale: { nome: "Testata" },
+};
+
+/* ======================= Disegno dell'interfaccia ======================= */
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function disegna() {
+  $("schede").innerHTML = Object.entries(SEZIONI).map(([k, s]) =>
+    `<button data-k="${k}" class="${k === schedaAttiva ? "attivo" : ""}">${s.nome}</button>`).join("");
+  $("schede").querySelectorAll("button").forEach(b => b.onclick = () => { schedaAttiva = b.dataset.k; disegna(); });
+
+  const p = $("pannello");
+  if (schedaAttiva === "generale") return disegnaGenerale(p);
+  if (schedaAttiva === "classifica") return disegnaClassifica(p);
+  disegnaLista(p, schedaAttiva);
+}
+
+function campo(valore, tipo, etichetta, extra, onInput) {
+  const id = "f" + Math.random().toString(36).slice(2);
+  const wrap = document.createElement("div");
+  if (extra === "largo") wrap.className = "largo";
+  wrap.innerHTML = `<label for="${id}">${esc(etichetta)}</label>` +
+    (tipo === "textarea" ? `<textarea id="${id}">${esc(valore)}</textarea>`
+                         : `<input id="${id}" type="${tipo}" value="${esc(valore)}">`);
+  wrap.querySelector("input,textarea").addEventListener("input", e => { onInput(e.target.value); segnaModificato(); });
+  return wrap;
+}
+
+function disegnaLista(p, k) {
+  const s = SEZIONI[k], lista = dati[k];
+  p.innerHTML = `<div class="intesta"><h2 style="color:var(--gold)">${s.nome} <span class="muted">(${lista.length})</span></h2>
+    <button class="primario" id="btn-nuovo">+ ${s.aggiungi}</button></div>`;
+  $("btn-nuovo").onclick = () => {
+    s.inCima ? lista.unshift(s.nuovo()) : lista.push(s.nuovo());
+    segnaModificato(); disegna();
+    const prima = p.querySelectorAll(".voce")[s.inCima ? 0 : lista.length - 1];
+    prima?.scrollIntoView({ behavior: "smooth", block: "center" });
+    prima?.querySelector("input,textarea")?.focus();
+  };
+  if (!lista.length) p.insertAdjacentHTML("beforeend", `<div class="card muted">Ancora niente qui.</div>`);
+
+  lista.forEach((voce, i) => {
+    const card = document.createElement("div");
+    card.className = "card voce";
+    const griglia = document.createElement("div");
+    griglia.className = "campi";
+    s.campi.forEach(([chiave, tipo, etichetta, extra]) =>
+      griglia.appendChild(campo(voce[chiave], tipo, etichetta, extra, v => voce[chiave] = v)));
+    card.appendChild(griglia);
+
+    const azioni = document.createElement("div");
+    azioni.className = "azioni";
+    azioni.innerHTML = `
+      <button class="piccolo" data-a="su" ${i === 0 ? "disabled" : ""} title="Sposta su">↑</button>
+      <button class="piccolo" data-a="giu" ${i === lista.length - 1 ? "disabled" : ""} title="Sposta giù">↓</button>
+      <button class="piccolo elimina" data-a="del">Elimina</button>`;
+    azioni.onclick = e => {
+      const a = e.target.dataset.a; if (!a) return;
+      if (a === "del" && !confirm("Eliminare questa voce?")) return;
+      if (a === "del") lista.splice(i, 1);
+      if (a === "su") [lista[i - 1], lista[i]] = [lista[i], lista[i - 1]];
+      if (a === "giu") [lista[i + 1], lista[i]] = [lista[i], lista[i + 1]];
+      segnaModificato(); disegna();
+    };
+    card.appendChild(azioni);
+    p.appendChild(card);
+  });
+}
+
+function disegnaClassifica(p) {
+  const lista = dati.classifica;
+  p.innerHTML = `<div class="intesta"><h2 style="color:var(--gold)">Classifica <span class="muted">(${lista.length})</span></h2>
+    <button class="primario" id="btn-nuovo">+ Aggiungi giocatore</button></div>
+    <div class="card" style="overflow-x:auto">
+      <p class="muted" style="margin-top:0">L'ordine sul sito è automatico, in base ai punti.</p>
+      <table class="griglia"><thead><tr>
+        <th>Giocatore</th><th>Punti</th><th>V</th><th>S</th><th>P</th><th></th>
+      </tr></thead><tbody id="righe"></tbody></table>
+    </div>`;
+  $("btn-nuovo").onclick = () => {
+    lista.push({ giocatore: "", punti: 0, vittorie: 0, sconfitte: 0, pareggi: 0 });
+    segnaModificato(); disegna();
+    const righe = $("righe").querySelectorAll("tr");
+    righe[righe.length - 1]?.querySelector("input")?.focus();
+  };
+  const tb = $("righe");
+  lista.forEach((g, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><input value="${esc(g.giocatore)}" data-c="giocatore" placeholder="Nome"></td>
+      ${["punti", "vittorie", "sconfitte", "pareggi"].map(c => `<td class="n"><input type="number" inputmode="numeric" value="${g[c] ?? 0}" data-c="${c}"></td>`).join("")}
+      <td><button class="piccolo elimina" title="Elimina">✕</button></td>`;
+    tr.querySelectorAll("input").forEach(inp => inp.addEventListener("input", () => {
+      const c = inp.dataset.c;
+      g[c] = c === "giocatore" ? inp.value : (Number(inp.value) || 0);
+      segnaModificato();
+    }));
+    tr.querySelector("button").onclick = () => {
+      if (!confirm(`Togliere ${g.giocatore || "questo giocatore"} dalla classifica?`)) return;
+      lista.splice(i, 1); segnaModificato(); disegna();
+    };
+    tb.appendChild(tr);
+  });
+  if (!lista.length) tb.innerHTML = `<tr><td colspan="6" class="muted">Nessun giocatore.</td></tr>`;
+}
+
+function disegnaGenerale(p) {
+  p.innerHTML = `<div class="card"><h2>Testata del sito</h2><div class="campi" id="g"></div>
+    <p class="muted" style="margin-bottom:0">Il regolamento non si modifica da qui: per cambiarlo chiedi a Claude.</p></div>`;
+  $("g").appendChild(campo(dati.nomeLega, "text", "Nome della lega", "largo", v => dati.nomeLega = v));
+  $("g").appendChild(campo(dati.sottotitolo, "text", "Sottotitolo", "largo", v => dati.sottotitolo = v));
+}
+
+/* ======================= Pulsanti ======================= */
+$("btn-accedi").onclick = () => {
+  const t = $("token").value.trim();
+  if (!t) return stato("Incolla prima il token.", "err");
+  const c = cfg();
+  if (!c.owner || !c.repo) return stato("Compila utente e repository nelle impostazioni avanzate.", "err");
+  mem.set("token", t); mem.set("owner", c.owner); mem.set("repo", c.repo); mem.set("branch", c.branch);
+  aggiornaEtichetta();
+  carica();
+};
+$("token").addEventListener("keydown", e => { if (e.key === "Enter") $("btn-accedi").click(); });
+$("btn-pubblica").onclick = pubblica;
+$("btn-ricarica").onclick = () => { if (!modificato || confirm("Hai modifiche non pubblicate: verranno perse. Continuare?")) carica(); };
+$("btn-esci").onclick = () => {
+  if (modificato && !confirm("Hai modifiche non pubblicate: verranno perse. Uscire lo stesso?")) return;
+  mem.del("token"); modificato = false; location.reload();
+};
+$("btn-scarica").onclick = () => {
+  const blob = new Blob([JSON.stringify(dati, null, 2) + "\n"], { type: "application/json" });
+  const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: "data.json" });
+  a.click(); URL.revokeObjectURL(a.href);
+};
+
+// Se il token è già salvato su questo browser, entra subito
+if (mem.get("token")) carica();
+</script>
+</body>
+</html>
