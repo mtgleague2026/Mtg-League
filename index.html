@@ -264,51 +264,73 @@
     th, td { padding: 10px; }
     .freccia { top: auto; bottom: 8px; transform: none; }
   }
+
+  /* Selettore lingua */
+  header { position: relative; }
+  .lingua {
+    position: absolute; top: 14px; right: 16px; display: flex; gap: 2px; padding: 3px;
+    border: 1px solid var(--line); border-radius: 999px; background: rgba(12,11,10,.6);
+  }
+  .lingua button {
+    font: inherit; font-size: .75rem; font-weight: 600; letter-spacing: .06em; cursor: pointer;
+    border: 0; border-radius: 999px; padding: 4px 10px; background: transparent; color: var(--muted);
+  }
+  .lingua button.attivo { background: var(--gold); color: #1a1308; }
+
+  /* Info utili */
+  .info-testo { white-space: normal; }
+  .info-testo p { margin: 0 0 8px; }
+  .info-testo p:last-child { margin-bottom: 0; }
 </style>
 </head>
 <body>
 
 <header>
-  <img class="logo" src="logo.jpg" alt="Logo della lega">
+  <div class="lingua" role="group" aria-label="Lingua / Language">
+    <button data-lang="it">IT</button><button data-lang="en">EN</button>
+  </div>
+  <img class="logo" src="logo.jpg" alt="Logo">
   <h1 id="titolo">Premodern della Terra di Mezzo</h1>
   <p id="sottotitolo"></p>
   <div class="ornamento">⚙</div>
 </header>
 
 <nav>
-  <button data-sezione="news" class="attivo">News</button>
-  <button data-sezione="classifica">Classifica</button>
-  <button data-sezione="eventi">Eventi</button>
-  <button data-sezione="decklist">Decklist</button>
-  <button data-sezione="regolamento">Regolamento</button>
-  <button data-sezione="contatti">Contatti</button>
+  <button data-sezione="news" class="attivo" data-t="nav_news">News</button>
+  <button data-sezione="classifica" data-t="nav_classifica">Classifica</button>
+  <button data-sezione="eventi" data-t="nav_eventi">Eventi</button>
+  <button data-sezione="decklist" data-t="nav_decklist">Decklist</button>
+  <button data-sezione="regolamento" data-t="nav_regolamento">Regolamento</button>
+  <button data-sezione="info" data-t="nav_info">Info utili</button>
+  <button data-sezione="contatti" data-t="nav_contatti">Contatti</button>
 </nav>
 
 <main>
   <section id="news" class="attivo">
     <div id="prossima-tappa"></div>
-    <h2>Ultime novità</h2>
+    <h2 data-t="tit_news">Ultime novità</h2>
     <div id="lista-news"></div>
   </section>
 
   <section id="classifica">
-    <h2>Classifica generale</h2>
-    <div class="cerca"><input id="cerca-giocatore" type="search" placeholder="Cerca per nome, cognome o nickname" aria-label="Cerca giocatore" autocomplete="off"></div>
+    <h2 data-t="tit_classifica">Classifica generale</h2>
+    <div class="cerca"><input id="cerca-giocatore" type="search" autocomplete="off"></div>
     <div class="tabella-wrap">
       <table>
         <thead><tr>
-          <th>#</th><th>Giocatore</th><th class="num">Punti</th>
-          <th class="num nascondi-mobile">V-S-P</th>
+          <th>#</th><th data-t="col_giocatore">Giocatore</th><th class="num" data-t="col_punti">Punti</th>
+          <th class="num nascondi-mobile" data-t="col_vsp">V-S-P</th>
         </tr></thead>
         <tbody id="tabella-classifica"></tbody>
       </table>
     </div>
   </section>
 
-  <section id="eventi"><h2>Calendario</h2><div id="lista-eventi"></div></section>
-  <section id="decklist"><h2>Decklist dei vincitori</h2><div id="lista-decklist"></div></section>
-  <section id="regolamento"><h2>Regolamento</h2><div id="contenuto-regolamento"></div></section>
-  <section id="contatti"><h2>Contatti</h2><div id="contenuto-contatti"></div></section>
+  <section id="eventi"><h2 data-t="tit_eventi">Calendario</h2><div id="lista-eventi"></div></section>
+  <section id="decklist"><h2 data-t="tit_decklist">Decklist dei vincitori</h2><div id="lista-decklist"></div></section>
+  <section id="regolamento"><h2 data-t="tit_regolamento">Regolamento</h2><div id="contenuto-regolamento"></div></section>
+  <section id="info"><h2 data-t="tit_info">Info utili</h2><div id="lista-info"></div></section>
+  <section id="contatti"><h2 data-t="tit_contatti">Contatti</h2><div id="contenuto-contatti"></div></section>
 </main>
 
 <footer>
@@ -328,24 +350,80 @@
 <!-- Visualizzatore foto -->
 <dialog id="galleria" aria-label="Foto">
   <img id="galleria-img" alt="">
-  <button class="freccia sx" id="foto-prec" aria-label="Foto precedente">‹</button>
-  <button class="freccia dx" id="foto-succ" aria-label="Foto successiva">›</button>
+  <button class="freccia sx" id="foto-prec" aria-label="‹">‹</button>
+  <button class="freccia dx" id="foto-succ" aria-label="›">›</button>
   <div class="contatore" id="galleria-contatore"></div>
   <button class="chiudi" data-chiudi aria-label="Chiudi">✕</button>
 </dialog>
 
 <script>
-  /* ---------------- Strumenti ---------------- */
+  /* ================= Testi dell'interfaccia nelle due lingue ================= */
+  const TESTI = {
+    it: {
+      nav_news: "News", nav_classifica: "Classifica", nav_eventi: "Eventi", nav_decklist: "Decklist",
+      nav_regolamento: "Regolamento", nav_info: "Info utili", nav_contatti: "Contatti",
+      tit_news: "Ultime novità", tit_classifica: "Classifica generale", tit_eventi: "Calendario",
+      tit_decklist: "Decklist dei vincitori", tit_regolamento: "Regolamento", tit_info: "Info utili", tit_contatti: "Contatti",
+      col_giocatore: "Giocatore", col_punti: "Punti", col_vsp: "V-S-P",
+      cerca: "Cerca per nome, cognome o nickname",
+      prossima: "Prossima tappa", oggi: "È oggi!", domani: "Domani!", mancano: n => `Mancano ${n} giorni`, ore: "ore",
+      class_vuota: "La classifica partirà con la prima tappa.", nessuno: q => `Nessun giocatore trovato per «${q}».`,
+      eventi_vuoti: "Nessun evento in calendario.", passati: "Eventi passati",
+      btn_classifica: "🏆 Classifica della tappa", btn_decklist_evento: "📋 Decklist dell'evento ↗", classifica_di: "Classifica",
+      deck_vuote: "Le decklist arriveranno dopo la prima tappa.", vedi_lista: "Vedi lista",
+      main: "Main deck", side: "Sideboard", copia: "Copia lista", copiata: "Copiata ✓", copia_ko: "Copia non riuscita",
+      lista_nd: "Lista non disponibile.", info_vuote: "Nessuna informazione per ora.",
+      stagione: "Stagione", aggiornato_il: "aggiornato il", ultimo_agg: "Ultimo aggiornamento",
+      errore: `Non riesco a leggere <strong>data.json</strong>.<br>Se hai aperto il file con un doppio clic dal computer è normale:
+        il browser blocca la lettura dei file locali. Se invece sei online, probabilmente c'è un errore di sintassi nel file.`,
+    },
+    en: {
+      nav_news: "News", nav_classifica: "Standings", nav_eventi: "Events", nav_decklist: "Decklists",
+      nav_regolamento: "Rules", nav_info: "Useful info", nav_contatti: "Contacts",
+      tit_news: "Latest news", tit_classifica: "Overall standings", tit_eventi: "Schedule",
+      tit_decklist: "Winning decklists", tit_regolamento: "Rules", tit_info: "Useful info", tit_contatti: "Contacts",
+      col_giocatore: "Player", col_punti: "Points", col_vsp: "W-L-D",
+      cerca: "Search by first name, last name or nickname",
+      prossima: "Next event", oggi: "It's today!", domani: "Tomorrow!", mancano: n => `${n} days to go`, ore: "at",
+      class_vuota: "The standings will start with the first event.", nessuno: q => `No player found for “${q}”.`,
+      eventi_vuoti: "No events scheduled.", passati: "Past events",
+      btn_classifica: "🏆 Event standings", btn_decklist_evento: "📋 Event decklists ↗", classifica_di: "Standings",
+      deck_vuote: "Decklists will be published after the first event.", vedi_lista: "View list",
+      main: "Main deck", side: "Sideboard", copia: "Copy list", copiata: "Copied ✓", copia_ko: "Copy failed",
+      lista_nd: "List not available.", info_vuote: "No information yet.",
+      stagione: "Season", aggiornato_il: "updated on", ultimo_agg: "Last updated",
+      errore: `Unable to read <strong>data.json</strong>. If you opened the file by double-clicking it on your computer this is normal;
+        if you are online there is probably a syntax error in the file.`,
+    },
+  };
+
+  /* ================= Lingua ================= */
+  const leggiLingua = () => { try { return localStorage.getItem("lingua"); } catch { return null; } };
+  let lang = leggiLingua() || ((navigator.language || "it").toLowerCase().startsWith("it") ? "it" : "en");
+  const T = k => TESTI[lang][k];
+  // Testo di un contenuto nella lingua scelta (campo "_en"), con ripiego sull'italiano
+  const tr = (o, campo) => (lang === "en" && o && String(o[campo + "_en"] || "").trim()) ? o[campo + "_en"] : (o ? o[campo] : "");
+  // "1° posto" → "1st place", "3°-4° posto" → "3rd-4th place"
+  const ordinale = n => n + (n % 100 >= 11 && n % 100 <= 13 ? "th" : ({ 1: "st", 2: "nd", 3: "rd" }[n % 10] || "th"));
+  const piazzamento = s => lang === "en" ? String(s || "").replace(/(\d+)°/g, (_, n) => ordinale(+n)).replace(/\bposto\b/gi, "place") : s;
+
+  /* ================= Strumenti ================= */
   const $ = id => document.getElementById(id);
   const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const locale = () => lang === "en" ? "en-GB" : "it-IT";
   const giorno = d => new Date(String(d).slice(0, 10) + "T00:00");
-  const dataIt = d => giorno(d).toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "long" });
-  const dataLunga = d => giorno(d).toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const dataBreve = d => giorno(d).toLocaleDateString(locale(), { weekday: "short", day: "numeric", month: "long" });
+  const dataLunga = d => giorno(d).toLocaleDateString(locale(), { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   const vuoto = testo => `<div class="card vuoto">${testo}</div>`;
   const linkSicuro = u => { u = String(u || "").trim(); if (!u) return ""; return /^https?:\/\//i.test(u) ? u : "https://" + u; };
   const normalizza = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  // Testo con a capo e link cliccabili (indirizzi web ed e-mail)
+  const testoRicco = s => esc(s).split(/\n{2,}/).map(par => "<p>" + par
+      .replace(/(https?:\/\/[^\s<]+|www\.[^\s<]+)/g, u => `<a href="${linkSicuro(u.replace(/[.,;:)]+$/, ""))}" target="_blank" rel="noopener">${u}</a>`)
+      .replace(/([\w.+-]+@[\w-]+\.[\w.-]+\w)/g, m => `<a href="mailto:${m}">${m}</a>`)
+      .replace(/\n/g, "<br>") + "</p>").join("");
 
-  /* ---------------- Navigazione ---------------- */
+  /* ================= Navigazione ================= */
   const mostra = id => {
     document.querySelectorAll("nav button, section").forEach(el => el.classList.remove("attivo"));
     document.querySelector(`nav button[data-sezione="${id}"]`).classList.add("attivo");
@@ -353,7 +431,7 @@
   };
   document.querySelectorAll("nav button").forEach(btn => btn.addEventListener("click", () => mostra(btn.dataset.sezione)));
 
-  /* ---------------- Popup ---------------- */
+  /* ================= Popup ================= */
   document.querySelectorAll("dialog").forEach(dl => {
     dl.addEventListener("click", e => { if (e.target === dl || e.target.closest("[data-chiudi]")) dl.close(); });
   });
@@ -365,7 +443,7 @@
     $("popup-corpo").scrollTop = 0;
   }
 
-  /* ---------------- Decklist: lettura del testo incollato ---------------- */
+  /* ================= Decklist: lettura del testo incollato ================= */
   // Accetta "4 Lightning Bolt", "4x Lightning Bolt", una riga "Sideboard" (o "SB: 2 Carta"),
   // oppure il formato MTGO/Arena con una riga vuota prima della sideboard.
   function leggiLista(testo) {
@@ -388,24 +466,24 @@
   }
   const totale = l => l.reduce((s, c) => s + c.n, 0);
   const scryfall = nome => "https://scryfall.com/search?q=" + encodeURIComponent('!"' + nome + '"');
-  const blocco = (titolo, l) => l.length ? `<div><h4>${titolo} (${totale(l)})</h4><ul>${l.map(c =>
+  const bloccoLista = (titolo, l) => l.length ? `<div><h4>${titolo} (${totale(l)})</h4><ul>${l.map(c =>
     `<li><span class="qta">${c.n}</span><a href="${scryfall(c.nome)}" target="_blank" rel="noopener">${esc(c.nome)}</a></li>`).join("")}</ul></div>` : "";
 
   function apriDecklist(k) {
     const { main, side } = leggiLista(k.lista);
     const html = main.length || side.length
-      ? `<div class="lista-deck">${blocco("Main deck", main)}${blocco("Sideboard", side)}</div>
-         <div class="azioni"><button class="btn" id="copia-lista">Copia lista</button></div>`
-      : `<p class="muted">Lista non disponibile.</p>`;
-    apriPopup(`${k.mazzo || "Decklist"} — ${k.giocatore || ""}`, [k.torneo, k.piazzamento].filter(Boolean).join(" · "), html);
+      ? `<div class="lista-deck">${bloccoLista(T("main"), main)}${bloccoLista(T("side"), side)}</div>
+         <div class="azioni"><button class="btn" id="copia-lista">${T("copia")}</button></div>`
+      : `<p class="muted">${T("lista_nd")}</p>`;
+    apriPopup(`${k.mazzo || "Decklist"} — ${k.giocatore || ""}`, [k.torneo, piazzamento(k.piazzamento)].filter(Boolean).join(" · "), html);
     const b = $("copia-lista");
     if (b) b.onclick = async () => {
-      try { await navigator.clipboard.writeText(k.lista.trim()); b.textContent = "Copiata ✓"; }
-      catch { b.textContent = "Copia non riuscita"; }
+      try { await navigator.clipboard.writeText(k.lista.trim()); b.textContent = T("copiata"); }
+      catch { b.textContent = T("copia_ko"); }
     };
   }
 
-  /* ---------------- Classifica di tappa: lettura del testo incollato ---------------- */
+  /* ================= Classifica di tappa: lettura del testo incollato ================= */
   // Se il testo arriva da una tabella (colonne separate da tab o da più spazi) diventa una tabella,
   // altrimenti viene mostrato così com'è.
   function tabellaDaTesto(testo) {
@@ -424,7 +502,7 @@
     </table></div>`;
   }
 
-  /* ---------------- Galleria foto ---------------- */
+  /* ================= Galleria foto ================= */
   let galleria = [], fotoAttuale = 0;
   function mostraFoto(i) {
     fotoAttuale = (i + galleria.length) % galleria.length;
@@ -451,142 +529,183 @@
     const visibili = foto.slice(0, 6), extra = foto.length - visibili.length;
     const classe = foto.length === 1 ? "n1" : foto.length === 2 || foto.length === 4 ? "n2" : "n3";
     return `<div class="foto ${classe}">${visibili.map((f, i) => `
-      <button data-news="${idNews}" data-i="${i}" aria-label="Apri foto ${i + 1}">
+      <button data-news="${idNews}" data-i="${i}" aria-label="Foto ${i + 1}">
         <img src="${esc(f)}" alt="" loading="lazy">
         ${i === visibili.length - 1 && extra > 0 ? `<span class="altre">+${extra}</span>` : ""}
       </button>`).join("")}</div>`;
   }
 
-  /* ---------------- Caricamento dati ---------------- */
+  /* ================= Disegno della pagina ================= */
+  let D = null;                    // dati del sito
+  let regoleEn = null;             // regolamento in inglese (caricato solo se serve)
+  let news = [], ordineEventi = [], decklist = [], classificaOrdinata = [];
+
+  function disegnaClassifica() {
+    const filtro = $("cerca-giocatore").value;
+    const f = normalizza(filtro).trim();
+    const righe = f ? classificaOrdinata.filter(g => normalizza(g.giocatore + " " + (g.nickname || "")).includes(f)) : classificaOrdinata;
+    $("tabella-classifica").innerHTML = !classificaOrdinata.length
+      ? `<tr><td colspan="4" class="vuoto">${T("class_vuota")}</td></tr>`
+      : !righe.length
+      ? `<tr><td colspan="4" class="vuoto">${esc(T("nessuno")(filtro))}</td></tr>`
+      : righe.map(g => `
+        <tr><td><span class="pos pos-${g.pos}">${g.pos}</span></td>
+        <td>${esc(g.giocatore)}${g.nickname ? `<span class="nick">${esc(g.nickname)}</span>` : ""}</td>
+        <td class="num punti">${g.punti}</td>
+        <td class="num nascondi-mobile">${g.vittorie}-${g.sconfitte}-${g.pareggi}</td></tr>`).join("");
+  }
+
+  function disegnaRegolamento(reg) {
+    if (!reg) { $("contenuto-regolamento").innerHTML = ""; return; }
+    const lista = voci => voci.map(v => `<li>${esc(v)}</li>`).join("");
+    const blocco = b => {
+      switch (b.tipo) {
+        case "paragrafo":      return `<p>${esc(b.testo)}</p>`;
+        case "sottotitolo":    return `<h4>${esc(b.testo)}</h4>`;
+        case "elenco":         return `<ul>${lista(b.voci)}</ul>`;
+        case "elencoNumerato": return `<ol>${lista(b.voci)}</ol>`;
+        case "formula":        return `<p class="formula">${esc(b.testo)}</p>`;
+        case "esempio":        return `<p class="esempio"><strong>${lang === "en" ? "Example" : "Esempio"}:</strong> ${esc(b.testo)}</p>`;
+        case "tabella":        return `<div class="scroll"><table class="tab-reg">
+          <thead><tr>${b.intestazioni.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead>
+          <tbody>${b.righe.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody>
+          </table></div>`;
+        default: return "";
+      }
+    };
+    $("contenuto-regolamento").innerHTML = `
+      <div class="card"><strong>${esc(reg.titolo)}</strong>
+        <div class="meta">${T("stagione")} ${esc(reg.stagione)} · ${T("aggiornato_il")} ${esc(reg.ultimoAggiornamento)}</div>
+        <ol class="indice">${reg.sezioni.map(s => `<li><a href="#reg-${esc(s.id)}">${esc(s.titolo)}</a></li>`).join("")}</ol>
+      </div>
+      ${reg.sezioni.map(s => `
+        <div class="card" id="reg-${esc(s.id)}">
+          <h3>${s.numero}. ${esc(s.titolo)}</h3>
+          ${s.blocchi.map(blocco).join("")}
+        </div>`).join("")}`;
+  }
+
+  function disegna() {
+    const d = D;
+    document.documentElement.lang = lang;
+    document.querySelectorAll("[data-t]").forEach(el => el.textContent = T(el.dataset.t));
+    document.querySelectorAll(".lingua button").forEach(b => b.classList.toggle("attivo", b.dataset.lang === lang));
+    $("cerca-giocatore").placeholder = T("cerca");
+    $("cerca-giocatore").setAttribute("aria-label", T("cerca"));
+
+    $("titolo").textContent = d.nomeLega;
+    $("sottotitolo").textContent = tr(d, "sottotitolo");
+    document.title = d.nomeLega;
+
+    // Prossima tappa in evidenza
+    const oggi = new Date(); oggi.setHours(0, 0, 0, 0);
+    const eventi = d.eventi || [];
+    const futuri = eventi.filter(e => giorno(e.data) >= oggi).sort((a, b) => a.data.localeCompare(b.data));
+    const passati = eventi.filter(e => giorno(e.data) < oggi).sort((a, b) => b.data.localeCompare(a.data));
+    ordineEventi = [...futuri, ...passati];
+    if (futuri.length) {
+      const e = futuri[0];
+      const gg = Math.round((giorno(e.data) - oggi) / 86400000);
+      $("prossima-tappa").innerHTML = `
+        <div class="card prossima">
+          <div class="etichetta">${T("prossima")}</div>
+          <div class="nome">${esc(e.nome)}</div>
+          <div class="meta">${dataLunga(e.data)} · ${T("ore")} ${esc(e.ora)}</div>
+          <div>${esc(e.luogo)}</div>
+          <div class="giorni">${gg === 0 ? T("oggi") : gg === 1 ? T("domani") : T("mancano")(gg)}</div>
+        </div>`;
+    } else $("prossima-tappa").innerHTML = "";
+
+    // News con foto
+    news = d.news || [];
+    $("lista-news").innerHTML = news.map((n, i) => `
+      <div class="card"><strong>${esc(tr(n, "titolo"))}</strong>
+      <div class="meta">${dataBreve(n.data)}</div><div class="info-testo">${testoRicco(tr(n, "testo"))}</div>
+      ${grigliaFoto(n.foto, i)}</div>`).join("");
+
+    // Classifica
+    classificaOrdinata = [...(d.classifica || [])].sort((a, b) => b.punti - a.punti).map((g, i) => ({ ...g, pos: i + 1 }));
+    disegnaClassifica();
+
+    // Eventi: prima i prossimi, poi quelli passati
+    const cardEvento = (e, passato) => {
+      const i = ordineEventi.indexOf(e), note = tr(e, "note");
+      return `
+      <div class="card ${passato ? "passato" : ""}"><strong>${esc(e.nome)}</strong>
+      <div class="meta">${dataBreve(e.data)} · ${T("ore")} ${esc(e.ora)} · ${esc(e.formato)}</div>
+      <div>${esc(e.luogo)}${note ? (e.luogo ? " — " : "") + esc(note) : ""}</div>
+      ${e.classifica || e.linkDecklist ? `<div class="azioni">
+        ${e.classifica ? `<button class="btn" data-evento="${i}">${T("btn_classifica")}</button>` : ""}
+        ${e.linkDecklist ? `<a class="btn" href="${esc(linkSicuro(e.linkDecklist))}" target="_blank" rel="noopener">${T("btn_decklist_evento")}</a>` : ""}
+      </div>` : ""}
+      </div>`;
+    };
+    $("lista-eventi").innerHTML = !eventi.length ? vuoto(T("eventi_vuoti"))
+      : futuri.map(e => cardEvento(e, false)).join("")
+        + (passati.length ? `<h2 class="secondario">${T("passati")}</h2>` + passati.map(e => cardEvento(e, true)).join("") : "");
+
+    // Decklist con popup
+    decklist = d.decklist || [];
+    $("lista-decklist").innerHTML = decklist.length
+      ? decklist.map((k, i) => `
+        <div class="card deck"><div><strong>${esc(k.mazzo)}</strong> — ${esc(k.giocatore)}
+        <div class="meta">${esc(k.torneo)}</div>
+        ${k.lista && k.lista.trim() ? `<div class="azioni"><button class="btn" data-deck="${i}">${T("vedi_lista")}</button></div>` : ""}</div>
+        <span class="badge">${esc(piazzamento(k.piazzamento))}</span></div>`).join("")
+      : vuoto(T("deck_vuote"));
+
+    // Regolamento (in inglese se disponibile)
+    disegnaRegolamento(lang === "en" && regoleEn ? regoleEn : d.regole);
+    if (lang === "en" && !regoleEn) {
+      fetch("regolamento_en.json?v=" + Date.now(), { cache: "no-store" })
+        .then(r => r.ok ? r.json() : Promise.reject())
+        .then(r => { regoleEn = r; if (lang === "en") disegnaRegolamento(r); })
+        .catch(() => {});
+    }
+
+    // Info utili
+    const info = d.info || [];
+    $("lista-info").innerHTML = info.length
+      ? info.map(x => `<div class="card"><h3>${esc(tr(x, "titolo"))}</h3><div class="info-testo">${testoRicco(tr(x, "testo"))}</div></div>`).join("")
+      : vuoto(T("info_vuote"));
+
+    // Contatti
+    $("contenuto-contatti").innerHTML = `
+      <div class="card"><ul>${(d.contatti || []).map(c => `<li><strong>${esc(tr(c, "nome"))}</strong>: ${c.link
+        ? `<a href="${esc(linkSicuro(c.link))}" target="_blank" rel="noopener">${esc(tr(c, "testo"))}</a>` : esc(tr(c, "testo"))}</li>`).join("")}</ul></div>`;
+
+    $("aggiornato").textContent = T("ultimo_agg") + ": " + dataBreve(d.ultimoAggiornamento);
+  }
+
+  /* ================= Interazioni (impostate una volta sola) ================= */
+  $("cerca-giocatore").addEventListener("input", disegnaClassifica);
+  $("lista-news").addEventListener("click", e => {
+    const b = e.target.closest("button[data-news]"); if (!b) return;
+    apriGalleria(news[b.dataset.news].foto, +b.dataset.i);
+  });
+  $("lista-eventi").addEventListener("click", ev => {
+    const b = ev.target.closest("button[data-evento]"); if (!b) return;
+    const e = ordineEventi[b.dataset.evento];
+    apriPopup(`${T("classifica_di")} — ${e.nome}`, `${dataLunga(e.data)}${e.luogo ? " · " + e.luogo : ""}`, tabellaDaTesto(e.classifica));
+  });
+  $("lista-decklist").addEventListener("click", e => {
+    const b = e.target.closest("button[data-deck]"); if (b) apriDecklist(decklist[b.dataset.deck]);
+  });
+  document.querySelectorAll(".lingua button").forEach(b => b.addEventListener("click", () => {
+    lang = b.dataset.lang;
+    try { localStorage.setItem("lingua", lang); } catch {}
+    if (D) disegna(); else document.querySelectorAll("[data-t]").forEach(el => el.textContent = T(el.dataset.t));
+  }));
+
+  /* ================= Caricamento dati ================= */
+  document.querySelectorAll("[data-t]").forEach(el => el.textContent = T(el.dataset.t));
+  document.querySelectorAll(".lingua button").forEach(b => b.classList.toggle("attivo", b.dataset.lang === lang));
   fetch("data.json?v=" + Date.now(), { cache: "no-store" })
     .then(r => r.json())
-    .then(d => {
-      $("titolo").textContent = d.nomeLega;
-      $("sottotitolo").textContent = d.sottotitolo;
-      document.title = d.nomeLega;
-      const oggi = new Date(); oggi.setHours(0, 0, 0, 0);
-      const eventi = d.eventi || [];
-
-      // Prossima tappa in evidenza
-      const futuri = eventi.filter(e => giorno(e.data) >= oggi).sort((a, b) => a.data.localeCompare(b.data));
-      const passati = eventi.filter(e => giorno(e.data) < oggi).sort((a, b) => b.data.localeCompare(a.data));
-      if (futuri.length) {
-        const e = futuri[0];
-        const gg = Math.round((giorno(e.data) - oggi) / 86400000);
-        const quando = gg === 0 ? "È oggi!" : gg === 1 ? "Domani!" : `Mancano ${gg} giorni`;
-        $("prossima-tappa").innerHTML = `
-          <div class="card prossima">
-            <div class="etichetta">Prossima tappa</div>
-            <div class="nome">${esc(e.nome)}</div>
-            <div class="meta">${dataLunga(e.data)} · ore ${esc(e.ora)}</div>
-            <div>${esc(e.luogo)}</div>
-            <div class="giorni">${quando}</div>
-          </div>`;
-      }
-
-      // News con foto
-      const news = d.news || [];
-      $("lista-news").innerHTML = news.map((n, i) => `
-        <div class="card"><strong>${esc(n.titolo)}</strong>
-        <div class="meta">${dataIt(n.data)}</div><div>${esc(n.testo)}</div>
-        ${grigliaFoto(n.foto, i)}</div>`).join("");
-      $("lista-news").addEventListener("click", e => {
-        const b = e.target.closest("button[data-news]"); if (!b) return;
-        apriGalleria(news[b.dataset.news].foto, +b.dataset.i);
-      });
-
-      // Classifica con ricerca
-      const ordinata = [...(d.classifica || [])].sort((a, b) => b.punti - a.punti).map((g, i) => ({ ...g, pos: i + 1 }));
-      const disegnaClassifica = filtro => {
-        const f = normalizza(filtro).trim();
-        const righe = f ? ordinata.filter(g => normalizza(g.giocatore + " " + (g.nickname || "")).includes(f)) : ordinata;
-        $("tabella-classifica").innerHTML = !ordinata.length
-          ? `<tr><td colspan="4" class="vuoto">La classifica partirà con la prima tappa.</td></tr>`
-          : !righe.length
-          ? `<tr><td colspan="4" class="vuoto">Nessun giocatore trovato per «${esc(filtro)}».</td></tr>`
-          : righe.map(g => `
-            <tr><td><span class="pos pos-${g.pos}">${g.pos}</span></td>
-            <td>${esc(g.giocatore)}${g.nickname ? `<span class="nick">${esc(g.nickname)}</span>` : ""}</td>
-            <td class="num punti">${g.punti}</td>
-            <td class="num nascondi-mobile">${g.vittorie}-${g.sconfitte}-${g.pareggi}</td></tr>`).join("");
-      };
-      disegnaClassifica("");
-      $("cerca-giocatore").addEventListener("input", e => disegnaClassifica(e.target.value));
-
-      // Eventi: prima i prossimi, poi quelli passati
-      const cardEvento = (e, i, passato) => `
-        <div class="card ${passato ? "passato" : ""}"><strong>${esc(e.nome)}</strong>
-        <div class="meta">${dataIt(e.data)} · ore ${esc(e.ora)} · ${esc(e.formato)}</div>
-        <div>${esc(e.luogo)}${e.note ? " — " + esc(e.note) : ""}</div>
-        ${e.classifica || e.linkDecklist ? `<div class="azioni">
-          ${e.classifica ? `<button class="btn" data-evento="${i}">🏆 Classifica della tappa</button>` : ""}
-          ${e.linkDecklist ? `<a class="btn" href="${esc(linkSicuro(e.linkDecklist))}" target="_blank" rel="noopener">📋 Decklist dell'evento ↗</a>` : ""}
-        </div>` : ""}
-        </div>`;
-      const ordineEventi = [...futuri, ...passati];
-      $("lista-eventi").innerHTML = !eventi.length ? vuoto("Nessun evento in calendario.")
-        : futuri.map(e => cardEvento(e, ordineEventi.indexOf(e), false)).join("")
-          + (passati.length ? `<h2 class="secondario">Eventi passati</h2>` + passati.map(e => cardEvento(e, ordineEventi.indexOf(e), true)).join("") : "");
-      $("lista-eventi").addEventListener("click", ev => {
-        const b = ev.target.closest("button[data-evento]"); if (!b) return;
-        const e = ordineEventi[b.dataset.evento];
-        apriPopup(`Classifica — ${e.nome}`, `${dataLunga(e.data)}${e.luogo ? " · " + e.luogo : ""}`, tabellaDaTesto(e.classifica));
-      });
-
-      // Decklist con popup
-      const decklist = d.decklist || [];
-      $("lista-decklist").innerHTML = decklist.length
-        ? decklist.map((k, i) => `
-          <div class="card deck"><div><strong>${esc(k.mazzo)}</strong> — ${esc(k.giocatore)}
-          <div class="meta">${esc(k.torneo)}</div>
-          ${k.lista && k.lista.trim() ? `<div class="azioni"><button class="btn" data-deck="${i}">Vedi lista</button></div>` : ""}</div>
-          <span class="badge">${esc(k.piazzamento)}</span></div>`).join("")
-        : vuoto("Le decklist arriveranno dopo la prima tappa.");
-      $("lista-decklist").addEventListener("click", e => {
-        const b = e.target.closest("button[data-deck]"); if (b) apriDecklist(decklist[b.dataset.deck]);
-      });
-
-      // Regolamento: ogni "blocco" viene disegnato in base al suo tipo
-      const lista = voci => voci.map(v => `<li>${esc(v)}</li>`).join("");
-      const bloccoReg = b => {
-        switch (b.tipo) {
-          case "paragrafo":      return `<p>${esc(b.testo)}</p>`;
-          case "sottotitolo":    return `<h4>${esc(b.testo)}</h4>`;
-          case "elenco":         return `<ul>${lista(b.voci)}</ul>`;
-          case "elencoNumerato": return `<ol>${lista(b.voci)}</ol>`;
-          case "formula":        return `<p class="formula">${esc(b.testo)}</p>`;
-          case "esempio":        return `<p class="esempio"><strong>Esempio:</strong> ${esc(b.testo)}</p>`;
-          case "tabella":        return `<div class="scroll"><table class="tab-reg">
-            <thead><tr>${b.intestazioni.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead>
-            <tbody>${b.righe.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody>
-            </table></div>`;
-          default: return "";
-        }
-      };
-      const reg = d.regole;
-      if (reg) $("contenuto-regolamento").innerHTML = `
-        <div class="card"><strong>${esc(reg.titolo)}</strong>
-          <div class="meta">Stagione ${esc(reg.stagione)} · aggiornato il ${esc(reg.ultimoAggiornamento)}</div>
-          <ol class="indice">${reg.sezioni.map(s => `<li><a href="#reg-${esc(s.id)}">${esc(s.titolo)}</a></li>`).join("")}</ol>
-        </div>
-        ${reg.sezioni.map(s => `
-          <div class="card" id="reg-${esc(s.id)}">
-            <h3>${s.numero}. ${esc(s.titolo)}</h3>
-            ${s.blocchi.map(bloccoReg).join("")}
-          </div>`).join("")}`;
-
-      $("contenuto-contatti").innerHTML = `
-        <div class="card"><ul>${(d.contatti || []).map(c => `<li><strong>${esc(c.nome)}</strong>: ${c.link ? `<a href="${esc(linkSicuro(c.link))}" target="_blank" rel="noopener">${esc(c.testo)}</a>` : esc(c.testo)}</li>`).join("")}</ul></div>`;
-
-      $("aggiornato").textContent = "Ultimo aggiornamento: " + dataIt(d.ultimoAggiornamento);
-    })
+    .then(d => { D = d; disegna(); })
     .catch(err => {
       console.error(err);
-      $("lista-news").innerHTML = `
-        <div class="card errore">Non riesco a leggere <strong>data.json</strong>.<br>
-        Se hai aperto il file con un doppio clic dal computer è normale: il browser blocca la lettura
-        dei file locali. Se invece sei online, probabilmente c'è un errore di sintassi nel file:
-        incollalo su jsonlint.com per trovarlo.</div>`;
+      $("lista-news").innerHTML = `<div class="card errore">${T("errore")}</div>`;
     });
 </script>
 </body>

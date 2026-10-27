@@ -40,7 +40,7 @@
     border-radius: 8px; padding: 9px 10px; font: inherit; font-size: 16px;
   }
   input:focus, textarea:focus { outline: none; border-color: var(--gold); }
-  textarea { min-height: 70px; resize: vertical; }
+  textarea { min-height: 110px; resize: vertical; }
   textarea.mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; min-height: 150px; white-space: pre; }
   .aiuto { font-size: .78rem; color: var(--muted); margin-top: 4px; }
   .aiuto.ok { color: var(--ok); }
@@ -64,6 +64,14 @@
   .schede button.attivo { border-color: var(--gold); color: var(--gold); }
 
   .voce .azioni { display: flex; gap: 6px; justify-content: flex-end; margin-top: 10px; }
+
+  /* Versione inglese dei contenuti */
+  details.en { margin-top: 12px; border: 1px dashed var(--line); border-radius: 10px; padding: 8px 12px; }
+  details.en[open] { padding-bottom: 12px; }
+  details.en summary { font-size: .88rem; }
+  details.en .stato-en { color: var(--muted); font-size: .8rem; margin-left: 6px; }
+  details.en .stato-en.pieno { color: var(--ok); }
+  details.en .campi { margin-top: 10px; }
   .intesta { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
   .intesta h2 { margin: 0; }
 
@@ -247,7 +255,7 @@ const gh = (metodo, corpo, ref = cfg().branch) => metodo === "GET"
   : ghApi("contents/data.json", metodo, corpo);
 
 function preparaDati() {
-  ["news", "eventi", "classifica", "decklist", "contatti"].forEach(k => { if (!Array.isArray(dati[k])) dati[k] = []; });
+  ["news", "eventi", "classifica", "decklist", "info", "contatti"].forEach(k => { if (!Array.isArray(dati[k])) dati[k] = []; });
 }
 
 async function carica() {
@@ -334,7 +342,8 @@ const oggi = () => new Date().toLocaleDateString("sv-SE");
 const SEZIONI = {
   news: {
     nome: "News", aggiungi: "Nuova news", inCima: true,
-    campi: [["data", "date", "Data"], ["titolo", "text", "Titolo", "largo"], ["testo", "textarea", "Testo", "largo"], ["foto", "foto", "Foto", "largo"]],
+    campi: [["data", "date", "Data"], ["titolo", "text", "Titolo", "largo"], ["testo", "textarea", "Testo", "largo"], ["foto", "foto", "Foto", "largo"],
+            ["titolo_en", "text", "Title", "en"], ["testo_en", "textarea", "Text", "en"]],
     nuovo: () => ({ data: oggi(), titolo: "", testo: "", foto: [] }),
   },
   eventi: {
@@ -342,7 +351,8 @@ const SEZIONI = {
     campi: [["nome", "text", "Nome (es. S1E2)"], ["data", "date", "Data"], ["ora", "time", "Ora"], ["formato", "text", "Formato"],
             ["luogo", "text", "Luogo", "largo"], ["note", "text", "Note", "largo"],
             ["linkDecklist", "url", "Link alle decklist dell'evento (MTGTop8, TCDecks…)", "largo"],
-            ["classifica", "classifica", "Classifica della tappa (incolla dal gestionale)", "largo"]],
+            ["classifica", "classifica", "Classifica della tappa (incolla dal gestionale)", "largo"],
+            ["note_en", "text", "Notes", "en"]],
     nuovo: () => ({ data: oggi(), ora: "13:30", nome: "", formato: "Premodern", luogo: "", note: "", linkDecklist: "", classifica: "" }),
   },
   classifica: { nome: "Classifica", aggiungi: "Aggiungi giocatore" },
@@ -352,9 +362,17 @@ const SEZIONI = {
             ["mazzo", "text", "Mazzo"], ["lista", "lista", "Lista del mazzo (incolla il testo)", "largo"]],
     nuovo: () => ({ torneo: "", giocatore: "", mazzo: "", piazzamento: "1° posto", lista: "" }),
   },
+  info: {
+    nome: "Info utili", aggiungi: "Nuova info",
+    campi: [["titolo", "text", "Titolo (es. Come inviare la lista per la top 8)", "largo"],
+            ["testo", "textarea", "Testo — lascia una riga vuota per andare a capo con un nuovo paragrafo; link ed e-mail diventano cliccabili", "largo"],
+            ["titolo_en", "text", "Title", "en"], ["testo_en", "textarea", "Text", "en"]],
+    nuovo: () => ({ titolo: "", testo: "" }),
+  },
   contatti: {
     nome: "Contatti", aggiungi: "Nuovo contatto",
-    campi: [["nome", "text", "Voce (es. Instagram)"], ["testo", "text", "Testo mostrato"], ["link", "url", "Link (facoltativo, con https://)", "largo"]],
+    campi: [["nome", "text", "Voce (es. Instagram)"], ["testo", "text", "Testo mostrato"], ["link", "url", "Link (facoltativo, con https://)", "largo"],
+            ["nome_en", "text", "Label", "en"], ["testo_en", "text", "Text shown", "en"]],
     nuovo: () => ({ nome: "", testo: "", link: "" }),
   },
   generale: { nome: "Testata" },
@@ -469,6 +487,21 @@ function disegnaFoto(wrap, news, etichetta) {
   ridisegna();
 }
 
+// Riquadro richiudibile con i campi della versione inglese (se restano vuoti, sul sito si vede l'italiano)
+function sezioneInglese(oggetto, campiEn) {
+  const det = document.createElement("details");
+  det.className = "en";
+  const pieni = () => campiEn.filter(([k]) => String(oggetto[k] || "").trim()).length;
+  const etichetta = () => pieni() ? `${pieni()} di ${campiEn.length} compilati` : "vuota: sul sito inglese si vedrà l'italiano";
+  det.innerHTML = `<summary>🇬🇧 Versione inglese <span class="stato-en"></span></summary><div class="campi"></div>`;
+  const st = det.querySelector(".stato-en");
+  const aggiorna = () => { st.textContent = "· " + etichetta(); st.classList.toggle("pieno", pieni() === campiEn.length); };
+  campiEn.forEach(([chiave, tipo, nome]) => det.querySelector(".campi").appendChild(campo(oggetto, chiave, tipo, nome + " (EN)", "largo")));
+  det.addEventListener("input", aggiorna);
+  aggiorna();
+  return det;
+}
+
 function disegnaLista(p, k) {
   const s = SEZIONI[k], lista = dati[k];
   p.innerHTML = `<div class="intesta"><h2 style="color:var(--gold)">${s.nome} <span class="muted">(${lista.length})</span></h2>
@@ -487,8 +520,10 @@ function disegnaLista(p, k) {
     card.className = "card voce";
     const griglia = document.createElement("div");
     griglia.className = "campi";
-    s.campi.forEach(([chiave, tipo, etichetta, extra]) => griglia.appendChild(campo(voce, chiave, tipo, etichetta, extra)));
+    s.campi.filter(c => c[3] !== "en").forEach(([chiave, tipo, etichetta, extra]) => griglia.appendChild(campo(voce, chiave, tipo, etichetta, extra)));
     card.appendChild(griglia);
+    const campiEn = s.campi.filter(c => c[3] === "en");
+    if (campiEn.length) card.appendChild(sezioneInglese(voce, campiEn));
 
     const azioni = document.createElement("div");
     azioni.className = "azioni";
@@ -549,9 +584,10 @@ function disegnaClassifica(p) {
 
 function disegnaGenerale(p) {
   p.innerHTML = `<div class="card"><h2>Testata del sito</h2><div class="campi" id="g"></div>
-    <p class="muted" style="margin-bottom:0">Il regolamento non si modifica da qui: per cambiarlo chiedi a Claude.</p></div>`;
+    <p class="muted" style="margin-bottom:0">Il regolamento (italiano e inglese) non si modifica da qui: per cambiarlo chiedi a Claude.</p></div>`;
   $("g").appendChild(campo(dati, "nomeLega", "text", "Nome della lega", "largo"));
   $("g").appendChild(campo(dati, "sottotitolo", "text", "Sottotitolo", "largo"));
+  $("g").appendChild(campo(dati, "sottotitolo_en", "text", "Sottotitolo in inglese (facoltativo)", "largo"));
 }
 
 /* ======================= Versioni precedenti ======================= */

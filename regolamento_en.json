@@ -1,0 +1,180 @@
+{
+  "titolo": "Premodern League Rules",
+  "stagione": "[2026/2027]",
+  "ultimoAggiornamento": "26 October 2026",
+  "sezioni": [
+    {
+      "id": "lega",
+      "numero": 1,
+      "titolo": "The league",
+      "blocchi": [
+        { "tipo": "paragrafo", "testo": "The league is a circuit of 6 Magic: The Gathering events in the Premodern format, played in Soresina from January 2027 to May 2027. The up-to-date schedule is published on this website." },
+        { "tipo": "paragrafo", "testo": "Each event is a tournament in its own right: everyone who takes part earns points for the overall standings. There is no season registration: you enter the standings from the first event you play, and you can take part in all the events or just some of them." },
+        { "tipo": "paragrafo", "testo": "Entry fee for each event: €12. Prizes: SECTION IN PREPARATION." }
+      ]
+    },
+    {
+      "id": "formato",
+      "numero": 2,
+      "titolo": "Format and decks",
+      "blocchi": [
+        { "tipo": "elenco", "voci": [
+          "The format is Premodern: cards from the sets from Fourth Edition to Scourge are allowed. The banned list published on premodernmagic.com and in force on the day of the event applies.",
+          "Decks of at least 60 cards, sideboard of at most 15. No more than 4 copies of each card, basic lands excluded.",
+          "Proxies and gold-bordered cards: allowed.",
+          "Decklist: required for the top 8."
+        ] }
+      ]
+    },
+    {
+      "id": "tappa",
+      "numero": 3,
+      "titolo": "How an event is played",
+      "blocchi": [
+        { "tipo": "sottotitolo", "testo": "Swiss rounds" },
+        { "tipo": "paragrafo", "testo": "In each round, players with similar scores are paired against each other, and nobody faces the same opponent twice whenever possible. The first round is drawn at random." },
+        { "tipo": "elenco", "voci": [
+          "Each match is best of three games, in 50 minutes.",
+          "With an odd number of players, one player receives a bye: they don't play and win the round 2-0. The bye goes to the lowest-ranked player who hasn't had one yet."
+        ] },
+        { "tipo": "sottotitolo", "testo": "Rounds and Top Cut" },
+        { "tipo": "paragrafo", "testo": "They depend on attendance, normally as follows:" },
+        { "tipo": "tabella",
+          "intestazioni": ["Players", "Swiss rounds", "Top Cut"],
+          "righe": [
+            ["2", "1", "None"],
+            ["3-4", "2", "None"],
+            ["5-8", "3", "None"],
+            ["9-16", "5", "Top 4"],
+            ["17-32", "5", "Top 8"],
+            ["33-64", "6", "Top 8"]
+          ] },
+        { "tipo": "paragrafo", "testo": "The organisers may change them, announcing it before the event starts." },
+        { "tipo": "sottotitolo", "testo": "Top Cut" },
+        { "tipo": "paragrafo", "testo": "At the end of the Swiss rounds, the top 4 or 8 play single elimination, best of three games, with no draws. 1st plays the last qualifier, 2nd plays the second-to-last, and so on." },
+        { "tipo": "sottotitolo", "testo": "Event standings" },
+        { "tipo": "paragrafo", "testo": "In the Swiss rounds a win is worth 3 points, a draw 1, a loss 0, a bye 3. Players tied on points are separated, in order, by the official tournament tiebreakers:" },
+        { "tipo": "elencoNumerato", "voci": [
+          "OMW%: average match-win percentage of the opponents faced.",
+          "GW%: percentage of games won.",
+          "OGW%: average game-win percentage of the opponents faced."
+        ] },
+        { "tipo": "paragrafo", "testo": "Each percentage has a minimum of 33%, and the bye doesn't count as an opponent. These tiebreakers are used only for the event standings and for qualifying for the Top Cut, not for the overall standings." }
+      ]
+    },
+    {
+      "id": "punti",
+      "numero": 4,
+      "titolo": "Points from an event",
+      "blocchi": [
+        { "tipo": "tabella",
+          "intestazioni": ["Item", "League points"],
+          "righe": [
+            ["Participation (at least one round played)", "+3"],
+            ["Each Swiss win", "+3"],
+            ["Each Swiss draw or ID", "+1"],
+            ["Each loss", "0"],
+            ["Bye", "+3"],
+            ["1st place", "+5"],
+            ["2nd place", "+3"],
+            ["3rd-4th place", "+2"],
+            ["5th-8th place", "+1"]
+          ] },
+        { "tipo": "formula", "testo": "Event points = participation + Swiss points + placement bonus" },
+        { "tipo": "paragrafo", "testo": "Top Cut matches don't award win points: they only count through the placement bonus." },
+        { "tipo": "esempio", "testo": "3 wins and 1 loss in the Swiss rounds, then winning the Top Cut: 3 + 9 + 5 = 17 points." },
+        { "tipo": "sottotitolo", "testo": "Events without a Top Cut" },
+        { "tipo": "paragrafo", "testo": "Placement bonuses are awarded based on the final Swiss standings, only to the top half of the players:" },
+        { "tipo": "tabella",
+          "intestazioni": ["Players", "Placements rewarded"],
+          "righe": [
+            ["2-3", "1st (+5)"],
+            ["4-5", "1st (+5), 2nd (+3)"],
+            ["6-7", "1st (+5), 2nd (+3), 3rd (+2)"],
+            ["8-15", "1st (+5), 2nd (+3), 3rd-4th (+2)"],
+            ["16 or more", "1st (+5), 2nd (+3), 3rd-4th (+2), 5th-8th (+1)"]
+          ] }
+      ]
+    },
+    {
+      "id": "generale",
+      "numero": 5,
+      "titolo": "Overall standings",
+      "blocchi": [
+        { "tipo": "paragrafo", "testo": "Gross points are the sum of the points from all the events played. An event you don't take part in is worth 0." },
+        { "tipo": "paragrafo", "testo": "For each player, [1] event is dropped: the one with the worst result. An absence is worth 0, so it is the first to be dropped." },
+        { "tipo": "formula", "testo": "Net points = gross points − points of the dropped event" },
+        { "tipo": "paragrafo", "testo": "The official standings are based on net points. In practice:" },
+        { "tipo": "elenco", "voci": [
+          "those who play every event drop their worst one;",
+          "those who miss one drop the absence and lose nothing;",
+          "those who miss two drop one, and the other stays in the standings with 0 points."
+        ] },
+        { "tipo": "paragrafo", "testo": "The drop applies from the second event played onwards." },
+        { "tipo": "sottotitolo", "testo": "Example after four events" },
+        { "tipo": "tabella",
+          "intestazioni": ["Player", "E1", "E2", "E3", "E4", "Gross", "Dropped", "Net"],
+          "righe": [
+            ["Bruno", "12", "10", "9", "14", "45", "−9", "36"],
+            ["Anna", "17", "absent", "11", "8", "36", "0", "36"]
+          ] },
+        { "tipo": "paragrafo", "testo": "Tied on net points, Bruno is ahead because he has more attendances." }
+      ]
+    },
+    {
+      "id": "spareggi",
+      "numero": 6,
+      "titolo": "Overall standings tiebreakers",
+      "blocchi": [
+        { "tipo": "paragrafo", "testo": "Players tied on net points are separated, in order, by:" },
+        { "tipo": "elencoNumerato", "voci": [
+          "number of events played;",
+          "gross points;",
+          "alphabetical order."
+        ] }
+      ]
+    },
+    {
+      "id": "finale",
+      "numero": 7,
+      "titolo": "Finals",
+      "blocchi": [
+        { "tipo": "paragrafo", "testo": "At the end of the season the top [8] of the overall standings qualify for the finals, which are played [date and format]. At least one attendance is required to qualify. If a qualified player cannot take part, their place goes [to the highest non-qualified player / to nobody]." }
+      ]
+    },
+    {
+      "id": "casi",
+      "numero": 8,
+      "titolo": "Drops, late arrivals and special cases",
+      "blocchi": [
+        { "tipo": "elenco", "voci": [
+          "Players who drop during an event are no longer paired, but keep the points earned up to that moment.",
+          "Late arrivals can be entered from the following round, starting from 0 points.",
+          "Players who don't show up at their table within [10] minutes of the start of the round lose the match.",
+          "Facing the same opponent twice is only allowed when, with few players, it can't be avoided.",
+          "Cases not covered here are decided by the organisers, following the spirit of the official Magic tournament rules."
+        ] }
+      ]
+    },
+    {
+      "id": "comportamento",
+      "numero": 9,
+      "titolo": "Conduct",
+      "blocchi": [
+        { "tipo": "paragrafo", "testo": "Play fairly and with respect towards opponents, organisers and the venue hosting us. Everyone communicates their game actions clearly and points out mistakes immediately, even when it's to their own disadvantage. Unsporting behaviour can lead to a match loss, disqualification from the event or exclusion from the league." }
+      ]
+    },
+    {
+      "id": "info",
+      "numero": 10,
+      "titolo": "Standings, disputes and changes",
+      "blocchi": [
+        { "tipo": "elenco", "voci": [
+          "Standings are published on this website [within X days of the event].",
+          "Errors in the results must be reported to [contact] within [7] days of publication; after that the standings are final.",
+          "The organisers may change these rules during the season, announcing it on this website. Points already awarded do not change."
+        ] }
+      ]
+    }
+  ]
+}
