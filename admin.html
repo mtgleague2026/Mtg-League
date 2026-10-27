@@ -25,7 +25,7 @@
   header h1 { font-size: 1.1rem; margin: 0; color: var(--gold); }
   header .sub { color: var(--muted); font-size: .85rem; }
   header a { margin-left: auto; color: var(--gold); font-size: .9rem; white-space: nowrap; }
-  main { max-width: 900px; margin: 0 auto; padding: 16px 16px 120px; }
+  main { max-width: 900px; margin: 0 auto; padding: 16px 16px 140px; }
 
   .card {
     background: linear-gradient(180deg, var(--card-2), var(--card));
@@ -41,6 +41,9 @@
   }
   input:focus, textarea:focus { outline: none; border-color: var(--gold); }
   textarea { min-height: 70px; resize: vertical; }
+  textarea.mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; min-height: 150px; white-space: pre; }
+  .aiuto { font-size: .78rem; color: var(--muted); margin-top: 4px; }
+  .aiuto.ok { color: var(--ok); }
   .campi { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
   .campi .largo { grid-column: 1 / -1; }
 
@@ -49,21 +52,42 @@
     border: 1px solid var(--line); background: var(--card-2); color: var(--text);
   }
   button:hover { border-color: var(--brass); }
+  button:disabled { opacity: .45; cursor: default; }
   button.primario {
     background: linear-gradient(180deg, var(--gold-hi), var(--gold)); color: #1a1308;
     border: none; font-weight: 600;
   }
-  button.primario:disabled { opacity: .45; cursor: default; }
   button.piccolo { padding: 5px 9px; font-size: .85rem; }
   button.elimina:hover { border-color: var(--err); color: var(--err); }
 
   .schede { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 14px; }
   .schede button.attivo { border-color: var(--gold); color: var(--gold); }
 
-  .voce { position: relative; }
   .voce .azioni { display: flex; gap: 6px; justify-content: flex-end; margin-top: 10px; }
   .intesta { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
   .intesta h2 { margin: 0; }
+
+  /* Foto delle news */
+  .miniature { display: flex; flex-wrap: wrap; gap: 8px; }
+  .mini {
+    position: relative; width: 96px; height: 96px; border-radius: 8px; overflow: hidden;
+    border: 1px solid var(--line); background: var(--bg);
+  }
+  .mini img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .mini .nuova {
+    position: absolute; top: 4px; left: 4px; font-size: .65rem; font-weight: 700; letter-spacing: .04em;
+    background: var(--gold); color: #1a1308; padding: 1px 5px; border-radius: 4px;
+  }
+  .mini .comandi {
+    position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between;
+    background: linear-gradient(transparent, rgba(0,0,0,.85)); padding: 14px 3px 3px;
+  }
+  .mini .comandi button { padding: 1px 7px; font-size: .8rem; background: rgba(0,0,0,.6); border-color: rgba(255,255,255,.2); }
+  .aggiungi-foto {
+    width: 96px; height: 96px; border: 1px dashed var(--brass); border-radius: 8px; color: var(--gold);
+    display: grid; place-items: center; text-align: center; cursor: pointer; font-size: .82rem; background: transparent;
+  }
+  .aggiungi-foto:hover { background: rgba(217,180,90,.08); }
 
   /* Classifica in forma di tabella compatta */
   .griglia { width: 100%; border-collapse: collapse; }
@@ -71,13 +95,10 @@
   .griglia td { padding: 3px 4px; }
   .griglia input { padding: 7px 8px; }
   .griglia .n { width: 60px; }
-  .griglia td:first-child input { min-width: 130px; }
+  .griglia td.nome input { min-width: 130px; }
+  .griglia td.nick input { min-width: 100px; }
   .griglia input[type=number] { padding: 7px 4px; text-align: center; -moz-appearance: textfield; }
   .griglia input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
-  @media (max-width: 520px) {
-    #stato { flex-basis: 100%; }
-    .barra button { flex: 1; }
-  }
   .griglia td:last-child { width: 1%; white-space: nowrap; }
 
   .barra {
@@ -95,8 +116,12 @@
   .riga { display: flex; gap: 8px; align-items: end; flex-wrap: wrap; }
   .riga > div { flex: 1; min-width: 200px; }
   details summary { cursor: pointer; color: var(--gold); }
-  ol.passi li { margin: 4px 0; }
-  code { background: var(--bg); padding: 1px 5px; border-radius: 4px; border: 1px solid var(--line); font-size: .85em; }
+
+  @media (max-width: 520px) {
+    #stato { flex-basis: 100%; }
+    .barra button { flex: 1; }
+    .mini, .aggiungi-foto { width: calc(33.333% - 6px); height: auto; aspect-ratio: 1; }
+  }
 </style>
 </head>
 <body>
@@ -145,10 +170,12 @@
 <div class="barra">
   <div class="dentro">
     <span id="stato">Inserisci il token per iniziare.</span>
-    <button id="btn-scarica" class="nascosto" title="Scarica data.json da caricare a mano">Scarica data.json</button>
+    <button id="btn-scarica" class="nascosto" title="Scarica data.json come copia di sicurezza">Scarica data.json</button>
     <button id="btn-pubblica" class="primario" disabled>Pubblica</button>
   </div>
 </div>
+
+<input type="file" id="scegli-foto" accept="image/*" multiple hidden>
 
 <script>
 /* ======================= Impostazioni e memoria locale ======================= */
@@ -174,6 +201,7 @@ let dati = null;        // contenuto di data.json
 let sha = null;         // versione del file su GitHub (serve per salvare)
 let modificato = false;
 let schedaAttiva = "news";
+const fotoInAttesa = new Map();   // percorso → { base64, anteprima } delle foto non ancora caricate
 
 function stato(testo, tipo = "") { const s = $("stato"); s.textContent = testo; s.className = tipo; }
 function segnaModificato() {
@@ -187,9 +215,10 @@ window.addEventListener("beforeunload", e => { if (modificato) { e.preventDefaul
 const b64Encode = str => { const bytes = new TextEncoder().encode(str); let bin = ""; bytes.forEach(b => bin += String.fromCharCode(b)); return btoa(bin); };
 const b64Decode = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\n/g, "")), c => c.charCodeAt(0)));
 
-async function gh(metodo, corpo) {
-  const { owner, repo, branch } = cfg();
-  const url = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/data.json` + (metodo === "GET" ? `?ref=${encodeURIComponent(branch)}&t=${Date.now()}` : "");
+// Chiamata generica alle API GitHub del repository (percorso relativo a /repos/utente/repository/)
+async function ghApi(percorso, metodo = "GET", corpo) {
+  const { owner, repo } = cfg();
+  const url = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/${percorso}`;
   const r = await fetch(url, {
     method: metodo, cache: "no-store",
     headers: {
@@ -203,7 +232,7 @@ async function gh(metodo, corpo) {
     const msg = {
       401: "Token non valido o scaduto. Creane uno nuovo ed esci/rientra.",
       403: "Il token non ha il permesso di scrivere. Controlla che abbia «Contents: Read and write» su questo repository.",
-      404: "Repository o file data.json non trovato. Controlla le impostazioni avanzate e che il token abbia accesso a questo repository.",
+      404: "Repository o file non trovato. Controlla le impostazioni avanzate e che il token abbia accesso a questo repository.",
       409: "Il file è stato modificato da un'altra parte nel frattempo. Premi «Ricarica dati» e rifai la modifica.",
       422: "GitHub ha rifiutato il salvataggio. Premi «Ricarica dati» e riprova.",
     }[r.status] || `Errore GitHub (${r.status}).`;
@@ -212,13 +241,22 @@ async function gh(metodo, corpo) {
   return r.json();
 }
 
+// Legge o scrive data.json (ref = branch, oppure una versione precedente)
+const gh = (metodo, corpo, ref = cfg().branch) => metodo === "GET"
+  ? ghApi(`contents/data.json?ref=${encodeURIComponent(ref)}&t=${Date.now()}`)
+  : ghApi("contents/data.json", metodo, corpo);
+
+function preparaDati() {
+  ["news", "eventi", "classifica", "decklist", "contatti"].forEach(k => { if (!Array.isArray(dati[k])) dati[k] = []; });
+}
+
 async function carica() {
   stato("Carico i dati da GitHub…");
   try {
     const f = await gh("GET");
     sha = f.sha;
     dati = JSON.parse(b64Decode(f.content));
-    ["news", "eventi", "classifica", "decklist", "contatti"].forEach(k => { if (!Array.isArray(dati[k])) dati[k] = []; });
+    preparaDati();
     modificato = false;
     $("btn-pubblica").disabled = true;
     $("box-token").classList.add("nascosto");
@@ -234,12 +272,27 @@ async function carica() {
 
 async function pubblica() {
   $("btn-pubblica").disabled = true;
-  stato("Pubblico…");
   try {
-    dati.ultimoAggiornamento = new Date().toLocaleDateString("sv-SE"); // formato AAAA-MM-GG
-    // rilegge la versione attuale per sicurezza
+    // 1. controlla che nessuno abbia cambiato i dati nel frattempo
+    stato("Pubblico…");
     const attuale = await gh("GET");
     if (attuale.sha !== sha) throw new Error("Il file su GitHub è cambiato da quando l'hai aperto. Premi «Ricarica dati» e rifai la modifica.");
+
+    // 2. carica le foto nuove (solo quelle ancora usate in qualche news)
+    const usate = new Set(dati.news.flatMap(n => n.foto || []));
+    const daCaricare = [...fotoInAttesa.keys()].filter(p => usate.has(p));
+    for (let i = 0; i < daCaricare.length; i++) {
+      stato(`Carico le foto… ${i + 1} di ${daCaricare.length}`);
+      const p = daCaricare[i];
+      await ghApi("contents/" + p.split("/").map(encodeURIComponent).join("/"), "PUT", {
+        message: "Foto news", content: fotoInAttesa.get(p).base64, branch: cfg().branch,
+      });
+      fotoInAttesa.delete(p);
+    }
+
+    // 3. salva i dati
+    stato("Salvo i dati…");
+    dati.ultimoAggiornamento = new Date().toLocaleDateString("sv-SE"); // formato AAAA-MM-GG
     const r = await gh("PUT", {
       message: "Aggiornamento dal pannello di gestione",
       content: b64Encode(JSON.stringify(dati, null, 2) + "\n"),
@@ -249,33 +302,55 @@ async function pubblica() {
     modificato = false;
     const ora = new Date().toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
     stato(`Pubblicato alle ${ora} ✓ Il sito si aggiorna entro 1-2 minuti.`, "ok");
+    if (schedaAttiva === "news") disegna();
   } catch (e) {
     $("btn-pubblica").disabled = false;
     stato(e.message, "err");
   }
 }
 
+/* ======================= Foto: ridimensionamento ======================= */
+// Le foto vengono ridotte a 1600 px sul lato lungo e salvate in JPEG: pesano poco e si caricano in fretta.
+async function preparaFoto(file) {
+  let sorgente;
+  try { sorgente = await createImageBitmap(file, { imageOrientation: "from-image" }); }
+  catch {
+    sorgente = await new Promise((ok, ko) => {
+      const img = new Image(); img.onload = () => ok(img); img.onerror = () => ko(new Error("Formato non supportato"));
+      img.src = URL.createObjectURL(file);
+    });
+  }
+  const max = 1600, w = sorgente.width, h = sorgente.height, s = Math.min(1, max / Math.max(w, h));
+  const c = document.createElement("canvas");
+  c.width = Math.round(w * s); c.height = Math.round(h * s);
+  c.getContext("2d").drawImage(sorgente, 0, 0, c.width, c.height);
+  const anteprima = c.toDataURL("image/jpeg", 0.82);
+  return { anteprima, base64: anteprima.split(",")[1] };
+}
+const nomeFoto = () => `foto/${new Date().toLocaleDateString("sv-SE")}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+
 /* ======================= Struttura delle sezioni ======================= */
 const oggi = () => new Date().toLocaleDateString("sv-SE");
 const SEZIONI = {
   news: {
     nome: "News", aggiungi: "Nuova news", inCima: true,
-    campi: [["data", "date", "Data"], ["titolo", "text", "Titolo", "largo"], ["testo", "textarea", "Testo", "largo"]],
-    nuovo: () => ({ data: oggi(), titolo: "", testo: "" }),
-    etichetta: v => v.titolo || "News senza titolo",
+    campi: [["data", "date", "Data"], ["titolo", "text", "Titolo", "largo"], ["testo", "textarea", "Testo", "largo"], ["foto", "foto", "Foto", "largo"]],
+    nuovo: () => ({ data: oggi(), titolo: "", testo: "", foto: [] }),
   },
   eventi: {
     nome: "Eventi", aggiungi: "Nuovo evento",
     campi: [["nome", "text", "Nome (es. S1E2)"], ["data", "date", "Data"], ["ora", "time", "Ora"], ["formato", "text", "Formato"],
-            ["luogo", "text", "Luogo", "largo"], ["note", "text", "Note", "largo"]],
-    nuovo: () => ({ data: oggi(), ora: "13:30", nome: "", formato: "Premodern", luogo: "Bar Milano, Soresina", note: "" }),
+            ["luogo", "text", "Luogo", "largo"], ["note", "text", "Note", "largo"],
+            ["linkDecklist", "url", "Link alle decklist dell'evento (MTGTop8, TCDecks…)", "largo"],
+            ["classifica", "classifica", "Classifica della tappa (incolla dal gestionale)", "largo"]],
+    nuovo: () => ({ data: oggi(), ora: "13:30", nome: "", formato: "Premodern", luogo: "", note: "", linkDecklist: "", classifica: "" }),
   },
   classifica: { nome: "Classifica", aggiungi: "Aggiungi giocatore" },
   decklist: {
     nome: "Decklist", aggiungi: "Nuova decklist", inCima: true,
     campi: [["torneo", "text", "Torneo"], ["piazzamento", "text", "Piazzamento"], ["giocatore", "text", "Giocatore"],
-            ["mazzo", "text", "Mazzo"], ["link", "url", "Link alla lista (facoltativo)", "largo"]],
-    nuovo: () => ({ torneo: "", giocatore: "", mazzo: "", piazzamento: "1° posto", link: "" }),
+            ["mazzo", "text", "Mazzo"], ["lista", "lista", "Lista del mazzo (incolla il testo)", "largo"]],
+    nuovo: () => ({ torneo: "", giocatore: "", mazzo: "", piazzamento: "1° posto", lista: "" }),
   },
   contatti: {
     nome: "Contatti", aggiungi: "Nuovo contatto",
@@ -283,6 +358,7 @@ const SEZIONI = {
     nuovo: () => ({ nome: "", testo: "", link: "" }),
   },
   generale: { nome: "Testata" },
+  versioni: { nome: "↺ Versioni" },
 };
 
 /* ======================= Disegno dell'interfaccia ======================= */
@@ -296,18 +372,101 @@ function disegna() {
   const p = $("pannello");
   if (schedaAttiva === "generale") return disegnaGenerale(p);
   if (schedaAttiva === "classifica") return disegnaClassifica(p);
+  if (schedaAttiva === "versioni") return disegnaVersioni(p);
   disegnaLista(p, schedaAttiva);
 }
 
-function campo(valore, tipo, etichetta, extra, onInput) {
+// Riepilogo di ciò che è stato riconosciuto nel testo incollato
+function contaLista(t) {
+  let main = 0, side = 0, inSide = false;
+  String(t || "").split("\n").forEach(r => {
+    r = r.trim();
+    if (/^(sideboard|side|sb)\s*:?\s*$/i.test(r)) { inSide = true; return; }
+    const m = r.replace(/^sb:\s*/i, "").match(/^(\d+)\s*x?\s+\S/i);
+    if (m) (inSide || /^sb:/i.test(r) ? side += +m[1] : main += +m[1]);
+  });
+  return main || side ? `Riconosciute: ${main} carte di main${side ? ` + ${side} di sideboard` : ""}. Una carta per riga, es. «4 Lightning Bolt»; scrivi «Sideboard» prima della sideboard.`
+                      : "Una carta per riga, es. «4 Lightning Bolt»; scrivi «Sideboard» prima della sideboard.";
+}
+function contaClassifica(t) {
+  const righe = String(t || "").split("\n").filter(r => r.trim());
+  if (!righe.length) return "Copia la tabella dal gestionale e incollala qui: sul sito diventa una tabella.";
+  const colonne = righe.some(r => r.includes("\t")) ? Math.max(...righe.map(r => r.split("\t").length)) : 0;
+  return colonne > 1 ? `Riconosciute ${righe.length} righe × ${colonne} colonne ✓`
+                     : `${righe.length} righe: sul sito verranno mostrate come testo.`;
+}
+
+function campo(oggetto, chiave, tipo, etichetta, extra) {
   const id = "f" + Math.random().toString(36).slice(2);
   const wrap = document.createElement("div");
   if (extra === "largo") wrap.className = "largo";
+  if (tipo === "foto") { disegnaFoto(wrap, oggetto, etichetta); return wrap; }
+
+  const valore = oggetto[chiave] ?? "";
+  const testoLungo = tipo === "textarea" || tipo === "lista" || tipo === "classifica";
+  const mono = tipo === "lista" || tipo === "classifica";
   wrap.innerHTML = `<label for="${id}">${esc(etichetta)}</label>` +
-    (tipo === "textarea" ? `<textarea id="${id}">${esc(valore)}</textarea>`
-                         : `<input id="${id}" type="${tipo}" value="${esc(valore)}">`);
-  wrap.querySelector("input,textarea").addEventListener("input", e => { onInput(e.target.value); segnaModificato(); });
+    (testoLungo ? `<textarea id="${id}" class="${mono ? "mono" : ""}" spellcheck="${!mono}">${esc(valore)}</textarea>`
+                : `<input id="${id}" type="${tipo}" value="${esc(valore)}">`);
+  const aiuto = { lista: contaLista, classifica: contaClassifica }[tipo];
+  let nota;
+  if (aiuto) { nota = document.createElement("div"); nota.className = "aiuto"; nota.textContent = aiuto(valore); wrap.appendChild(nota); }
+  wrap.querySelector("input,textarea").addEventListener("input", e => {
+    oggetto[chiave] = e.target.value;
+    if (nota) { nota.textContent = aiuto(e.target.value); nota.classList.toggle("ok", /✓|Riconosciute/.test(nota.textContent)); }
+    segnaModificato();
+  });
   return wrap;
+}
+
+function disegnaFoto(wrap, news, etichetta) {
+  if (!Array.isArray(news.foto)) news.foto = [];
+  const ridisegna = () => {
+    wrap.innerHTML = `<label>${esc(etichetta)} <span class="muted">(${news.foto.length})</span></label><div class="miniature"></div>`;
+    const box = wrap.querySelector(".miniature");
+    news.foto.forEach((p, i) => {
+      const inAttesa = fotoInAttesa.get(p);
+      const m = document.createElement("div");
+      m.className = "mini";
+      m.innerHTML = `<img src="${esc(inAttesa ? inAttesa.anteprima : p)}" alt="">
+        ${inAttesa ? `<span class="nuova">NUOVA</span>` : ""}
+        <div class="comandi">
+          <button data-a="sx" title="Sposta a sinistra" ${i === 0 ? "disabled" : ""}>‹</button>
+          <button data-a="del" title="Togli foto">✕</button>
+          <button data-a="dx" title="Sposta a destra" ${i === news.foto.length - 1 ? "disabled" : ""}>›</button>
+        </div>`;
+      m.querySelector(".comandi").onclick = e => {
+        const a = e.target.dataset.a; if (!a) return;
+        if (a === "del") { if (!confirm("Togliere questa foto dalla news?")) return; news.foto.splice(i, 1); }
+        if (a === "sx") [news.foto[i - 1], news.foto[i]] = [news.foto[i], news.foto[i - 1]];
+        if (a === "dx") [news.foto[i + 1], news.foto[i]] = [news.foto[i], news.foto[i + 1]];
+        segnaModificato(); ridisegna();
+      };
+      box.appendChild(m);
+    });
+    const add = document.createElement("button");
+    add.className = "aggiungi-foto"; add.innerHTML = "+<br>Aggiungi foto";
+    add.onclick = () => {
+      const input = $("scegli-foto");
+      input.value = "";
+      input.onchange = async () => {
+        const file = [...input.files]; if (!file.length) return;
+        for (let i = 0; i < file.length; i++) {
+          stato(`Preparo le foto… ${i + 1} di ${file.length}`);
+          try {
+            const f = await preparaFoto(file[i]);
+            const p = nomeFoto();
+            fotoInAttesa.set(p, f);
+            news.foto.push(p);
+          } catch { alert(`Non riesco a leggere «${file[i].name}». Prova con una foto JPG o PNG.`); }
+        }
+        segnaModificato(); ridisegna();
+      };
+      input.click();
+    };
+    box.appendChild(add);
+  };
+  ridisegna();
 }
 
 function disegnaLista(p, k) {
@@ -317,9 +476,9 @@ function disegnaLista(p, k) {
   $("btn-nuovo").onclick = () => {
     s.inCima ? lista.unshift(s.nuovo()) : lista.push(s.nuovo());
     segnaModificato(); disegna();
-    const prima = p.querySelectorAll(".voce")[s.inCima ? 0 : lista.length - 1];
-    prima?.scrollIntoView({ behavior: "smooth", block: "center" });
-    prima?.querySelector("input,textarea")?.focus();
+    const nuova = p.querySelectorAll(".voce")[s.inCima ? 0 : lista.length - 1];
+    nuova?.scrollIntoView({ behavior: "smooth", block: "center" });
+    nuova?.querySelector("input,textarea")?.focus();
   };
   if (!lista.length) p.insertAdjacentHTML("beforeend", `<div class="card muted">Ancora niente qui.</div>`);
 
@@ -328,8 +487,7 @@ function disegnaLista(p, k) {
     card.className = "card voce";
     const griglia = document.createElement("div");
     griglia.className = "campi";
-    s.campi.forEach(([chiave, tipo, etichetta, extra]) =>
-      griglia.appendChild(campo(voce[chiave], tipo, etichetta, extra, v => voce[chiave] = v)));
+    s.campi.forEach(([chiave, tipo, etichetta, extra]) => griglia.appendChild(campo(voce, chiave, tipo, etichetta, extra)));
     card.appendChild(griglia);
 
     const azioni = document.createElement("div");
@@ -356,13 +514,13 @@ function disegnaClassifica(p) {
   p.innerHTML = `<div class="intesta"><h2 style="color:var(--gold)">Classifica <span class="muted">(${lista.length})</span></h2>
     <button class="primario" id="btn-nuovo">+ Aggiungi giocatore</button></div>
     <div class="card" style="overflow-x:auto">
-      <p class="muted" style="margin-top:0">L'ordine sul sito è automatico, in base ai punti.</p>
+      <p class="muted" style="margin-top:0">L'ordine sul sito è automatico, in base ai punti. Il nickname è facoltativo: serve anche per la ricerca.</p>
       <table class="griglia"><thead><tr>
-        <th>Giocatore</th><th>Punti</th><th>V</th><th>S</th><th>P</th><th></th>
+        <th>Nome e cognome</th><th>Nickname</th><th>Punti</th><th>V</th><th>S</th><th>P</th><th></th>
       </tr></thead><tbody id="righe"></tbody></table>
     </div>`;
   $("btn-nuovo").onclick = () => {
-    lista.push({ giocatore: "", punti: 0, vittorie: 0, sconfitte: 0, pareggi: 0 });
+    lista.push({ giocatore: "", nickname: "", punti: 0, vittorie: 0, sconfitte: 0, pareggi: 0 });
     segnaModificato(); disegna();
     const righe = $("righe").querySelectorAll("tr");
     righe[righe.length - 1]?.querySelector("input")?.focus();
@@ -371,12 +529,13 @@ function disegnaClassifica(p) {
   lista.forEach((g, i) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td><input value="${esc(g.giocatore)}" data-c="giocatore" placeholder="Nome"></td>
+      <td class="nome"><input value="${esc(g.giocatore)}" data-c="giocatore" placeholder="Nome Cognome"></td>
+      <td class="nick"><input value="${esc(g.nickname || "")}" data-c="nickname" placeholder="—"></td>
       ${["punti", "vittorie", "sconfitte", "pareggi"].map(c => `<td class="n"><input type="number" inputmode="numeric" value="${g[c] ?? 0}" data-c="${c}"></td>`).join("")}
       <td><button class="piccolo elimina" title="Elimina">✕</button></td>`;
     tr.querySelectorAll("input").forEach(inp => inp.addEventListener("input", () => {
       const c = inp.dataset.c;
-      g[c] = c === "giocatore" ? inp.value : (Number(inp.value) || 0);
+      g[c] = c === "giocatore" || c === "nickname" ? inp.value : (Number(inp.value) || 0);
       segnaModificato();
     }));
     tr.querySelector("button").onclick = () => {
@@ -385,14 +544,67 @@ function disegnaClassifica(p) {
     };
     tb.appendChild(tr);
   });
-  if (!lista.length) tb.innerHTML = `<tr><td colspan="6" class="muted">Nessun giocatore.</td></tr>`;
+  if (!lista.length) tb.innerHTML = `<tr><td colspan="7" class="muted">Nessun giocatore.</td></tr>`;
 }
 
 function disegnaGenerale(p) {
   p.innerHTML = `<div class="card"><h2>Testata del sito</h2><div class="campi" id="g"></div>
     <p class="muted" style="margin-bottom:0">Il regolamento non si modifica da qui: per cambiarlo chiedi a Claude.</p></div>`;
-  $("g").appendChild(campo(dati.nomeLega, "text", "Nome della lega", "largo", v => dati.nomeLega = v));
-  $("g").appendChild(campo(dati.sottotitolo, "text", "Sottotitolo", "largo", v => dati.sottotitolo = v));
+  $("g").appendChild(campo(dati, "nomeLega", "text", "Nome della lega", "largo"));
+  $("g").appendChild(campo(dati, "sottotitolo", "text", "Sottotitolo", "largo"));
+}
+
+/* ======================= Versioni precedenti ======================= */
+const quando = iso => new Date(iso).toLocaleString("it-IT", { weekday: "short", day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+
+async function disegnaVersioni(p) {
+  p.innerHTML = `<div class="intesta"><h2 style="color:var(--gold)">Versioni precedenti</h2></div>
+    <div class="card muted" style="margin-bottom:12px">
+      Ogni pubblicazione viene conservata. «Ripristina» carica quella versione nel pannello:
+      controlla che sia giusta e premi <strong>Pubblica</strong> per rimetterla online.
+      Finché non pubblichi, il sito non cambia.
+    </div>
+    <div id="lista-versioni"><div class="card muted">Carico l'elenco…</div></div>`;
+  try {
+    const commit = await ghApi(`commits?path=data.json&sha=${encodeURIComponent(cfg().branch)}&per_page=30&t=${Date.now()}`);
+    if (schedaAttiva !== "versioni") return; // l'utente ha cambiato scheda nel frattempo
+    const box = $("lista-versioni");
+    if (!commit.length) { box.innerHTML = `<div class="card muted">Nessuna versione trovata.</div>`; return; }
+    box.innerHTML = "";
+    commit.forEach((c, i) => {
+      const card = document.createElement("div");
+      card.className = "card intesta";
+      card.style.marginBottom = "8px";
+      card.innerHTML = `
+        <div>
+          <strong>${quando(c.commit.author.date)}</strong>${i === 0 ? ` <span class="muted">· online adesso</span>` : ""}
+          <div class="muted">${esc(c.commit.message.split("\n")[0])}</div>
+        </div>
+        ${i === 0 ? "" : `<button class="piccolo">Ripristina</button>`}`;
+      card.querySelector("button")?.addEventListener("click", () => ripristina(c));
+      box.appendChild(card);
+    });
+  } catch (e) {
+    $("lista-versioni").innerHTML = `<div class="card" style="color:var(--err)">${esc(e.message)}</div>`;
+  }
+}
+
+async function ripristina(c) {
+  const data = quando(c.commit.author.date);
+  if (modificato && !confirm("Hai modifiche non pubblicate: verranno sostituite. Continuare?")) return;
+  if (!confirm(`Caricare la versione del ${data}?\nPotrai controllarla prima di pubblicarla.`)) return;
+  stato("Carico la versione…");
+  try {
+    const f = await gh("GET", null, c.sha);
+    dati = JSON.parse(b64Decode(f.content));
+    preparaDati();
+    schedaAttiva = "classifica";
+    disegna();
+    segnaModificato();
+    stato(`Versione del ${data} caricata. Controlla e premi Pubblica per rimetterla online.`, "mod");
+  } catch (e) {
+    stato(e.message, "err");
+  }
 }
 
 /* ======================= Pulsanti ======================= */
