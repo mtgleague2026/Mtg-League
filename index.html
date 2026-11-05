@@ -536,6 +536,52 @@ html.splash-lock { overflow: hidden; }
   100% { opacity: 0; transform: scale(.4)  rotate(45deg); }
 }
 
+/* ---------- Esplosione finale: il sigillo si frantuma in schegge di ghiaccio ---------- */
+.splash-shard {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+/* onda d'urto */
+.splash-burst {
+  position: absolute;
+  inset: 4%;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  border: 2px solid var(--splash-ice-light);
+  box-shadow: 0 0 18px rgba(143, 211, 236, .9), inset 0 0 18px rgba(143, 211, 236, .6);
+}
+.splash-boom .splash-logo { animation: none; opacity: 0; }
+.splash-boom .splash-frost,
+.splash-boom .splash-crystal,
+.splash-boom .splash-shine,
+.splash-boom .splash-spark { animation: none; opacity: 0; }
+.splash-boom .splash-shard {
+  animation: splash-shard .8s cubic-bezier(.12, .75, .3, 1) var(--dl, 0s) forwards;
+}
+.splash-boom .splash-halo  { animation: splash-halo-boom .55s ease-out forwards; }
+.splash-boom .splash-burst { animation: splash-burst .6s ease-out forwards; }
+@keyframes splash-shard {
+  0%   { opacity: 1; transform: none; filter: brightness(1); }
+  12%  { opacity: 1; filter: brightness(1.7) drop-shadow(0 0 6px rgba(143, 211, 236, .9)); }
+  100% { opacity: 0; transform: translate(var(--tx), var(--ty)) rotate(var(--r)) scale(var(--sc)); filter: brightness(1.2); }
+}
+@keyframes splash-halo-boom {
+  0%   { opacity: .8; transform: scale(1); }
+  25%  { opacity: 1;  transform: scale(1.35); }
+  100% { opacity: 0;  transform: scale(2.2); }
+}
+@keyframes splash-burst {
+  0%   { opacity: 1; transform: scale(.85); }
+  100% { opacity: 0; transform: scale(2.6); border-width: 0; }
+}
+
 /* ---------- Movimento ridotto: logo fermo + breve dissolvenza ---------- */
 @media (prefers-reduced-motion: reduce) {
   #splash-overlay, #splash-overlay * { animation: none !important; }
@@ -543,7 +589,7 @@ html.splash-lock { overflow: hidden; }
   .splash-logo   { opacity: 1; transform: none; filter: none; }
   .splash-halo   { opacity: .6; transform: none; }
   .splash-aurora { opacity: .6; }
-  .splash-frost, .splash-crystal, .splash-shine, .splash-spark { display: none; }
+  .splash-frost, .splash-crystal, .splash-shine, .splash-spark, .splash-shard, .splash-burst { display: none; }
 }
 </style>
 </head>
@@ -623,11 +669,16 @@ html.splash-lock { overflow: hidden; }
     setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 500);
   }
   function tasto(e) { if (e.key === "Escape" || e.key === "Esc") chiudi(); }
+  function esplodi() {
+    if (chiuso) return;
+    ov.classList.add("splash-boom");
+    timer = setTimeout(chiudi, 220);                     // la dissolvenza parte mentre le schegge volano
+  }
   function parti() {
     if (partito || chiuso) return;
     partito = true;
     ov.classList.add("splash-play");
-    timer = setTimeout(chiudi, ridotto ? 600 : 2050);   // dissolvenza dopo 2,05 s → fine a 2,5 s
+    timer = ridotto ? setTimeout(chiudi, 600) : setTimeout(esplodi, 1950);   // esplosione a 1,95 s → fine a ~2,7 s
   }
 
   ov.addEventListener("click", chiudi);
@@ -635,6 +686,39 @@ html.splash-lock { overflow: hidden; }
 
   // La sequenza parte quando il logo è caricato (con rete lenta, al massimo dopo 1,5 s)
   var logo = ov.querySelector(".splash-logo");
+
+  // Schegge del sigillo: spicchi attorno al centro, divisi in parte interna ed esterna,
+  // ognuno con un pezzo dell'immagine del logo e una direzione di volo verso l'esterno
+  if (!ridotto) {
+    var N = 12, giro = Math.PI * 2, base = Math.random() * giro, ang = [], rag = [];
+    for (var a = 0; a < N; a++) {
+      ang.push(base + a * giro / N + (Math.random() - .5) * .35);
+      rag.push(20 + Math.random() * 12);                 // raggio del taglio interno, in %
+    }
+    var punto = function (an, r) { return (50 + r * Math.cos(an)).toFixed(1) + "% " + (50 + r * Math.sin(an)).toFixed(1) + "%"; };
+    var sfondo = 'url("' + logo.getAttribute("src") + '")';
+    var scheggia = function (poligono, an, dist, sc) {
+      var el = document.createElement("span");
+      el.className = "splash-shard";
+      el.style.backgroundImage = sfondo;
+      el.style.clipPath = el.style.webkitClipPath = "polygon(" + poligono.join(",") + ")";
+      el.style.setProperty("--tx", (Math.cos(an) * dist).toFixed(1) + "%");
+      el.style.setProperty("--ty", (Math.sin(an) * dist).toFixed(1) + "%");
+      el.style.setProperty("--r", ((Math.random() - .5) * 140).toFixed(0) + "deg");
+      el.style.setProperty("--sc", sc);
+      el.style.setProperty("--dl", (Math.random() * .06).toFixed(3) + "s");
+      sigillo.appendChild(el);
+    };
+    for (var b = 0; b < N; b++) {
+      var a1 = ang[b], a2 = ang[(b + 1) % N] + (b === N - 1 ? giro : 0), am = (a1 + a2) / 2;
+      var r1 = rag[b], r2 = rag[(b + 1) % N];
+      scheggia(["50% 50%", punto(a1, r1), punto(a2, r2)], am, 22 + Math.random() * 18, ".75");
+      scheggia([punto(a1, r1), punto(a1, 76), punto(a2, 76), punto(a2, r2)], am, 55 + Math.random() * 40, "1.05");
+    }
+    var onda = document.createElement("span");
+    onda.className = "splash-burst";
+    sigillo.appendChild(onda);
+  }
   if (logo.complete && logo.naturalWidth) parti();
   else {
     logo.addEventListener("load", parti);
