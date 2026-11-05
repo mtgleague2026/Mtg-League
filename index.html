@@ -286,22 +286,25 @@
     .freccia { top: auto; bottom: 8px; transform: none; }
   }
 
-  /* Selettore lingua */
-  header { position: relative; }
-  .lingua {
-    position: absolute; top: 14px; right: 16px; display: flex; gap: 2px; padding: 3px;
-    border: 1px solid var(--line); border-radius: 999px; background: rgba(7,11,20,.6);
-  }
-  .lingua button {
-    font: inherit; font-size: .75rem; font-weight: 600; letter-spacing: .06em; cursor: pointer;
-    border: 0; border-radius: 999px; padding: 4px 10px; background: transparent; color: var(--muted);
-  }
-  .lingua button.attivo { background: var(--gold); color: #07111f; }
-
   /* Info utili */
   .info-testo { white-space: normal; }
   .info-testo p { margin: 0 0 8px; }
   .info-testo p:last-child { margin-bottom: 0; }
+  .allegati { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+  .allegato {
+    display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; text-decoration: none;
+    background: var(--bg); border: 1px solid var(--line); color: var(--text); transition: .2s;
+  }
+  .allegato:hover { border-color: var(--gold); background: rgba(143,211,236,.06); }
+  .allegato-nome { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .allegato-nome small { display: block; color: var(--muted); font-size: .78rem; }
+  .allegato-scarica { flex-shrink: 0; color: var(--gold); font-size: .85rem; font-weight: 600; }
+  .ext {
+    flex-shrink: 0; min-width: 42px; text-align: center; font-size: .7rem; font-weight: 700; letter-spacing: .04em;
+    padding: 6px 6px; border-radius: 6px; color: #07111f; background: var(--muted);
+  }
+  .ext.pdf { background: #e57373; } .ext.doc { background: #6fa8ff; } .ext.xls { background: #6fcf8f; }
+  .ext.ppt { background: #f0a35e; } .ext.img { background: #c49bff; }
 
 /* =====================================================================
    SPLASH "Premodern delle Lande Desolate" — CSS
@@ -741,9 +744,6 @@ html.splash-lock { overflow: hidden; }
 
 
 <header>
-  <div class="lingua" role="group" aria-label="Lingua / Language">
-    <button data-lang="it">IT</button><button data-lang="en">EN</button>
-  </div>
   <img class="logo" src="logo.png" alt="Logo">
   <h1 id="titolo"><span>Premodern delle Lande Desolate</span></h1>
   <p id="sottotitolo"></p>
@@ -774,7 +774,6 @@ html.splash-lock { overflow: hidden; }
       <table>
         <thead><tr>
           <th>#</th><th data-t="col_giocatore">Giocatore</th><th class="num" data-t="col_punti">Punti</th>
-          <th class="num nascondi-mobile" data-t="col_vsp">V-S-P</th>
         </tr></thead>
         <tbody id="tabella-classifica"></tbody>
       </table>
@@ -812,14 +811,14 @@ html.splash-lock { overflow: hidden; }
 </dialog>
 
 <script>
-  /* ================= Testi dell'interfaccia nelle due lingue ================= */
+  /* ================= Testi dell'interfaccia ================= */
   const TESTI = {
     it: {
       nav_news: "News", nav_classifica: "Classifica", nav_eventi: "Eventi", nav_decklist: "Decklist",
       nav_regolamento: "Regolamento", nav_info: "Info utili", nav_contatti: "Contatti",
       tit_news: "Ultime novità", tit_classifica: "Classifica generale", tit_eventi: "Calendario",
       tit_decklist: "Decklist dei vincitori", tit_regolamento: "Regolamento", tit_info: "Info utili", tit_contatti: "Contatti",
-      col_giocatore: "Giocatore", col_punti: "Punti", col_vsp: "V-S-P",
+      col_giocatore: "Giocatore", col_punti: "Punti",
       cerca: "Cerca per nome, cognome o nickname",
       prossima: "Prossima tappa", oggi: "È oggi!", domani: "Domani!", mancano: n => `Mancano ${n} giorni`, ore: "ore",
       class_vuota: "La classifica partirà con la prima tappa.", nessuno: q => `Nessun giocatore trovato per «${q}».`,
@@ -827,45 +826,22 @@ html.splash-lock { overflow: hidden; }
       btn_classifica: "🏆 Classifica della tappa", btn_decklist_evento: "📋 Decklist dell'evento ↗", classifica_di: "Classifica",
       deck_vuote: "Le decklist arriveranno dopo la prima tappa.", vedi_lista: "Vedi lista",
       main: "Main deck", side: "Sideboard", copia: "Copia lista", copiata: "Copiata ✓", copia_ko: "Copia non riuscita",
-      lista_nd: "Lista non disponibile.", info_vuote: "Nessuna informazione per ora.",
+      lista_nd: "Lista non disponibile.", info_vuote: "Nessuna informazione per ora.", scarica: "Scarica",
       stagione: "Stagione", aggiornato_il: "aggiornato il", ultimo_agg: "Ultimo aggiornamento",
       errore: `Non riesco a leggere <strong>data.json</strong>.<br>Se hai aperto il file con un doppio clic dal computer è normale:
         il browser blocca la lettura dei file locali. Se invece sei online, probabilmente c'è un errore di sintassi nel file.`,
     },
-    en: {
-      nav_news: "News", nav_classifica: "Standings", nav_eventi: "Events", nav_decklist: "Decklists",
-      nav_regolamento: "Rules", nav_info: "Useful info", nav_contatti: "Contacts",
-      tit_news: "Latest news", tit_classifica: "Overall standings", tit_eventi: "Schedule",
-      tit_decklist: "Winning decklists", tit_regolamento: "Rules", tit_info: "Useful info", tit_contatti: "Contacts",
-      col_giocatore: "Player", col_punti: "Points", col_vsp: "W-L-D",
-      cerca: "Search by first name, last name or nickname",
-      prossima: "Next event", oggi: "It's today!", domani: "Tomorrow!", mancano: n => `${n} days to go`, ore: "at",
-      class_vuota: "The standings will start with the first event.", nessuno: q => `No player found for “${q}”.`,
-      eventi_vuoti: "No events scheduled.", passati: "Past events",
-      btn_classifica: "🏆 Event standings", btn_decklist_evento: "📋 Event decklists ↗", classifica_di: "Standings",
-      deck_vuote: "Decklists will be published after the first event.", vedi_lista: "View list",
-      main: "Main deck", side: "Sideboard", copia: "Copy list", copiata: "Copied ✓", copia_ko: "Copy failed",
-      lista_nd: "List not available.", info_vuote: "No information yet.",
-      stagione: "Season", aggiornato_il: "updated on", ultimo_agg: "Last updated",
-      errore: `Unable to read <strong>data.json</strong>. If you opened the file by double-clicking it on your computer this is normal;
-        if you are online there is probably a syntax error in the file.`,
-    },
   };
 
-  /* ================= Lingua ================= */
-  const leggiLingua = () => { try { return localStorage.getItem("lingua"); } catch { return null; } };
-  let lang = leggiLingua() || ((navigator.language || "it").toLowerCase().startsWith("it") ? "it" : "en");
-  const T = k => TESTI[lang][k];
-  // Testo di un contenuto nella lingua scelta (campo "_en"), con ripiego sull'italiano
-  const tr = (o, campo) => (lang === "en" && o && String(o[campo + "_en"] || "").trim()) ? o[campo + "_en"] : (o ? o[campo] : "");
-  // "1° posto" → "1st place", "3°-4° posto" → "3rd-4th place"
-  const ordinale = n => n + (n % 100 >= 11 && n % 100 <= 13 ? "th" : ({ 1: "st", 2: "nd", 3: "rd" }[n % 10] || "th"));
-  const piazzamento = s => lang === "en" ? String(s || "").replace(/(\d+)°/g, (_, n) => ordinale(+n)).replace(/\bposto\b/gi, "place") : s;
+  /* ================= Testi ================= */
+  const T = k => TESTI.it[k];
+  const tr = (o, campo) => o ? o[campo] : "";
+  const piazzamento = s => s;
 
   /* ================= Strumenti ================= */
   const $ = id => document.getElementById(id);
   const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-  const locale = () => lang === "en" ? "en-GB" : "it-IT";
+  const locale = () => "it-IT";
   const giorno = d => new Date(String(d).slice(0, 10) + "T00:00");
   const dataBreve = d => giorno(d).toLocaleDateString(locale(), { weekday: "short", day: "numeric", month: "long" });
   const dataLunga = d => giorno(d).toLocaleDateString(locale(), { weekday: "long", day: "numeric", month: "long", year: "numeric" });
@@ -990,9 +966,25 @@ html.splash-lock { overflow: hidden; }
       </button>`).join("")}</div>`;
   }
 
+  /* ================= Allegati scaricabili (Info utili) ================= */
+  const estensione = f => (String(f).match(/\.([a-z0-9]{1,5})$/i) || [, ""])[1].toLowerCase();
+  const famiglia = ext => ({ pdf: "pdf", doc: "doc", docx: "doc", odt: "doc", rtf: "doc", txt: "doc", xls: "xls", xlsx: "xls", ods: "xls", csv: "xls",
+    ppt: "ppt", pptx: "ppt", odp: "ppt", jpg: "img", jpeg: "img", png: "img", gif: "img", webp: "img" }[ext] || "");
+  const peso = b => !b ? "" : b >= 1048576 ? (b / 1048576).toFixed(1).replace(".", ",") + " MB" : Math.max(1, Math.round(b / 1024)) + " KB";
+  function elencoAllegati(lista) {
+    if (!lista || !lista.length) return "";
+    return `<div class="allegati">${lista.map(f => {
+      const ext = estensione(f.file), nome = f.nome || T("scarica");
+      const nomeFile = /\.[a-z0-9]{1,5}$/i.test(nome) ? nome : nome + (ext ? "." + ext : "");
+      return `<a class="allegato" href="${esc(f.file)}" download="${esc(nomeFile)}">
+        <span class="ext ${famiglia(ext)}">${esc(ext.toUpperCase() || "FILE")}</span>
+        <span class="allegato-nome">${esc(nome)}<small>${peso(f.dimensione)}</small></span>
+        <span class="allegato-scarica">↓ ${T("scarica")}</span></a>`;
+    }).join("")}</div>`;
+  }
+
   /* ================= Disegno della pagina ================= */
   let D = null;                    // dati del sito
-  let regoleEn = null;             // regolamento in inglese (caricato solo se serve)
   let news = [], ordineEventi = [], decklist = [], classificaOrdinata = [];
 
   function disegnaClassifica() {
@@ -1000,14 +992,13 @@ html.splash-lock { overflow: hidden; }
     const f = normalizza(filtro).trim();
     const righe = f ? classificaOrdinata.filter(g => normalizza(g.giocatore + " " + (g.nickname || "")).includes(f)) : classificaOrdinata;
     $("tabella-classifica").innerHTML = !classificaOrdinata.length
-      ? `<tr><td colspan="4" class="vuoto">${T("class_vuota")}</td></tr>`
+      ? `<tr><td colspan="3" class="vuoto">${T("class_vuota")}</td></tr>`
       : !righe.length
-      ? `<tr><td colspan="4" class="vuoto">${esc(T("nessuno")(filtro))}</td></tr>`
+      ? `<tr><td colspan="3" class="vuoto">${esc(T("nessuno")(filtro))}</td></tr>`
       : righe.map(g => `
         <tr><td><span class="pos pos-${g.pos}">${g.pos}</span></td>
         <td>${esc(g.giocatore)}${g.nickname ? `<span class="nick">${esc(g.nickname)}</span>` : ""}</td>
-        <td class="num punti">${g.punti}</td>
-        <td class="num nascondi-mobile">${g.vittorie}-${g.sconfitte}-${g.pareggi}</td></tr>`).join("");
+        <td class="num punti">${g.punti}</td></tr>`).join("");
   }
 
   function disegnaRegolamento(reg) {
@@ -1015,12 +1006,12 @@ html.splash-lock { overflow: hidden; }
     const lista = voci => voci.map(v => `<li>${esc(v)}</li>`).join("");
     const blocco = b => {
       switch (b.tipo) {
-        case "paragrafo":      return `<p>${esc(b.testo)}</p>`;
+        case "paragrafo":      return `<p class="acapo">${esc(b.testo)}</p>`;
         case "sottotitolo":    return `<h4>${esc(b.testo)}</h4>`;
         case "elenco":         return `<ul>${lista(b.voci)}</ul>`;
         case "elencoNumerato": return `<ol>${lista(b.voci)}</ol>`;
         case "formula":        return `<p class="formula">${esc(b.testo)}</p>`;
-        case "esempio":        return `<p class="esempio"><strong>${lang === "en" ? "Example" : "Esempio"}:</strong> ${esc(b.testo)}</p>`;
+        case "esempio":        return `<p class="esempio"><strong>Esempio:</strong> ${esc(b.testo)}</p>`;
         case "tabella":        return `<div class="scroll"><table class="tab-reg">
           <thead><tr>${b.intestazioni.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead>
           <tbody>${b.righe.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody>
@@ -1042,9 +1033,7 @@ html.splash-lock { overflow: hidden; }
 
   function disegna() {
     const d = D;
-    document.documentElement.lang = lang;
     document.querySelectorAll("[data-t]").forEach(el => el.textContent = T(el.dataset.t));
-    document.querySelectorAll(".lingua button").forEach(b => b.classList.toggle("attivo", b.dataset.lang === lang));
     $("cerca-giocatore").placeholder = T("cerca");
     $("cerca-giocatore").setAttribute("aria-label", T("cerca"));
 
@@ -1109,19 +1098,13 @@ html.splash-lock { overflow: hidden; }
         <span class="badge">${esc(piazzamento(k.piazzamento))}</span></div>`).join("")
       : vuoto(T("deck_vuote"));
 
-    // Regolamento (in inglese se disponibile)
-    disegnaRegolamento(lang === "en" && regoleEn ? regoleEn : d.regole);
-    if (lang === "en" && !regoleEn) {
-      fetch("regolamento_en.json?v=" + Date.now(), { cache: "no-store" })
-        .then(r => r.ok ? r.json() : Promise.reject())
-        .then(r => { regoleEn = r; if (lang === "en") disegnaRegolamento(r); })
-        .catch(() => {});
-    }
+    // Regolamento
+    disegnaRegolamento(d.regole);
 
     // Info utili
     const info = d.info || [];
     $("lista-info").innerHTML = info.length
-      ? info.map(x => `<div class="card"><h3 class="acapo">${esc(tr(x, "titolo"))}</h3><div class="info-testo">${testoRicco(tr(x, "testo"))}</div></div>`).join("")
+      ? info.map(x => `<div class="card"><h3 class="acapo">${esc(tr(x, "titolo"))}</h3><div class="info-testo">${testoRicco(tr(x, "testo"))}</div>${elencoAllegati(x.allegati)}</div>`).join("")
       : vuoto(T("info_vuote"));
 
     // Contatti
@@ -1146,15 +1129,8 @@ html.splash-lock { overflow: hidden; }
   $("lista-decklist").addEventListener("click", e => {
     const b = e.target.closest("button[data-deck]"); if (b) apriDecklist(decklist[b.dataset.deck]);
   });
-  document.querySelectorAll(".lingua button").forEach(b => b.addEventListener("click", () => {
-    lang = b.dataset.lang;
-    try { localStorage.setItem("lingua", lang); } catch {}
-    if (D) disegna(); else document.querySelectorAll("[data-t]").forEach(el => el.textContent = T(el.dataset.t));
-  }));
-
   /* ================= Caricamento dati ================= */
   document.querySelectorAll("[data-t]").forEach(el => el.textContent = T(el.dataset.t));
-  document.querySelectorAll(".lingua button").forEach(b => b.classList.toggle("attivo", b.dataset.lang === lang));
   fetch("data.json?v=" + Date.now(), { cache: "no-store" })
     .then(r => r.json())
     .then(d => { D = d; disegna(); })
