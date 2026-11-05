@@ -1,5 +1,5 @@
 {
-  "nomeLega": "Premodern della Terra di Mezzo",
+  "nomeLega": "Premodern delle Lande Desolate",
   "sottotitolo": "Classifica, eventi e decklist della nostra community",
   "ultimoAggiornamento": "2026-11-05",
   "news": [
@@ -454,13 +454,14 @@
     {
       "nome": "Gruppo WhatsApp",
       "testo": "Rimani in contatto con noi tramite WhatsApp al seguente link!",
-      "link": ""
+      "link": "https://chat.whatsapp.com/FqzTcuPoosb3ygFQqcw1oZ?s=sh&p=a&iam=2"
     },
     {
       "nome": "Instagram",
       "testo": "Segui le ultime notizie anche su Instagram!",
-      "link": ""
+      "link": "https://www.instagram.com/premodern_delle_lande_desolate/"
     }
   ],
-  "info": []
+  "info": [],
+  "sottotitolo_en": "Rankings, events, and decklists from our community"
 }
