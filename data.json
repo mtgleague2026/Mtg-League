@@ -29,16 +29,7 @@
       "note": "Iscrizioni aperte da dicembre. Limite massimo di 30 player."
     }
   ],
-  "decklist": [
-    {
-      "torneo": "S1E1",
-      "giocatore": "Test_Edo",
-      "mazzo": "HFEB",
-      "piazzamento": "1° posto",
-      "link": "www.mtgtop8.com",
-      "lista": "1 Akroma, Angel of Wrath\n1 Battlefield Scrounger\n4 Birds of Paradise\n1 Elvish Spirit Guide\n4 Hermit Druid\n1 Karmic Guide\n1 Palinchron\n1 Phyrexian Devourer\n1 Psychatog\n1 Squee, Goblin Nabob\n1 Triskelion\n2 Volrath's Shapeshifter\n4 Wall of Roots\n1 Krosan Reclamation\n4 Cabal Therapy\n1 Duress\n4 Unearth\n1 Animate Dead\n4 Survival of the Fittest\n4 City of Brass\n4 Gemstone Mine\n4 Llanowar Wastes\n3 Reflecting Pool\n1 Treva's Ruins\n1 Underground River\n1 Undiscovered Paradise\n4 Yavimaya Coast\nSideboard\n2 Duress\n1 Auramancer\n1 Blue Elemental Blast\n1 Crumble\n1 Enlightened Tutor\n1 Ghitu Slinger\n1 Monk Realist\n1 Naturalize\n2 Pyroclasm\n1 Ray of Revelation\n1 Uktabi Orangutan\n2 Xantid Swarm"
-    }
-  ],
+  "decklist": [],
   "regole": {
     "titolo": "Regolamento della Lega Premodern",
     "stagione": "[2026/2027]",
