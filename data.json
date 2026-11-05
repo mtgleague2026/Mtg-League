@@ -31,8 +31,8 @@
   ],
   "decklist": [],
   "regole": {
-    "titolo": "Regolamento della Lega Premodern",
-    "stagione": "[2026/2027]",
+    "titolo": "Regolamento della Lega Premodern 2027",
+    "stagione": "[2027]",
     "ultimoAggiornamento": "26 Ottobre 2026",
     "sezioni": [
       {
@@ -50,7 +50,7 @@
           },
           {
             "tipo": "paragrafo",
-            "testo": "Quota di partecipazione a ciascuna tappa: 12€. Premi: SEZIONE IN ALLESTIMENTO."
+            "testo": "Quota di partecipazione a ciascuna tappa: SEZIONE IN ALLESTIMENTO.\nPremi: SEZIONE IN ALLESTIMENTO."
           }
         ]
       },
@@ -284,7 +284,7 @@
           },
           {
             "tipo": "paragrafo",
-            "testo": "Per ogni giocatore si scarta [1] tappa, quella con il risultato peggiore. Un'assenza vale 0 ed è quindi la prima a essere scartata."
+            "testo": "Per ogni giocatore si scarta 1 tappa, quella con il risultato peggiore. Un'assenza vale 0 ed è quindi la prima a essere scartata."
           },
           {
             "tipo": "formula",
@@ -377,7 +377,7 @@
         "blocchi": [
           {
             "tipo": "paragrafo",
-            "testo": "A fine stagione i primi [8] della classifica generale accedono alla fase finale, che si gioca [data e formula]. Per qualificarsi serve almeno una presenza. Se un qualificato non può partecipare, il suo posto va [al primo dei non qualificati / a nessuno]."
+            "testo": "A fine stagione i primi 8 della classifica generale accedono alla fase finale, che si giocherà in data da definire (in base alle disponibilità dei finalisti, ma comunque non oltre 45 dopo l'ultima tappa della lega). Se un qualificato non può partecipare, il suo posto va al primo dei non qualificati."
           }
         ]
       },
@@ -391,7 +391,7 @@
             "voci": [
               "Chi si ritira durante una tappa non viene più abbinato, ma conserva i punti ottenuti fino a quel momento.",
               "Chi arriva in ritardo può essere iscritto dal turno successivo, partendo da 0 punti.",
-              "Chi non si presenta al tavolo entro [10] minuti dall'inizio del turno perde l'incontro.",
+              "Chi non si presenta al tavolo entro 10 minuti dall'inizio del turno perde l'incontro.",
               "Affrontare due volte lo stesso avversario è ammesso solo quando, con pochi presenti, è inevitabile.",
               "I casi non previsti sono decisi dall'organizzazione, ispirandosi alle regole dei tornei ufficiali di Magic."
             ]
@@ -417,8 +417,8 @@
           {
             "tipo": "elenco",
             "voci": [
-              "Le classifiche sono pubblicate su questo sito [entro X giorni dalla tappa].",
-              "Gli errori nei risultati vanno segnalati a [contatto] entro [7] giorni dalla pubblicazione; poi la classifica è definitiva.",
+              "Le classifiche sono pubblicate su questo sito entro 7 giorni dalla tappa.",
+              "Gli errori nei risultati vanno segnalati a Luca o a Edo entro 3 giorni dalla pubblicazione; poi la classifica è definitiva.",
               "L'organizzazione può modificare il regolamento durante la stagione, dandone comunicazione su questo sito. I punteggi già assegnati non cambiano."
             ]
           }
@@ -443,6 +443,5 @@
       "titolo": "Invia la tua lista della Top8!",
       "testo": "Ti chiediamo la cortesia di inviarci (tramite WhatsApp) la lista che hai giocato nella tappa in cui hai fatto risultato nella Top8!\nPer comodità, il formato migliore è il classico, come da esempio qui sotto:\n\nNome del giocatore\nPiazzamento\n\n4 Card Name\n10 Card Name\nSB: 3 Card Name\nSB: 2 Card Name\n\nTi ringraziamo per la collaborazione!"
     }
-  ],
-  "sottotitolo_en": "Rankings, events, and decklists from our community"
+  ]
 }
