@@ -18,29 +18,14 @@
       "foto": []
     }
   ],
-  "classifica": [
-    {
-      "giocatore": "Test_Luca",
-      "punti": 4,
-      "vittorie": 1,
-      "sconfitte": 1,
-      "pareggi": 1
-    },
-    {
-      "giocatore": "Test_Edo",
-      "punti": 6,
-      "vittorie": 2,
-      "sconfitte": 0,
-      "pareggi": 0
-    }
-  ],
+  "classifica": [],
   "eventi": [
     {
       "data": "2027-01-09",
       "ora": "13:30",
       "nome": "S1E1",
       "formato": "Premodern",
-      "luogo": "In fase di sviluppo...",
+      "luogo": "Soresina, 26015.. In fase di lavorazione la location.",
       "note": "Iscrizioni aperte da dicembre. Limite massimo di 30 player."
     }
   ],
@@ -462,6 +447,11 @@
       "link": "https://www.instagram.com/premodern_delle_lande_desolate/"
     }
   ],
-  "info": [],
+  "info": [
+    {
+      "titolo": "Invia la tua lista della Top8!",
+      "testo": "Ti chiediamo la cortesia di inviarci (tramite WhatsApp) la lista che hai giocato nella tappa in cui hai fatto risultato nella Top8!\nPer comodità, il formato migliore è il classico, come da esempio qui sotto:\n\nNome del giocatore\nPiazzamento\n\n4 Card Name\n10 Card Name\nSB: 3 Card Name\nSB: 2 Card Name\n\nTi ringraziamo per la collaborazione!"
+    }
+  ],
   "sottotitolo_en": "Rankings, events, and decklists from our community"
 }
