@@ -296,9 +296,356 @@
   .info-testo { white-space: normal; }
   .info-testo p { margin: 0 0 8px; }
   .info-testo p:last-child { margin-bottom: 0; }
+
+/* =====================================================================
+   SPLASH "Premodern delle Lande Desolate" — CSS
+   Tutti i selettori iniziano con "splash-". Nessuna dipendenza esterna.
+   Timeline (da quando il logo è caricato):
+     0.00s  stelle + aurora
+     0.15s  logo da sfocato a nitido (0.9s) + alone
+     0.60s  anello di brina, poi cristalli di ghiaccio
+     1.05s  bagliore che percorre il bordo argentato
+     1.50s  stellina zaffiro ✦
+     2.05s  dissolvenza dell'overlay (0.45s) → fine a 2.5s
+   ===================================================================== */
+
+/* Blocca lo scroll della pagina mentre lo splash è visibile */
+html.splash-lock { overflow: hidden; }
+
+#splash-overlay {
+  /* Palette */
+  --splash-night: #070b14;
+  --splash-deep: #132036;
+  --splash-line: #263a58;
+  --splash-ice: #8fd3ec;
+  --splash-ice-light: #dff4fc;
+  --splash-steel: #4f86c6;
+  --splash-sapphire: #3d6fe0;
+  --splash-aurora: 46, 196, 160;
+  --splash-text: #e8f0f8;
+  /* Dimensione del sigillo (limitata anche in altezza per i telefoni in orizzontale) */
+  --splash-size: min(300px, 70vw, 62vh);
+
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 55%, var(--splash-deep) 0%, rgba(19, 32, 54, 0) 70%),
+    var(--splash-night);
+  opacity: 1;
+  transition: opacity .45s ease, visibility .45s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+#splash-overlay.splash-hide {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* ---------- Stelle (generate dal JS) ---------- */
+.splash-stars { position: absolute; inset: 0; pointer-events: none; }
+.splash-star {
+  position: absolute;
+  width: var(--s, 2px);
+  height: var(--s, 2px);
+  border-radius: 50%;
+  background: var(--splash-ice-light);
+  box-shadow: 0 0 4px rgba(143, 211, 236, .8);
+  opacity: 0;
+  animation: splash-star-in .9s ease-out var(--d, 0s) forwards;
+}
+.splash-star.splash-star-blue { background: var(--splash-steel); box-shadow: 0 0 5px var(--splash-sapphire); }
+@keyframes splash-star-in { to { opacity: var(--o, .7); } }
+
+/* ---------- Aurora (due veli di gradiente che ondeggiano) ---------- */
+.splash-aurora {
+  position: absolute;
+  left: -25%;
+  right: -25%;
+  top: -12%;
+  height: 58%;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    radial-gradient(ellipse 38% 42% at 32% 45%, rgba(var(--splash-aurora), .30), rgba(var(--splash-aurora), 0) 70%),
+    radial-gradient(ellipse 34% 30% at 64% 34%, rgba(143, 211, 236, .20), rgba(143, 211, 236, 0) 70%),
+    radial-gradient(ellipse 30% 26% at 80% 52%, rgba(var(--splash-aurora), .16), rgba(var(--splash-aurora), 0) 70%);
+  animation:
+    splash-fade-in 1s ease-out forwards,
+    splash-aurora-wave 3.2s ease-in-out infinite alternate;
+}
+.splash-aurora.splash-aurora-b {
+  top: -4%;
+  transform: scaleX(-1);
+  animation:
+    splash-fade-in-soft 1.2s ease-out .2s forwards,
+    splash-aurora-wave-b 3.8s ease-in-out infinite alternate;
+}
+@keyframes splash-fade-in { to { opacity: 1; } }
+@keyframes splash-fade-in-soft { to { opacity: .55; } }
+@keyframes splash-aurora-wave {
+  from { transform: translateX(-4%) skewX(-8deg); }
+  to   { transform: translateX(4%)  skewX(6deg); }
+}
+@keyframes splash-aurora-wave-b {
+  from { transform: scaleX(-1) translateX(3%)  skewX(5deg); }
+  to   { transform: scaleX(-1) translateX(-3%) skewX(-7deg); }
+}
+
+/* ---------- Sigillo: contenitore ---------- */
+.splash-seal {
+  position: relative;
+  width: var(--splash-size);
+  height: var(--splash-size);
+  flex: 0 0 auto;
+}
+
+/* Alone luminoso dietro il logo */
+.splash-halo {
+  position: absolute;
+  inset: -22%;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle,
+    rgba(143, 211, 236, .38) 0%,
+    rgba(61, 111, 224, .16) 38%,
+    rgba(61, 111, 224, 0) 66%);
+  opacity: 0;
+  transform: scale(.7);
+}
+
+/* Logo (il tuo PNG, non ridisegnato) */
+.splash-logo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  opacity: 0;
+  transform: scale(.88);
+  filter: blur(10px);
+  will-change: transform, opacity, filter;
+  -webkit-user-drag: none;
+}
+
+/* Anello di brina: tacche sottili disposte in cerchio attorno al sigillo */
+.splash-frost {
+  position: absolute;
+  inset: -7%;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  background: repeating-conic-gradient(rgba(223, 244, 252, .75) 0deg 0.8deg, rgba(223, 244, 252, 0) 0.8deg 5deg);
+  -webkit-mask: radial-gradient(circle closest-side, transparent 93%, #000 94% 97%, transparent 98%);
+          mask: radial-gradient(circle closest-side, transparent 93%, #000 94% 97%, transparent 98%);
+  filter: drop-shadow(0 0 4px rgba(143, 211, 236, .7));
+}
+
+/* Cristalli di ghiaccio (12, disposti in cerchio tramite --a) */
+.splash-crystal {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 15px;
+  margin: -7.5px 0 0 -3px;
+  pointer-events: none;
+  background: linear-gradient(180deg, var(--splash-ice-light), var(--splash-ice) 55%, var(--splash-steel));
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  opacity: 0;
+  transform: rotate(var(--a)) translateY(calc(var(--splash-size) * -.585)) scale(0);
+}
+
+/* Bagliore che percorre il bordo argentato (mascherato sulla sola corona) */
+.splash-shine {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  background: conic-gradient(from 0deg,
+    rgba(223, 244, 252, 0) 0deg,
+    rgba(223, 244, 252, 0) 300deg,
+    rgba(223, 244, 252, .9) 345deg,
+    rgba(223, 244, 252, 0) 360deg);
+  -webkit-mask: radial-gradient(circle closest-side, transparent 60%, #000 63% 95%, transparent 99%);
+          mask: radial-gradient(circle closest-side, transparent 60%, #000 63% 95%, transparent 99%);
+  mix-blend-mode: screen;
+}
+
+/* Stellina zaffiro a quattro punte, sulla gemma in alto del sigillo */
+.splash-spark {
+  position: absolute;
+  left: 50%;
+  top: 4.4%;
+  width: 22%;
+  height: 22%;
+  margin: -11% 0 0 -11%;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0) rotate(-30deg);
+  filter: drop-shadow(0 0 6px rgba(61, 111, 224, .95)) drop-shadow(0 0 14px rgba(143, 211, 236, .6));
+}
+.splash-spark svg { display: block; width: 100%; height: 100%; }
+
+/* ---------- Riproduzione: parte quando il JS aggiunge .splash-play ---------- */
+.splash-play .splash-logo    { animation: splash-focus .9s cubic-bezier(.2, .7, .2, 1) .15s both; }
+.splash-play .splash-halo    { animation: splash-halo 1.1s ease-out .25s both; }
+.splash-play .splash-frost   { animation: splash-frost 1s ease-out .6s both; }
+.splash-play .splash-crystal { animation: splash-crystal .55s ease-out calc(.7s + var(--i) * 35ms) both; }
+.splash-play .splash-shine   { animation: splash-shine .75s ease-in-out 1.05s both; }
+.splash-play .splash-spark   { animation: splash-spark .6s ease-out 1.5s both; }
+
+@keyframes splash-focus {
+  0%   { opacity: 0; transform: scale(.88); filter: blur(10px); }
+  45%  { opacity: 1; }
+  100% { opacity: 1; transform: scale(1);   filter: blur(0); }
+}
+@keyframes splash-halo {
+  0%   { opacity: 0;   transform: scale(.7); }
+  60%  { opacity: 1;   transform: scale(1.04); }
+  100% { opacity: .75; transform: scale(1); }
+}
+@keyframes splash-frost {
+  0%   { opacity: 0;   transform: scale(1.12) rotate(-25deg); }
+  55%  { opacity: .95; }
+  100% { opacity: .5;  transform: scale(1) rotate(0deg); }
+}
+@keyframes splash-crystal {
+  0%   { opacity: 0;  transform: rotate(var(--a)) translateY(calc(var(--splash-size) * -.62))  scale(0); }
+  60%  { opacity: 1;  transform: rotate(var(--a)) translateY(calc(var(--splash-size) * -.585)) scale(1.15); }
+  100% { opacity: .8; transform: rotate(var(--a)) translateY(calc(var(--splash-size) * -.585)) scale(1); }
+}
+@keyframes splash-shine {
+  0%   { opacity: 0; transform: rotate(-40deg); }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; transform: rotate(320deg); }
+}
+@keyframes splash-spark {
+  0%   { opacity: 0; transform: scale(0)   rotate(-30deg); }
+  45%  { opacity: 1; transform: scale(1.2) rotate(10deg); }
+  100% { opacity: 0; transform: scale(.4)  rotate(45deg); }
+}
+
+/* ---------- Movimento ridotto: logo fermo + breve dissolvenza ---------- */
+@media (prefers-reduced-motion: reduce) {
+  #splash-overlay, #splash-overlay * { animation: none !important; }
+  #splash-overlay { transition-duration: .25s; }
+  .splash-logo   { opacity: 1; transform: none; filter: none; }
+  .splash-halo   { opacity: .6; transform: none; }
+  .splash-aurora { opacity: .6; }
+  .splash-frost, .splash-crystal, .splash-shine, .splash-spark { display: none; }
+}
 </style>
 </head>
 <body>
+<!-- ===================== SPLASH di apertura ===================== -->
+<div id="splash-overlay" aria-hidden="true">
+  <div class="splash-stars"></div>
+  <div class="splash-aurora"></div>
+  <div class="splash-aurora splash-aurora-b"></div>
+  <div class="splash-seal">
+    <div class="splash-halo"></div>
+    <img class="splash-logo" src="splash-logo.png" alt="" decoding="async" draggable="false">
+    <div class="splash-frost"></div>
+    <div class="splash-shine"></div>
+    <div class="splash-spark">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <defs>
+          <radialGradient id="splash-spark-grad" cx="50%" cy="50%" r="50%">
+            <stop offset="0" stop-color="#dff4fc"/>
+            <stop offset=".45" stop-color="#8fd3ec"/>
+            <stop offset="1" stop-color="#3d6fe0"/>
+          </radialGradient>
+        </defs>
+        <path d="M50 0 C54 38 62 46 100 50 C62 54 54 62 50 100 C46 62 38 54 0 50 C38 46 46 38 50 0 Z" fill="url(#splash-spark-grad)"/>
+      </svg>
+    </div>
+  </div>
+</div>
+<script>
+/* Splash: parte subito, prima del resto della pagina */
+(function () {
+  var ov = document.getElementById("splash-overlay");
+  if (!ov) return;
+
+  // Solo alla prima apertura nella sessione
+  var giaVisto = false;
+  try { giaVisto = sessionStorage.getItem("splash-visto") === "1"; } catch (e) {}
+  if (giaVisto) { ov.parentNode.removeChild(ov); return; }
+  try { sessionStorage.setItem("splash-visto", "1"); } catch (e) {}
+
+  var html = document.documentElement;
+  html.classList.add("splash-lock");
+  var ridotto = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Stelle sparse (meno sui telefoni)
+  var cielo = ov.querySelector(".splash-stars");
+  var quante = window.innerWidth < 600 ? 45 : 85;
+  for (var i = 0; i < quante; i++) {
+    var s = document.createElement("span");
+    s.className = "splash-star" + (Math.random() < .22 ? " splash-star-blue" : "");
+    s.style.left = (Math.random() * 100).toFixed(2) + "%";
+    s.style.top = (Math.pow(Math.random(), 1.4) * 100).toFixed(2) + "%";   // un po' più fitte in alto
+    s.style.setProperty("--s", (1 + Math.random() * 1.8).toFixed(2) + "px");
+    s.style.setProperty("--d", (Math.random() * .9).toFixed(2) + "s");
+    s.style.setProperty("--o", (.35 + Math.random() * .55).toFixed(2));
+    cielo.appendChild(s);
+  }
+
+  // Dodici cristalli di ghiaccio in cerchio attorno al sigillo
+  var sigillo = ov.querySelector(".splash-seal");
+  for (var k = 0; k < 12; k++) {
+    var c = document.createElement("span");
+    c.className = "splash-crystal";
+    c.style.setProperty("--a", (k * 30) + "deg");
+    c.style.setProperty("--i", k);
+    sigillo.appendChild(c);
+  }
+
+  var chiuso = false, partito = false, timer = null;
+  function chiudi() {
+    if (chiuso) return;
+    chiuso = true;
+    clearTimeout(timer);
+    ov.classList.add("splash-hide");
+    html.classList.remove("splash-lock");
+    document.removeEventListener("keydown", tasto);
+    setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 500);
+  }
+  function tasto(e) { if (e.key === "Escape" || e.key === "Esc") chiudi(); }
+  function parti() {
+    if (partito || chiuso) return;
+    partito = true;
+    ov.classList.add("splash-play");
+    timer = setTimeout(chiudi, ridotto ? 600 : 2050);   // dissolvenza dopo 2,05 s → fine a 2,5 s
+  }
+
+  ov.addEventListener("click", chiudi);
+  document.addEventListener("keydown", tasto);
+
+  // La sequenza parte quando il logo è caricato (con rete lenta, al massimo dopo 1,5 s)
+  var logo = ov.querySelector(".splash-logo");
+  if (logo.complete && logo.naturalWidth) parti();
+  else {
+    logo.addEventListener("load", parti);
+    logo.addEventListener("error", chiudi);
+    setTimeout(parti, 1500);
+  }
+  setTimeout(chiudi, 5000);   // rete di sicurezza: lo splash non resta mai bloccato
+})();
+</script>
+<!-- =================== fine SPLASH =================== -->
+
 
 <header>
   <div class="lingua" role="group" aria-label="Lingua / Language">
