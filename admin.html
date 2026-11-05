@@ -41,6 +41,7 @@
   }
   input:focus, textarea:focus { outline: none; border-color: var(--gold); }
   textarea { min-height: 110px; resize: vertical; }
+  textarea.riga { min-height: 0; resize: none; overflow: hidden; line-height: 1.4; }
   textarea.mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; min-height: 150px; white-space: pre; }
   .aiuto { font-size: .78rem; color: var(--muted); margin-top: 4px; }
   .aiuto.ok { color: var(--ok); }
@@ -342,17 +343,17 @@ const oggi = () => new Date().toLocaleDateString("sv-SE");
 const SEZIONI = {
   news: {
     nome: "News", aggiungi: "Nuova news", inCima: true,
-    campi: [["data", "date", "Data"], ["titolo", "text", "Titolo", "largo"], ["testo", "textarea", "Testo", "largo"], ["foto", "foto", "Foto", "largo"],
-            ["titolo_en", "text", "Title", "en"], ["testo_en", "textarea", "Text", "en"]],
+    campi: [["data", "date", "Data"], ["titolo", "riga", "Titolo", "largo"], ["testo", "textarea", "Testo", "largo"], ["foto", "foto", "Foto", "largo"],
+            ["titolo_en", "riga", "Title", "en"], ["testo_en", "textarea", "Text", "en"]],
     nuovo: () => ({ data: oggi(), titolo: "", testo: "", foto: [] }),
   },
   eventi: {
     nome: "Eventi", aggiungi: "Nuovo evento",
     campi: [["nome", "text", "Nome (es. S1E2)"], ["data", "date", "Data"], ["ora", "time", "Ora"], ["formato", "text", "Formato"],
-            ["luogo", "text", "Luogo", "largo"], ["note", "text", "Note", "largo"],
+            ["luogo", "riga", "Luogo", "largo"], ["note", "riga", "Note", "largo"],
             ["linkDecklist", "url", "Link alle decklist dell'evento (MTGTop8, TCDecks…)", "largo"],
             ["classifica", "classifica", "Classifica della tappa (incolla dal gestionale)", "largo"],
-            ["note_en", "text", "Notes", "en"]],
+            ["note_en", "riga", "Notes", "en"]],
     nuovo: () => ({ data: oggi(), ora: "13:30", nome: "", formato: "Premodern", luogo: "", note: "", linkDecklist: "", classifica: "" }),
   },
   classifica: { nome: "Classifica", aggiungi: "Aggiungi giocatore" },
@@ -364,15 +365,15 @@ const SEZIONI = {
   },
   info: {
     nome: "Info utili", aggiungi: "Nuova info",
-    campi: [["titolo", "text", "Titolo (es. Come inviare la lista per la top 8)", "largo"],
+    campi: [["titolo", "riga", "Titolo (es. Come inviare la lista per la top 8)", "largo"],
             ["testo", "textarea", "Testo — lascia una riga vuota per andare a capo con un nuovo paragrafo; link ed e-mail diventano cliccabili", "largo"],
-            ["titolo_en", "text", "Title", "en"], ["testo_en", "textarea", "Text", "en"]],
+            ["titolo_en", "riga", "Title", "en"], ["testo_en", "textarea", "Text", "en"]],
     nuovo: () => ({ titolo: "", testo: "" }),
   },
   contatti: {
     nome: "Contatti", aggiungi: "Nuovo contatto",
-    campi: [["nome", "text", "Voce (es. Instagram)"], ["testo", "text", "Testo mostrato"], ["link", "url", "Link (facoltativo, con https://)", "largo"],
-            ["nome_en", "text", "Label", "en"], ["testo_en", "text", "Text shown", "en"]],
+    campi: [["nome", "text", "Voce (es. Instagram)"], ["testo", "riga", "Testo mostrato"], ["link", "url", "Link (facoltativo, con https://)", "largo"],
+            ["nome_en", "text", "Label", "en"], ["testo_en", "riga", "Text shown", "en"]],
     nuovo: () => ({ nome: "", testo: "", link: "" }),
   },
   generale: { nome: "Testata" },
@@ -421,15 +422,26 @@ function campo(oggetto, chiave, tipo, etichetta, extra) {
   if (tipo === "foto") { disegnaFoto(wrap, oggetto, etichetta); return wrap; }
 
   const valore = oggetto[chiave] ?? "";
-  const testoLungo = tipo === "textarea" || tipo === "lista" || tipo === "classifica";
+  const testoLungo = tipo === "textarea" || tipo === "lista" || tipo === "classifica" || tipo === "riga";
   const mono = tipo === "lista" || tipo === "classifica";
   wrap.innerHTML = `<label for="${id}">${esc(etichetta)}</label>` +
-    (testoLungo ? `<textarea id="${id}" class="${mono ? "mono" : ""}" spellcheck="${!mono}">${esc(valore)}</textarea>`
+    (testoLungo ? `<textarea id="${id}" class="${mono ? "mono" : tipo === "riga" ? "riga" : ""}" ${tipo === "riga" ? 'rows="1"' : ""} spellcheck="${!mono}">${esc(valore)}</textarea>`
                 : `<input id="${id}" type="${tipo}" value="${esc(valore)}">`);
   const aiuto = { lista: contaLista, classifica: contaClassifica }[tipo];
   let nota;
   if (aiuto) { nota = document.createElement("div"); nota.className = "aiuto"; nota.textContent = aiuto(valore); wrap.appendChild(nota); }
-  wrap.querySelector("input,textarea").addEventListener("input", e => {
+  const casella = wrap.querySelector("input,textarea");
+  if (tipo === "riga") {
+    // la casella parte da una riga e si allunga se vai a capo con Invio
+    const adatta = () => {
+      if (!casella.offsetParent) return;          // nascosta (es. riquadro inglese chiuso): si adatta quando si apre
+      casella.style.height = "auto"; casella.style.height = casella.scrollHeight + 2 + "px";
+    };
+    casella._adatta = adatta;
+    casella.addEventListener("input", adatta);
+    requestAnimationFrame(adatta);
+  }
+  casella.addEventListener("input", e => {
     oggetto[chiave] = e.target.value;
     if (nota) { nota.textContent = aiuto(e.target.value); nota.classList.toggle("ok", /✓|Riconosciute/.test(nota.textContent)); }
     segnaModificato();
@@ -498,6 +510,7 @@ function sezioneInglese(oggetto, campiEn) {
   const aggiorna = () => { st.textContent = "· " + etichetta(); st.classList.toggle("pieno", pieni() === campiEn.length); };
   campiEn.forEach(([chiave, tipo, nome]) => det.querySelector(".campi").appendChild(campo(oggetto, chiave, tipo, nome + " (EN)", "largo")));
   det.addEventListener("input", aggiorna);
+  det.addEventListener("toggle", () => det.querySelectorAll("textarea.riga").forEach(c => c._adatta && c._adatta()));
   aggiorna();
   return det;
 }
@@ -585,9 +598,9 @@ function disegnaClassifica(p) {
 function disegnaGenerale(p) {
   p.innerHTML = `<div class="card"><h2>Testata del sito</h2><div class="campi" id="g"></div>
     <p class="muted" style="margin-bottom:0">Il regolamento (italiano e inglese) non si modifica da qui: per cambiarlo chiedi a Claude.</p></div>`;
-  $("g").appendChild(campo(dati, "nomeLega", "text", "Nome della lega", "largo"));
-  $("g").appendChild(campo(dati, "sottotitolo", "text", "Sottotitolo", "largo"));
-  $("g").appendChild(campo(dati, "sottotitolo_en", "text", "Sottotitolo in inglese (facoltativo)", "largo"));
+  $("g").appendChild(campo(dati, "nomeLega", "riga", "Nome della lega — premi Invio per andare a capo", "largo"));
+  $("g").appendChild(campo(dati, "sottotitolo", "riga", "Sottotitolo", "largo"));
+  $("g").appendChild(campo(dati, "sottotitolo_en", "riga", "Sottotitolo in inglese (facoltativo)", "largo"));
 }
 
 /* ======================= Versioni precedenti ======================= */
