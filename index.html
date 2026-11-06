@@ -209,6 +209,12 @@
   a.compila strong { display: block; font-family: Cinzel, Georgia, serif; font-size: 1.02rem; letter-spacing: .03em; }
   a.compila small { display: block; color: var(--muted); font-size: .84rem; }
   a.compila > span:last-child { margin-left: auto; font-size: 1.6rem; color: var(--muted); }
+  /* la pagina di compilazione si apre sopra il sito (così il fuoco non si interrompe) */
+  #finestra-lista { position: fixed; inset: 0; z-index: 40; background: var(--bg); display: none; }
+  #finestra-lista.aperta { display: block; animation: comparsa .25s ease; }
+  #finestra-lista iframe { width: 100%; height: 100%; border: 0; display: block; background: var(--bg); }
+  html.lista-aperta { overflow: hidden; }
+  html.lista-aperta #audio-fuoco { z-index: 45; }
   /* popup decklist: immagini delle carte */
   dialog.largo { width: min(820px, calc(100vw - 24px)); }
   .vista-popup { display: flex; gap: 6px; margin-bottom: 12px; }
@@ -645,10 +651,10 @@ html.splash-lock { overflow: hidden; }
 <body>
 <script>
 /* ===================== Suoni del sito (generati dal browser, nessun file audio) =====================
-   Un solo "impianto audio" condiviso da splash, passi sul menu e fuoco.
+   Un solo "impianto audio" condiviso dai passi sul menu e dal fuoco.
    Il pulsante 🔊 in basso a destra li spegne/accende tutti (scelta ricordata nel browser). */
 window.SuoniLega = (function () {
-  var AC = window.AudioContext || window.webkitAudioContext, ac = null, uscita = null, bufRumore = null, splashGain = null;
+  var AC = window.AudioContext || window.webkitAudioContext, ac = null, uscita = null, bufRumore = null;
   function acceso() { try { return localStorage.getItem("audio-fuoco") !== "off"; } catch (e) { return true; } }
   function contesto() {
     if (!AC) return null;
@@ -670,7 +676,7 @@ window.SuoniLega = (function () {
     g.gain.exponentialRampToValueAtTime(picco, t + attacco); g.gain.exponentialRampToValueAtTime(.0001, t + attacco + durata);
     s.connect(f); f.connect(g); g.connect(dest); s.start(t, Math.random() * .5, attacco + durata + .05);
   }
-  // nota pura che scende di tono (tonfi, rintocchi)
+  // nota pura che scende di tono (il tonfo del passo)
   function tono(dest, t, forma, da, a, picco, durata) {
     var o = ac.createOscillator(); o.type = forma;
     o.frequency.setValueAtTime(da, t); o.frequency.exponentialRampToValueAtTime(a, t + durata);
@@ -690,41 +696,7 @@ window.SuoniLega = (function () {
     if (Math.random() < .5) soffio(uscita, t + .05 + Math.random() * .04, "bandpass", 1400, 1, .06, .003, .05);   // un sassolino
   }
 
-  /* --- Suono dello splash, sincronizzato con l'animazione (esplosione a 1,95 s) --- */
-  function splash() {
-    if (!acceso() || !contesto()) return;
-    var chiesto = performance.now();
-    ac.resume().then(function () {
-      // se il browser ha sbloccato l'audio solo più tardi (al primo tocco), non suona in ritardo
-      if (ac.state !== "running" || performance.now() - chiesto > 350) return;
-      var t = ac.currentTime + .02;
-      splashGain = ac.createGain(); splashGain.gain.value = 1; splashGain.connect(uscita);
-      var d = splashGain;
-      // vento gelido che sale mentre il sigillo prende forma
-      var s = ac.createBufferSource(); s.buffer = rumore(); s.loop = true;
-      var f = ac.createBiquadFilter(); f.type = "lowpass"; f.Q.value = 1.5;
-      f.frequency.setValueAtTime(180, t); f.frequency.exponentialRampToValueAtTime(1300, t + 1.9);
-      var g = ac.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.22, t + 1.85); g.gain.exponentialRampToValueAtTime(.0001, t + 2.05);
-      s.connect(f); f.connect(g); g.connect(d); s.start(t); s.stop(t + 2.1);
-      tono(d, t, "sine", 55, 52, .12, 2);                                  // bordone profondo
-      // brina: piccoli tintinnii di ghiaccio
-      for (var i = 0; i < 9; i++) tono(d, t + .6 + i * .075 + Math.random() * .04, "sine", 2200 + Math.random() * 2200, 2000, .035, .25);
-      // la stellina: un rintocco cristallino
-      tono(d, t + 1.5, "sine", 1760, 1750, .1, .9); tono(d, t + 1.5, "sine", 2637, 2630, .05, .7);
-      // esplosione: colpo profondo, schianto e pioggia di schegge
-      var b = t + 1.95;
-      tono(d, b, "sine", 80, 30, .7, .7);
-      soffio(d, b, "lowpass", 1800, .7, .55, .005, .7);
-      for (var k = 0; k < 26; k++) {
-        var q = b + .02 + Math.pow(Math.random(), 1.6) * 1.6;
-        soffio(d, q, "bandpass", 2500 + Math.random() * 5000, 4, .05 + Math.random() * .12, .002, .03 + Math.random() * .06);
-      }
-    }).catch(function () {});
-  }
-  function fermaSplash() {                 // se lo splash viene saltato, il suono sfuma subito
-    if (splashGain && ac) { splashGain.gain.setTargetAtTime(0, ac.currentTime, .08); splashGain = null; }
-  }
-  return { contesto: contesto, uscita: function () { contesto(); return uscita; }, acceso: acceso, passo: passo, splash: splash, fermaSplash: fermaSplash };
+  return { contesto: contesto, uscita: function () { contesto(); return uscita; }, acceso: acceso, passo: passo };
 })();
 </script>
 <!-- ===================== SPLASH di apertura ===================== -->
@@ -798,7 +770,6 @@ window.SuoniLega = (function () {
     clearTimeout(timer);
     ov.classList.add("splash-hide");
     html.classList.remove("splash-lock");
-    if (window.SuoniLega && !ov.classList.contains("splash-boom")) SuoniLega.fermaSplash();
     document.removeEventListener("keydown", tasto);
     setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); }, ov.classList.contains("splash-boom") ? 1300 : 500);
   }
@@ -812,7 +783,6 @@ window.SuoniLega = (function () {
     if (partito || chiuso) return;
     partito = true;
     ov.classList.add("splash-play");
-    if (window.SuoniLega) SuoniLega.splash();             // suona solo dove il browser lo permette
     timer = ridotto ? setTimeout(chiudi, 600) : setTimeout(esplodi, 1950);   // esplosione a 1,95 s → fine a ~2,7 s
   }
 
@@ -1034,6 +1004,7 @@ window.SuoniLega = (function () {
 })();
 </script>
 <!-- =================== fine braci e suono =================== -->
+<div id="finestra-lista" role="dialog" aria-label="Compila la tua decklist"></div>
 
 
 <header>
@@ -1468,6 +1439,7 @@ window.SuoniLega = (function () {
     $("link-privacy-box").hidden = !$("privacy");
     const ancora = location.hash.slice(1);           // es. ritorno dalla pagina della decklist
     if (ancora === "privacy") apriPrivacy();
+    else if (ancora === "compila") { mostra("decklist"); apriLista(true); }
     else if (ancora && document.querySelector(`nav button[data-sezione="${ancora}"]`)) mostra(ancora);
   }
 
@@ -1511,6 +1483,30 @@ window.SuoniLega = (function () {
     if (D) disegnaDecklist();
   }));
   $("cerca-deck").addEventListener("input", () => { if (D) disegnaDecklist(); });
+
+  /* ================= Compila la tua decklist (aperta sopra il sito) ================= */
+  function apriLista(dallaStoria) {
+    const f = $("finestra-lista");
+    if (!f.firstChild) f.innerHTML = `<iframe src="lista.html?dentro=1" title="Compila la tua decklist"></iframe>`;   // creata una volta: la bozza resta
+    f.classList.add("aperta"); document.documentElement.classList.add("lista-aperta");
+    if (!dallaStoria) history.pushState({ lista: true }, "", "#compila");
+  }
+  function chiudiLista(dallaStoria) {
+    if (!$("finestra-lista").classList.contains("aperta")) return;
+    $("finestra-lista").classList.remove("aperta"); document.documentElement.classList.remove("lista-aperta");
+    if (!dallaStoria && location.hash === "#compila") history.back();   // il tasto "indietro" resta coerente
+    mostra("decklist");
+  }
+  document.addEventListener("click", e => {
+    const a = e.target.closest("a.compila"); if (!a) return;
+    e.preventDefault(); apriLista();
+  });
+  window.addEventListener("popstate", () => { if (location.hash === "#compila") apriLista(true); else chiudiLista(true); });
+  window.addEventListener("message", e => {           // messaggi dalla pagina di compilazione
+    if (e.origin !== location.origin || !e.data) return;
+    if (e.data.tipo === "chiudi-lista") chiudiLista();
+    if (e.data.tipo === "privacy") { chiudiLista(); setTimeout(apriPrivacy, 80); }
+  });
 
   /* ================= Privacy ================= */
   function apriPrivacy() {             // porta all'informativa nelle Info utili e la apre
