@@ -1435,6 +1435,15 @@ window.SuoniLega = (function () {
 
     $("aggiornato").textContent = T("ultimo_agg") + ": " + dataBreve(d.ultimoAggiornamento);
 
+    // Contatore visite (GoatCounter): attivo solo se il codice è impostato dal pannello. I numeri si vedono solo nel pannello.
+    const gc = String((d.statistiche || {}).goatcounter || "").trim().toLowerCase();
+    if (/^[a-z0-9-]{2,40}$/.test(gc) && !document.getElementById("goatcounter")) {
+      const s = document.createElement("script");
+      s.id = "goatcounter"; s.async = true; s.src = "https://gc.zgo.at/count.js";
+      s.dataset.goatcounter = `https://${gc}.goatcounter.com/count`;
+      document.body.appendChild(s);
+    }
+
     // Privacy (collegamento nel piè di pagina, dopo che le Info utili sono state disegnate)
     $("link-privacy-box").hidden = !$("privacy");
     const ancora = location.hash.slice(1);           // es. ritorno dalla pagina della decklist
