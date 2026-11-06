@@ -8,7 +8,7 @@
       "titolo": "WINTER LEAGUE!",
       "testo": "Ciao a tutti!\nVi informiamo che i primi appuntamenti della WINTER LEAGUE 2027 delle Lande Desolate si terranno a partire da gennaio 2027.\nStiamo lavorando per voi, rimanete sintonizzati!\n\n- Luca & Edo",
       "foto": [
-        "foto/2026-11-05-d6vedq.jpg"
+        "foto/2026-11-06-616zsu.jpg"
       ]
     },
     {
@@ -441,7 +441,8 @@
   "info": [
     {
       "titolo": "Invia la tua lista della Top8!",
-      "testo": "Ti chiediamo la cortesia di inviarci (tramite WhatsApp) la lista che hai giocato nella tappa in cui hai fatto risultato nella Top8!\nPer comodità, il formato migliore è il classico, come da esempio qui sotto:\n\nNome del giocatore\nPiazzamento\n\n4 Card Name\n10 Card Name\nSB: 3 Card Name\nSB: 2 Card Name\n\nTi ringraziamo per la collaborazione!"
+      "testo": "Ti chiediamo la cortesia di inviarci (tramite WhatsApp) la lista che hai giocato nella tappa in cui hai fatto risultato nella Top8!\nPer comodità, il formato migliore è il classico, come da esempio qui sotto:\n\nNome del giocatore\nPiazzamento\n\n4 Card Name\n10 Card Name\nSB: 3 Card Name\nSB: 2 Card Name\n\nTi ringraziamo per la collaborazione!",
+      "allegati": []
     }
   ]
 }
