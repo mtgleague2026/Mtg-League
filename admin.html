@@ -407,6 +407,7 @@ const SEZIONI = {
   },
   regolamento: { nome: "Regolamento" },
   privacy: { nome: "Privacy" },
+  statistiche: { nome: "Visite" },
   generale: { nome: "Testata" },
   versioni: { nome: "↺ Versioni" },
 };
@@ -426,6 +427,7 @@ function disegna() {
   if (schedaAttiva === "versioni") return disegnaVersioni(p);
   if (schedaAttiva === "regolamento") return disegnaRegolamento(p);
   if (schedaAttiva === "privacy") return disegnaPrivacy(p);
+  if (schedaAttiva === "statistiche") return disegnaStatistiche(p);
   disegnaLista(p, schedaAttiva);
 }
 
@@ -919,6 +921,45 @@ function disegnaPrivacy(p) {
   $("campi-privacy").appendChild(campo(dati.privacy, "testo", "lungo", "Testo", "largo"));
   const rimasti = (dati.privacy.testo.match(/\[[^\]]+\]/g) || []).length;
   if (rimasti) $("campi-privacy").insertAdjacentHTML("beforeend", `<div class="aiuto largo" style="color:var(--err)">Restano ${rimasti} parti da completare tra [ ].</div>`);
+}
+
+/* ======================= Visite al sito (GoatCounter) ======================= */
+function disegnaStatistiche(p) {
+  if (!dati.statistiche) dati.statistiche = { goatcounter: "" };
+  const st = dati.statistiche;
+  const codice = () => String(st.goatcounter || "").trim().toLowerCase();
+  p.innerHTML = `<div class="intesta"><h2 style="color:var(--gold)">Visite al sito</h2></div>
+    <div class="card" id="box-visite"></div>
+    <div class="card">
+      <h2>Impostazione</h2>
+      <div class="campi" id="campi-visite"></div>
+      <details style="margin-top:12px"><summary>Come attivarlo (una volta sola)</summary>
+        <ol class="muted" style="margin:10px 0 0;padding-left:20px">
+          <li>Vai su <strong>goatcounter.com</strong> e crea un account gratuito (Sign up). Come «Code» scegli un nome breve, es. <strong>landedesolate</strong>.</li>
+          <li>Nelle impostazioni del sito su GoatCounter (Settings) attiva <strong>«Allow adding visitor counts on your website»</strong>: serve a far leggere il totale a questo pannello.</li>
+          <li>Scrivi qui sopra lo stesso codice e premi <strong>Pubblica</strong>. Da quel momento le visite vengono contate.</li>
+          <li>Aggiungi una riga all'informativa privacy (scheda Privacy) che citi GoatCounter come servizio di statistiche anonime.</li>
+        </ol></details>
+    </div>`;
+  $("campi-visite").appendChild(campo(st, "goatcounter", "text", "Codice GoatCounter (solo lettere minuscole, numeri e trattini)"));
+  const box = $("box-visite");
+  const c = codice();
+  if (!c) { box.innerHTML = `<p class="muted" style="margin:0">Il contatore non è ancora attivo: segui i passaggi qui sotto.</p>`; return; }
+  if (!/^[a-z0-9-]{2,40}$/.test(c)) { box.innerHTML = `<p style="margin:0;color:var(--err)">Il codice può contenere solo lettere minuscole, numeri e trattini.</p>`; return; }
+  box.innerHTML = `<p class="muted" style="margin:0">Leggo il contatore…</p>`;
+  fetch(`https://${c}.goatcounter.com/counter/TOTAL.json?t=${Date.now()}`, { cache: "no-store" })
+    .then(r => r.ok ? r.json() : Promise.reject(r.status))
+    .then(j => {
+      box.innerHTML = `<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap">
+          <span style="font-size:2.4rem;font-weight:700;color:var(--gold-hi)">${esc(j.count)}</span><span class="muted">visite totali al sito</span></div>
+        <p class="muted" style="margin:8px 0 0">I numeri sono visibili solo qui e su GoatCounter: i visitatori del sito non li vedono.
+        Per giorni, pagine più viste e provenienza: <a href="https://${c}.goatcounter.com" target="_blank" rel="noopener" style="color:var(--gold)">apri le statistiche dettagliate ↗</a></p>`;
+    })
+    .catch(() => {
+      box.innerHTML = `<p style="margin:0;color:var(--err)">Non riesco a leggere il contatore. Se lo hai appena attivato è normale finché non arriva la prima visita;
+        altrimenti controlla il codice e che su GoatCounter sia attiva l'opzione «Allow adding visitor counts on your website».</p>
+        <p class="muted" style="margin:8px 0 0"><a href="https://${c}.goatcounter.com" target="_blank" rel="noopener" style="color:var(--gold)">Apri GoatCounter ↗</a></p>`;
+    });
 }
 
 /* ======================= Versioni precedenti ======================= */
