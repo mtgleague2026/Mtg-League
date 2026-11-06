@@ -187,6 +187,37 @@
 
   /* Decklist */
   .deck { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  /* strumenti della sezione decklist */
+  .deck-strumenti { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+  .viste { display: flex; gap: 6px; flex-wrap: wrap; }
+  .viste button, .vista-popup button {
+    font: inherit; font-size: .85rem; cursor: pointer; padding: 6px 13px; border-radius: 999px;
+    background: transparent; color: var(--muted); border: 1px solid var(--line);
+  }
+  .viste button.attivo, .vista-popup button.attivo { background: var(--ink); color: #0b0b0b; border-color: var(--ink); font-weight: 600; }
+  .gruppo-deck { display: flex; align-items: baseline; gap: 10px; margin: 18px 0 10px; font-size: 1rem; color: var(--gold-hi); }
+  .gruppo-deck:first-child { margin-top: 0; }
+  .gruppo-deck small { color: var(--muted); font-family: Inter, sans-serif; font-size: .8rem; font-weight: 400; }
+  /* collegamento alla pagina della lista nel menu */
+  nav a.nav-link {
+    display: inline-flex; align-items: center; text-decoration: none; font-family: Cinzel, Georgia, serif;
+    border: 1px dashed var(--ink); color: var(--text); padding: 7px 14px; border-radius: 999px;
+    font-size: .85rem; font-weight: 500; letter-spacing: .05em; transition: .2s;
+  }
+  nav a.nav-link:hover { background: rgba(255,255,255,.08); }
+  /* popup decklist: immagini delle carte */
+  dialog.largo { width: min(820px, calc(100vw - 24px)); }
+  .vista-popup { display: flex; gap: 6px; margin-bottom: 12px; }
+  .griglia-carte { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; margin-bottom: 16px; }
+  .griglia-carte a { position: relative; display: block; border-radius: 5%; overflow: hidden; background: #1a1a1a; aspect-ratio: 488 / 680; }
+  .griglia-carte img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .griglia-carte .n {
+    position: absolute; left: 4px; top: 4px; background: rgba(0,0,0,.82); color: #fff; font-weight: 700;
+    font-size: .78rem; padding: 2px 7px; border-radius: 999px; border: 1px solid rgba(255,255,255,.4);
+  }
+  .griglia-carte .senza-img { display: grid; place-items: center; text-align: center; padding: 6px; font-size: .75rem; color: var(--muted); height: 100%; }
+  .titolo-griglia { margin: 4px 0 8px; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-family: Inter, sans-serif; }
+  footer a { color: var(--muted); }
   .badge {
     flex-shrink: 0; font-size: .75rem; font-weight: 600; padding: 4px 10px; border-radius: 999px;
     border: 1px solid var(--brass); color: var(--gold);
@@ -282,6 +313,10 @@
   .info-testo { white-space: normal; }
   .info-testo p { margin: 0 0 8px; }
   .info-testo p:last-child { margin-bottom: 0; }
+  .info-testo h4 { margin: 16px 0 6px; font-size: .95rem; color: var(--gold-hi); font-family: Inter, sans-serif; }
+  .info-testo h4:first-child { margin-top: 0; }
+  .info-testo ul { margin: 0 0 8px; padding-left: 20px; }
+  .info-testo li { margin: 3px 0; }
   .allegati { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
   .allegato {
     display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; text-decoration: none;
@@ -917,6 +952,7 @@ html.splash-lock { overflow: hidden; }
   <button data-sezione="classifica" data-t="nav_classifica">Classifica</button>
   <button data-sezione="eventi" data-t="nav_eventi">Eventi</button>
   <button data-sezione="decklist" data-t="nav_decklist">Decklist</button>
+  <a class="nav-link" href="lista.html">✎ Compila lista</a>
   <button data-sezione="regolamento" data-t="nav_regolamento">Regolamento</button>
   <button data-sezione="info" data-t="nav_info">Info utili</button>
   <button data-sezione="contatti" data-t="nav_contatti">Contatti</button>
@@ -943,7 +979,17 @@ html.splash-lock { overflow: hidden; }
   </section>
 
   <section id="eventi"><h2 data-t="tit_eventi">Calendario</h2><div id="lista-eventi"></div></section>
-  <section id="decklist"><h2 data-t="tit_decklist">Decklist dei vincitori</h2><div id="lista-decklist"></div></section>
+  <section id="decklist"><h2 data-t="tit_decklist">Decklist dei vincitori</h2>
+    <div class="deck-strumenti">
+      <div class="viste" role="group" aria-label="Raggruppa le decklist">
+        <button data-vista="tappa" class="attivo">Per tappa</button>
+        <button data-vista="archetipo">Per archetipo</button>
+        <button data-vista="giocatore">Per giocatore</button>
+      </div>
+      <div class="cerca"><input id="cerca-deck" type="search" placeholder="Cerca giocatore, mazzo o carta" aria-label="Cerca nelle decklist" autocomplete="off"></div>
+    </div>
+    <div id="lista-decklist"></div>
+  </section>
   <section id="regolamento"><h2 data-t="tit_regolamento">Regolamento</h2><div id="contenuto-regolamento"></div></section>
   <section id="info"><h2 data-t="tit_info">Info utili</h2><div id="lista-info"></div></section>
   <section id="contatti"><h2 data-t="tit_contatti">Contatti</h2><div id="contenuto-contatti"></div></section>
@@ -951,7 +997,7 @@ html.splash-lock { overflow: hidden; }
 
 <footer>
   <div class="aggiornato" id="aggiornato"></div>
-  <div>Soresina · Premodern Magic: The Gathering</div>
+  <div>Soresina · Premodern Magic: The Gathering<span id="link-privacy-box" hidden> · <a href="#privacy" id="link-privacy">Privacy</a></span></div>
 </footer>
 
 <!-- Finestra popup (decklist e classifiche di tappa) -->
@@ -1011,10 +1057,17 @@ html.splash-lock { overflow: hidden; }
   const linkSicuro = u => { u = String(u || "").trim(); if (!u) return ""; return /^https?:\/\//i.test(u) ? u : "https://" + u; };
   const normalizza = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
   // Testo con a capo e link cliccabili (indirizzi web ed e-mail)
-  const testoRicco = s => esc(s).split(/\n{2,}/).map(par => "<p>" + par
+  const collega = s => s
       .replace(/(https?:\/\/[^\s<]+|www\.[^\s<]+)/g, u => `<a href="${linkSicuro(u.replace(/[.,;:)]+$/, ""))}" target="_blank" rel="noopener">${u}</a>`)
-      .replace(/([\w.+-]+@[\w-]+\.[\w.-]+\w)/g, m => `<a href="mailto:${m}">${m}</a>`)
-      .replace(/\n/g, "<br>") + "</p>").join("");
+      .replace(/([\w.+-]+@[\w-]+\.[\w.-]+\w)/g, m => `<a href="mailto:${m}">${m}</a>`);
+  // paragrafi separati da una riga vuota; "## " = titoletto, righe con "- " = elenco
+  const testoRicco = s => esc(s).split(/\n{2,}/).map(par => {
+    let righe = par.split("\n"), html = "";
+    if (/^##\s+/.test(righe[0])) { html += `<h4>${collega(righe[0].replace(/^##\s+/, ""))}</h4>`; righe = righe.slice(1); }
+    if (!righe.length) return html;
+    if (righe.every(r => /^[-•]\s+/.test(r))) return html + `<ul>${righe.map(r => `<li>${collega(r.replace(/^[-•]\s+/, ""))}</li>`).join("")}</ul>`;
+    return html + `<p>${collega(righe.join("<br>"))}</p>`;
+  }).join("");
 
   /* ================= Navigazione ================= */
   const mostra = id => {
@@ -1028,7 +1081,8 @@ html.splash-lock { overflow: hidden; }
   document.querySelectorAll("dialog").forEach(dl => {
     dl.addEventListener("click", e => { if (e.target === dl || e.target.closest("[data-chiudi]")) dl.close(); });
   });
-  function apriPopup(titolo, meta, html) {
+  function apriPopup(titolo, meta, html, largo) {
+    $("popup").classList.toggle("largo", !!largo);
     $("popup-titolo").textContent = titolo;
     $("popup-meta").textContent = meta || "";
     $("popup-corpo").innerHTML = html;
@@ -1062,13 +1116,51 @@ html.splash-lock { overflow: hidden; }
   const bloccoLista = (titolo, l) => l.length ? `<div><h4>${titolo} (${totale(l)})</h4><ul>${l.map(c =>
     `<li><span class="qta">${c.n}</span><a href="${scryfall(c.nome)}" target="_blank" rel="noopener">${esc(c.nome)}</a></li>`).join("")}</ul></div>` : "";
 
+  // Immagini delle carte da Scryfall (una sola richiesta per lista, con memoria)
+  const immagini = new Map();      // nome in minuscolo → { img, link }
+  async function caricaImmagini(nomi) {
+    const mancano = [...new Set(nomi)].filter(n => !immagini.has(n.toLowerCase()));
+    for (let i = 0; i < mancano.length; i += 75) {
+      const r = await fetch("https://api.scryfall.com/cards/collection", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identifiers: mancano.slice(i, i + 75).map(name => ({ name })) }),
+      });
+      if (!r.ok) throw new Error("scryfall");
+      const j = await r.json();
+      (j.data || []).forEach(c => {
+        const facce = c.card_faces || [], im = c.image_uris || (facce[0] && facce[0].image_uris) || {};
+        const voce = { img: im.normal || im.small || "", link: c.scryfall_uri || "" };
+        immagini.set(c.name.toLowerCase(), voce);
+        if (c.name.includes(" // ")) immagini.set(c.name.split(" // ")[0].toLowerCase(), voce);
+      });
+      (j.not_found || []).forEach(x => immagini.set(String(x.name).toLowerCase(), { img: "", link: "" }));
+    }
+  }
+  const griglia = (titolo, l) => !l.length ? "" : `<div class="titolo-griglia">${titolo} (${totale(l)})</div>
+    <div class="griglia-carte">${l.map(c => {
+      const im = immagini.get(c.nome.toLowerCase()) || {};
+      return `<a href="${esc(im.link || scryfall(c.nome))}" target="_blank" rel="noopener" title="${esc(c.nome)}">
+        ${im.img ? `<img src="${esc(im.img)}" alt="${esc(c.nome)}" loading="lazy">` : `<span class="senza-img">${esc(c.nome)}</span>`}
+        <span class="n">${c.n}×</span></a>`;
+    }).join("")}</div>`;
+
   function apriDecklist(k) {
     const { main, side } = leggiLista(k.lista);
-    const html = main.length || side.length
-      ? `<div class="lista-deck">${bloccoLista(T("main"), main)}${bloccoLista(T("side"), side)}</div>
-         <div class="azioni"><button class="btn" id="copia-lista">${T("copia")}</button></div>`
-      : `<p class="muted">${T("lista_nd")}</p>`;
-    apriPopup(`${k.mazzo || "Decklist"} — ${k.giocatore || ""}`, [k.torneo, piazzamento(k.piazzamento)].filter(Boolean).join(" · "), html);
+    const meta = [k.torneo, piazzamento(k.piazzamento), k.archetipo && k.archetipo !== k.mazzo ? k.archetipo : ""].filter(Boolean).join(" · ");
+    if (!main.length && !side.length) { apriPopup(`${k.mazzo || "Decklist"} — ${k.giocatore || ""}`, meta, `<p class="muted">${T("lista_nd")}</p>`); return; }
+    apriPopup(`${k.mazzo || "Decklist"} — ${k.giocatore || ""}`, meta, `
+      <div class="vista-popup"><button data-pv="img" class="attivo">Immagini</button><button data-pv="txt">Testo</button></div>
+      <div id="pv-img"><p class="muted">Carico le immagini delle carte…</p></div>
+      <div id="pv-txt" hidden><div class="lista-deck">${bloccoLista(T("main"), main)}${bloccoLista(T("side"), side)}</div></div>
+      <div class="azioni"><button class="btn" id="copia-lista">${T("copia")}</button></div>`, true);
+    const pv = v => {
+      document.querySelectorAll(".vista-popup button").forEach(b => b.classList.toggle("attivo", b.dataset.pv === v));
+      $("pv-img").hidden = v !== "img"; $("pv-txt").hidden = v !== "txt";
+    };
+    document.querySelectorAll(".vista-popup button").forEach(b => b.onclick = () => pv(b.dataset.pv));
+    caricaImmagini([...main, ...side].map(c => c.nome))
+      .then(() => { if ($("pv-img")) $("pv-img").innerHTML = griglia(T("main"), main) + griglia(T("side"), side); })
+      .catch(() => { if ($("pv-img")) { $("pv-img").innerHTML = `<p class="muted">Immagini non disponibili in questo momento.</p>`; pv("txt"); } });
     const b = $("copia-lista");
     if (b) b.onclick = async () => {
       try { await navigator.clipboard.writeText(k.lista.trim()); b.textContent = T("copiata"); }
@@ -1250,15 +1342,13 @@ html.splash-lock { overflow: hidden; }
       : futuri.map(e => cardEvento(e, false)).join("")
         + (passati.length ? `<h2 class="secondario">${T("passati")}</h2>` + passati.map(e => cardEvento(e, true)).join("") : "");
 
-    // Decklist con popup
+    // Decklist raggruppate
     decklist = d.decklist || [];
-    $("lista-decklist").innerHTML = decklist.length
-      ? decklist.map((k, i) => `
-        <div class="card deck"><div><strong>${esc(k.mazzo)}</strong> — ${esc(k.giocatore)}
-        <div class="meta">${esc(k.torneo)}</div>
-        ${k.lista && k.lista.trim() ? `<div class="azioni"><button class="btn" data-deck="${i}">${T("vedi_lista")}</button></div>` : ""}</div>
-        <span class="badge">${esc(piazzamento(k.piazzamento))}</span></div>`).join("")
-      : vuoto(T("deck_vuote"));
+    disegnaDecklist();
+
+    // Privacy (collegamento nel piè di pagina)
+    $("link-privacy-box").hidden = !(d.privacy && String(d.privacy.testo || "").trim());
+    if (location.hash === "#privacy") apriPrivacy();
 
     // Regolamento
     disegnaRegolamento(d.regole);
@@ -1276,6 +1366,55 @@ html.splash-lock { overflow: hidden; }
 
     $("aggiornato").textContent = T("ultimo_agg") + ": " + dataBreve(d.ultimoAggiornamento);
   }
+
+  /* ================= Decklist: viste e ricerca ================= */
+  let vistaDeck = (() => { try { return localStorage.getItem("vista-deck") || "tappa"; } catch { return "tappa"; } })();
+  const numeroPosto = s => { const m = String(s || "").match(/\d+/); return m ? +m[0] : 99; };
+  function disegnaDecklist() {
+    document.querySelectorAll(".viste button").forEach(b => b.classList.toggle("attivo", b.dataset.vista === vistaDeck));
+    if (!decklist.length) { $("lista-decklist").innerHTML = vuoto(T("deck_vuote")); return; }
+    const f = normalizza($("cerca-deck").value).trim();
+    const dataTappa = {}; (D.eventi || []).forEach(e => { dataTappa[e.nome] = e.data; });
+    const voci = decklist.map((k, i) => ({ k, i })).filter(({ k }) => !f ||
+      normalizza([k.giocatore, k.mazzo, k.archetipo, k.torneo, k.lista].join(" ")).includes(f));
+    if (!voci.length) { $("lista-decklist").innerHTML = vuoto(`Nessuna decklist trovata per «${esc($("cerca-deck").value)}».`); return; }
+    const chiave = { tappa: x => x.k.torneo || "Altri tornei", archetipo: x => x.k.archetipo || x.k.mazzo || "Senza archetipo", giocatore: x => x.k.giocatore || "—" }[vistaDeck];
+    const gruppi = new Map();
+    voci.forEach(x => { const g = chiave(x); if (!gruppi.has(g)) gruppi.set(g, []); gruppi.get(g).push(x); });
+    let ordine = [...gruppi.keys()];
+    if (vistaDeck === "tappa") ordine.sort((a, b) => String(dataTappa[b] || "").localeCompare(String(dataTappa[a] || "")));   // tappe più recenti in alto
+    else if (vistaDeck === "archetipo") ordine.sort((a, b) => gruppi.get(b).length - gruppi.get(a).length || a.localeCompare(b));
+    else ordine.sort((a, b) => a.localeCompare(b, "it"));
+    $("lista-decklist").innerHTML = ordine.map(g => {
+      const lista = gruppi.get(g).sort((a, b) => vistaDeck === "giocatore"
+        ? String(dataTappa[b.k.torneo] || "").localeCompare(String(dataTappa[a.k.torneo] || ""))
+        : numeroPosto(a.k.piazzamento) - numeroPosto(b.k.piazzamento));
+      const sotto = vistaDeck === "tappa" && dataTappa[g] ? ` · ${dataBreve(dataTappa[g])}` : "";
+      return `<h3 class="gruppo-deck">${esc(g)} <small>${lista.length} ${lista.length === 1 ? "lista" : "liste"}${sotto}</small></h3>` +
+        lista.map(({ k, i }) => {
+          const info = [vistaDeck !== "tappa" ? k.torneo : "", vistaDeck !== "archetipo" && k.archetipo && k.archetipo !== k.mazzo ? k.archetipo : ""].filter(Boolean).join(" · ");
+          const titolo = vistaDeck === "giocatore" ? `<strong>${esc(k.mazzo)}</strong>` : `<strong>${esc(k.mazzo)}</strong> — ${esc(k.giocatore)}`;
+          return `<div class="card deck"><div>${titolo}
+            ${info ? `<div class="meta">${esc(info)}</div>` : ""}
+            ${k.lista && k.lista.trim() ? `<div class="azioni"><button class="btn" data-deck="${i}">${T("vedi_lista")}</button></div>` : ""}</div>
+            <span class="badge">${esc(piazzamento(k.piazzamento))}</span></div>`;
+        }).join("");
+    }).join("");
+  }
+  document.querySelectorAll(".viste button").forEach(b => b.addEventListener("click", () => {
+    vistaDeck = b.dataset.vista;
+    try { localStorage.setItem("vista-deck", vistaDeck); } catch {}
+    if (D) disegnaDecklist();
+  }));
+  $("cerca-deck").addEventListener("input", () => { if (D) disegnaDecklist(); });
+
+  /* ================= Privacy ================= */
+  function apriPrivacy() {
+    const p = D && D.privacy;
+    if (!p || !String(p.testo || "").trim()) return;
+    apriPopup("Informativa privacy", p.aggiornata ? "Aggiornata il " + p.aggiornata : "", `<div class="info-testo">${testoRicco(p.testo)}</div>`, true);
+  }
+  $("link-privacy").addEventListener("click", e => { e.preventDefault(); apriPrivacy(); });
 
   /* ================= Interazioni (impostate una volta sola) ================= */
   $("cerca-giocatore").addEventListener("input", disegnaClassifica);

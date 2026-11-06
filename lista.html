@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compila la lista — Premodern delle Lande Desolate</title>
+<link rel="icon" href="favicon.png?v=4">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0b0b; --card: #131313; --card-2: #1b1b1b; --line: #2f2f2f; --ink: #e6e6e6;
+    --text: #ecece9; --muted: #9c9c97; --ok: #7fcf8a; --warn: #f2c66d; --err: #ff8a80;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    margin: 0; color: var(--text); background: transparent; min-height: 100vh;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.5;
+  }
+  body::after {
+    content: ""; position: fixed; left: 0; right: 0; bottom: 0; height: 40vh; z-index: -1; pointer-events: none;
+    background: radial-gradient(ellipse 75% 100% at 50% 100%, rgba(255,255,255,.06), transparent 70%);
+  }
+  h1, h2 { font-family: Cinzel, Georgia, serif; }
+  a { color: var(--ink); }
+  header { max-width: 820px; margin: 0 auto; padding: 22px 16px 6px; display: flex; align-items: center; gap: 14px; }
+  header img { width: 64px; height: 64px; flex-shrink: 0; }
+  header h1 { margin: 0; font-size: clamp(1.2rem, 4.5vw, 1.6rem); letter-spacing: .04em; }
+  header p { margin: 2px 0 0; color: var(--muted); font-size: .9rem; }
+  .torna { display: inline-block; max-width: 820px; margin: 0 auto; padding: 0 16px; }
+  .torna a { color: var(--muted); font-size: .88rem; text-decoration: none; }
+  .torna a:hover { color: var(--ink); }
+  main { max-width: 820px; margin: 0 auto; padding: 12px 16px 60px; }
+
+  .card {
+    background: linear-gradient(180deg, var(--card-2), var(--card)); border: 1.5px solid var(--ink);
+    border-radius: 12px; padding: 16px 18px; margin-bottom: 14px;
+  }
+  .card h2 { margin: 0 0 4px; font-size: 1.05rem; display: flex; align-items: center; gap: 10px; }
+  .passo {
+    display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--ink); color: #0b0b0b; font-family: Inter, sans-serif; font-size: .8rem; font-weight: 700;
+  }
+  .sotto { color: var(--muted); font-size: .88rem; margin: 0 0 12px; }
+
+  label { display: block; font-size: .78rem; color: var(--muted); margin-bottom: 4px; }
+  input, textarea, select {
+    width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 8px;
+    padding: 10px 11px; font: inherit; font-size: 16px;
+  }
+  input:focus, textarea:focus { outline: none; border-color: var(--ink); }
+  .campi { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+
+  button {
+    font: inherit; font-size: .9rem; cursor: pointer; border-radius: 8px; padding: 9px 14px;
+    border: 1px solid var(--line); background: var(--card-2); color: var(--text);
+  }
+  button:hover:not(:disabled) { border-color: var(--ink); }
+  button:disabled { opacity: .4; cursor: default; }
+  button.primario { background: var(--ink); color: #0b0b0b; border-color: var(--ink); font-weight: 600; }
+  button.piccolo { padding: 4px 9px; font-size: .85rem; }
+
+  /* Ricerca carte */
+  .ricerca { display: grid; grid-template-columns: 1fr 74px auto; gap: 8px; align-items: end; }
+  .zona { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .zona button { border: 0; border-radius: 0; padding: 10px 12px; background: transparent; color: var(--muted); }
+  .zona button.attivo { background: var(--ink); color: #0b0b0b; font-weight: 600; }
+  .riga-azioni { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .campo-ricerca { position: relative; }
+  .suggerimenti {
+    position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 10; margin: 0; padding: 4px; list-style: none;
+    background: #161616; border: 1px solid var(--ink); border-radius: 10px; box-shadow: 0 12px 30px rgba(0,0,0,.6);
+    max-height: 320px; overflow-y: auto;
+  }
+  .suggerimenti li { padding: 9px 10px; border-radius: 6px; cursor: pointer; }
+  .suggerimenti li.attivo, .suggerimenti li:hover { background: var(--ink); color: #0b0b0b; }
+  .suggerimenti .nota { color: var(--muted); cursor: default; }
+  .suggerimenti .nota:hover { background: none; color: var(--muted); }
+  .messaggio { font-size: .85rem; margin-top: 8px; min-height: 1.2em; color: var(--muted); }
+  .messaggio.err { color: var(--err); } .messaggio.ok { color: var(--ok); }
+  @media (max-width: 520px) {
+    .ricerca { grid-template-columns: 1fr 70px; }
+    .ricerca .zona-wrap { grid-column: 1 / -1; }
+  }
+
+  /* Lista */
+  .contatori { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .contatore { border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; font-size: .88rem; }
+  .contatore.ok { border-color: var(--ok); color: var(--ok); }
+  .contatore.no { border-color: var(--warn); color: var(--warn); }
+  .gruppo h3 { margin: 14px 0 6px; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-family: Inter, sans-serif; }
+  .carta {
+    display: grid; grid-template-columns: 44px 1fr auto; gap: 10px; align-items: center;
+    padding: 6px 4px; border-bottom: 1px dashed rgba(255,255,255,.12);
+  }
+  .carta img, .carta .senza { width: 44px; height: 61px; border-radius: 4px; object-fit: cover; background: #222; cursor: zoom-in; display: block; }
+  .carta .nome { font-weight: 500; overflow-wrap: anywhere; }
+  .carta .tipo { color: var(--muted); font-size: .78rem; }
+  .carta .avviso { color: var(--warn); font-size: .78rem; }
+  .carta.troppe .nome { color: var(--err); }
+  .qta { display: flex; align-items: center; gap: 4px; }
+  .qta span { min-width: 22px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .qta button { width: 30px; height: 30px; padding: 0; }
+  .comandi { display: flex; gap: 4px; justify-content: flex-end; margin-top: 4px; }
+  .vuota { color: var(--muted); font-size: .9rem; padding: 6px 0; }
+
+  /* Controlli e testo finale */
+  .problemi { margin: 0 0 12px; padding-left: 20px; color: var(--warn); font-size: .9rem; }
+  .problemi.tutto-ok { list-style: none; padding: 0; color: var(--ok); }
+  #testo-finale { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; min-height: 260px; white-space: pre; }
+  .istruzioni { background: var(--bg); border: 1px dashed var(--ink); border-radius: 10px; padding: 10px 12px; font-size: .9rem; margin-top: 10px; }
+
+  details summary { cursor: pointer; color: var(--ink); font-size: .9rem; }
+  dialog {
+    border: 1.5px solid var(--ink); border-radius: 14px; padding: 12px; background: #111; color: var(--text);
+    max-width: min(380px, calc(100vw - 24px));
+  }
+  dialog::backdrop { background: rgba(0,0,0,.75); }
+  dialog img { width: 100%; border-radius: 12px; display: block; }
+  dialog .chiudi { margin-top: 10px; width: 100%; }
+  footer { text-align: center; color: var(--muted); font-size: .8rem; padding: 0 16px 30px; }
+  .nascosto { display: none !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="logo.png?v=4" alt="">
+  <div>
+    <h1>Compila la tua lista</h1>
+    <p>Premodern delle Lande Desolate</p>
+  </div>
+</header>
+<div class="torna"><a href="./">← Torna al sito</a></div>
+
+<main>
+  <!-- 1. Dati -->
+  <section class="card">
+    <h2><span class="passo">1</span> I tuoi dati</h2>
+    <p class="sotto">Compaiono in cima alla lista, esattamente come li scrivi.</p>
+    <div class="campi">
+      <div><label for="giocatore">Nome e cognome</label><input id="giocatore" autocomplete="name" placeholder="Mario Rossi"></div>
+      <div><label for="mazzo">Nome del mazzo</label><input id="mazzo" placeholder="es. Burn, Stasis, Elves…"></div>
+      <div><label for="piazzamento">Piazzamento</label><input id="piazzamento" list="piazzamenti" placeholder="es. 1° posto"></div>
+    </div>
+    <datalist id="piazzamenti">
+      <option value="1° posto"><option value="2° posto"><option value="3° posto"><option value="4° posto">
+      <option value="5° posto"><option value="6° posto"><option value="7° posto"><option value="8° posto">
+    </datalist>
+  </section>
+
+  <!-- 2. Carte -->
+  <section class="card">
+    <h2><span class="passo">2</span> Aggiungi le carte</h2>
+    <p class="sotto">Scrivi il nome <strong>in inglese</strong> e scegli la carta tra i suggerimenti. Nomi e immagini vengono da Scryfall.</p>
+    <div class="ricerca">
+      <div class="campo-ricerca">
+        <label for="cerca">Carta</label>
+        <input id="cerca" placeholder="es. Lightning Bolt" autocomplete="off" spellcheck="false"
+               role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggerimenti">
+        <ul id="suggerimenti" class="suggerimenti nascosto" role="listbox"></ul>
+      </div>
+      <div><label for="quante">Copie</label><input id="quante" type="number" inputmode="numeric" min="1" max="99" value="4"></div>
+      <div class="zona-wrap"><label>Dove</label>
+        <div class="zona" role="group" aria-label="Main o sideboard">
+          <button type="button" data-zona="main" class="attivo">Main</button><button type="button" data-zona="side">Sideboard</button>
+        </div>
+      </div>
+    </div>
+    <div class="riga-azioni"><button class="primario" id="aggiungi" disabled>+ Aggiungi</button></div>
+    <div class="messaggio" id="msg-carte" aria-live="polite"></div>
+
+    <details style="margin-top:10px">
+      <summary>Hai già la lista scritta? Incollala qui</summary>
+      <p class="sotto" style="margin-top:8px">Una carta per riga, es. «4 Lightning Bolt»; la sideboard con «SB: » davanti (oppure dopo una riga «Sideboard»). I nomi devono essere in inglese.</p>
+      <textarea id="incolla" rows="8" spellcheck="false" placeholder="4 Lightning Bolt&#10;20 Mountain&#10;SB: 3 Pyroblast"></textarea>
+      <div class="riga-azioni"><button id="importa">Importa nella lista</button></div>
+      <div class="messaggio" id="msg-importa" aria-live="polite"></div>
+    </details>
+  </section>
+
+  <!-- 3. Lista -->
+  <section class="card">
+    <h2><span class="passo">3</span> La tua lista</h2>
+    <div class="contatori" id="contatori"></div>
+    <div id="lista"></div>
+    <div class="riga-azioni" style="margin-top:12px"><button class="piccolo" id="svuota">Svuota la lista</button></div>
+  </section>
+
+  <!-- 4. Testo -->
+  <section class="card">
+    <h2><span class="passo">4</span> Genera il testo da inviare</h2>
+    <ul class="problemi" id="problemi"></ul>
+    <button class="primario" id="genera" disabled>Genera il testo</button>
+    <div id="risultato" class="nascosto">
+      <label for="testo-finale" style="margin-top:14px">Il tuo testo</label>
+      <textarea id="testo-finale" readonly></textarea>
+      <div class="riga-azioni"><button class="primario" id="copia">Copia il testo</button></div>
+      <div class="istruzioni">
+        <strong>Ora:</strong> apri la chat WhatsApp della lega, <strong>incolla</strong> il testo e invialo scrivendo agli admin.
+        Non modificarlo a mano: è già nel formato giusto.
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>Nomi e immagini delle carte: <a href="https://scryfall.com" target="_blank" rel="noopener">Scryfall</a> · <a href="./#privacy">Privacy</a></footer>
+
+<dialog id="anteprima"><img id="anteprima-img" alt=""><button class="chiudi" onclick="this.closest('dialog').close()">Chiudi</button></dialog>
+
+<script>
+/* =================== Strumenti =================== */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const API = "https://api.scryfall.com";
+const memo = {   // bozza salvata solo in questo browser
+  leggi: () => { try { return JSON.parse(localStorage.getItem("lista-bozza") || "null"); } catch { return null; } },
+  salva: v => { try { localStorage.setItem("lista-bozza", JSON.stringify(v)); } catch {} },
+};
+
+/* =================== Stato =================== */
+// ogni voce: { nome, zona: "main"|"side", n, img, imgGrande, tipo, libere (copie illimitate), legale }
+let carte = [];
+let zona = "main";
+let scelta = null;          // nome scelto dai suggerimenti
+const cache = new Map();    // nome → dati Scryfall
+
+function salvaBozza() {
+  memo.salva({ giocatore: $("giocatore").value, mazzo: $("mazzo").value, piazzamento: $("piazzamento").value, carte });
+}
+
+/* =================== Scryfall =================== */
+function datiCarta(c) {
+  const facce = c.card_faces || [];
+  const img = c.image_uris || (facce[0] && facce[0].image_uris) || {};
+  return {
+    nome: c.name,
+    img: img.small || img.normal || "",
+    imgGrande: img.normal || img.large || img.small || "",
+    tipo: c.type_line || (facce[0] && facce[0].type_line) || "",
+    libere: /\bBasic\b/.test(c.type_line || "") || /A deck can have any number of cards named/i.test(c.oracle_text || (facce[0] && facce[0].oracle_text) || ""),
+    legale: !c.legalities || c.legalities.premodern !== "not_legal",   // le bannate non vengono controllate
+  };
+}
+async function cartaPerNome(nome) {
+  if (cache.has(nome)) return cache.get(nome);
+  const r = await fetch(`${API}/cards/named?exact=${encodeURIComponent(nome)}`);
+  if (!r.ok) throw new Error(r.status === 404 ? "Carta non trovata" : "Scryfall non risponde");
+  const d = datiCarta(await r.json());
+  cache.set(d.nome, d);
+  return d;
+}
+async function cartePerNomi(nomi) {        // fino a 75 per richiesta
+  const trovate = [], mancanti = [];
+  for (let i = 0; i < nomi.length; i += 75) {
+    const r = await fetch(`${API}/cards/collection`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifiers: nomi.slice(i, i + 75).map(name => ({ name })) }),
+    });
+    if (!r.ok) throw new Error("Scryfall non risponde");
+    const j = await r.json();
+    (j.data || []).forEach(c => { const d = datiCarta(c); cache.set(d.nome, d); trovate.push(d); });
+    (j.not_found || []).forEach(x => mancanti.push(x.name));
+    if (i + 75 < nomi.length) await new Promise(ok => setTimeout(ok, 120));
+  }
+  return { trovate, mancanti };
+}
+
+/* =================== Suggerimenti mentre scrivi =================== */
+let attesa = null, richiesta = 0, evidenziato = -1, proposte = [];
+const lista = $("suggerimenti"), cerca = $("cerca");
+function mostraSuggerimenti(voci, nota) {
+  proposte = voci; evidenziato = voci.length ? 0 : -1;
+  lista.innerHTML = voci.map((n, i) => `<li role="option" data-i="${i}" class="${i === 0 ? "attivo" : ""}">${esc(n)}</li>`).join("")
+    + (nota ? `<li class="nota">${esc(nota)}</li>` : "");
+  lista.classList.toggle("nascosto", !voci.length && !nota);
+  cerca.setAttribute("aria-expanded", String(!!(voci.length || nota)));
+}
+function chiudiSuggerimenti() { lista.classList.add("nascosto"); cerca.setAttribute("aria-expanded", "false"); }
+cerca.addEventListener("input", () => {
+  scelta = null; $("aggiungi").disabled = true;
+  const q = cerca.value.trim();
+  clearTimeout(attesa);
+  if (q.length < 2) { chiudiSuggerimenti(); return; }
+  attesa = setTimeout(async () => {
+    const mio = ++richiesta;
+    try {
+      const r = await fetch(`${API}/cards/autocomplete?q=${encodeURIComponent(q)}`);
+      const j = await r.json();
+      if (mio !== richiesta) return;                 // è arrivata una ricerca più recente
+      const voci = (j.data || []).slice(0, 10);
+      mostraSuggerimenti(voci, voci.length ? "" : "Nessuna carta trovata: il nome è in inglese?");
+    } catch { if (mio === richiesta) mostraSuggerimenti([], "Scryfall non risponde, riprova tra poco."); }
+  }, 220);
+});
+function scegli(i) {
+  if (i < 0 || i >= proposte.length) return;
+  scelta = proposte[i]; cerca.value = scelta; chiudiSuggerimenti();
+  $("aggiungi").disabled = false; $("aggiungi").focus();
+}
+lista.addEventListener("mousedown", e => { const li = e.target.closest("li[data-i]"); if (li) { e.preventDefault(); scegli(+li.dataset.i); } });
+cerca.addEventListener("keydown", e => {
+  const aperto = !lista.classList.contains("nascosto") && proposte.length;
+  if (e.key === "ArrowDown" && aperto) { e.preventDefault(); evidenziato = (evidenziato + 1) % proposte.length; }
+  else if (e.key === "ArrowUp" && aperto) { e.preventDefault(); evidenziato = (evidenziato - 1 + proposte.length) % proposte.length; }
+  else if (e.key === "Enter") { e.preventDefault(); if (aperto) scegli(evidenziato); else if (scelta) aggiungi(); return; }
+  else if (e.key === "Escape") { chiudiSuggerimenti(); return; }
+  else return;
+  lista.querySelectorAll("li[data-i]").forEach((li, i) => li.classList.toggle("attivo", i === evidenziato));
+});
+cerca.addEventListener("blur", () => setTimeout(chiudiSuggerimenti, 150));
+document.querySelectorAll(".zona button").forEach(b => b.onclick = () => {
+  zona = b.dataset.zona;
+  document.querySelectorAll(".zona button").forEach(x => x.classList.toggle("attivo", x === b));
+});
+
+/* =================== Aggiunta e modifica =================== */
+function inserisci(d, n, z) {
+  const gia = carte.find(c => c.nome === d.nome && c.zona === z);
+  if (gia) gia.n += n; else carte.push({ ...d, zona: z, n });
+}
+async function aggiungi() {
+  if (!scelta) return;
+  const n = Math.max(1, Math.min(99, parseInt($("quante").value, 10) || 1));
+  const msg = $("msg-carte");
+  $("aggiungi").disabled = true; msg.className = "messaggio"; msg.textContent = "Cerco la carta…";
+  try {
+    const d = await cartaPerNome(scelta);
+    inserisci(d, n, zona);
+    msg.className = "messaggio ok"; msg.textContent = `Aggiunte ${n} × ${d.nome} ${zona === "side" ? "in sideboard" : "nel main"}.`;
+    cerca.value = ""; scelta = null; cerca.focus();
+    aggiorna();
+  } catch (e) { msg.className = "messaggio err"; msg.textContent = e.message + ". Riprova."; $("aggiungi").disabled = false; }
+}
+$("aggiungi").onclick = aggiungi;
+
+$("lista").addEventListener("click", e => {
+  const b = e.target.closest("button[data-a]"), img = e.target.closest("img[data-grande]");
+  if (img) { $("anteprima-img").src = img.dataset.grande; $("anteprima").showModal(); return; }
+  if (!b) return;
+  const c = carte[+b.dataset.i];
+  if (b.dataset.a === "piu") c.n++;
+  if (b.dataset.a === "meno") c.n--;
+  if (b.dataset.a === "sposta") {
+    const altra = c.zona === "main" ? "side" : "main";
+    const gia = carte.find(x => x !== c && x.nome === c.nome && x.zona === altra);
+    if (gia) { gia.n += c.n; c.n = 0; } else c.zona = altra;
+  }
+  if (b.dataset.a === "togli") c.n = 0;
+  carte = carte.filter(x => x.n > 0);
+  aggiorna();
+});
+$("svuota").onclick = () => { if (carte.length && confirm("Svuotare tutta la lista?")) { carte = []; aggiorna(); } };
+$("anteprima").addEventListener("click", e => { if (e.target === $("anteprima")) $("anteprima").close(); });
+
+/* =================== Importazione da testo =================== */
+const RIGA_CARTA = /^(SB:\s*)?(\d+)\s*x?\s+(.+?)\s*$/i;
+$("importa").onclick = async () => {
+  const msg = $("msg-importa"), righe = $("incolla").value.replace(/\r/g, "").split("\n").map(r => r.trim());
+  const voci = []; let inSide = false, intestazione = [];
+  for (const r of righe) {
+    if (!r) continue;
+    if (/^(sideboard|side|sb)\s*:?\s*$/i.test(r)) { inSide = true; continue; }
+    const m = r.match(RIGA_CARTA);
+    if (m) voci.push({ nome: m[3], n: +m[2], zona: m[1] || inSide ? "side" : "main" });
+    else if (!voci.length) intestazione.push(r);          // righe prima delle carte: nome, mazzo, piazzamento
+  }
+  if (!voci.length) { msg.className = "messaggio err"; msg.textContent = "Non trovo righe del tipo «4 Lightning Bolt»."; return; }
+  msg.className = "messaggio"; msg.textContent = "Cerco le carte su Scryfall…";
+  try {
+    const { mancanti } = await cartePerNomi([...new Set(voci.map(v => v.nome))]);
+    const chiave = n => n.toLowerCase();
+    const trovata = nome => { for (const d of cache.values()) if (chiave(d.nome) === chiave(nome) || chiave(d.nome).startsWith(chiave(nome) + " //")) return d; };
+    let ok = 0;
+    voci.forEach(v => { const d = trovata(v.nome); if (d) { inserisci(d, v.n, v.zona); ok += v.n; } });
+    ["giocatore", "mazzo", "piazzamento"].forEach((id, i) => { if (intestazione[i] && !$(id).value.trim()) $(id).value = intestazione[i]; });
+    aggiorna();
+    msg.className = mancanti.length ? "messaggio err" : "messaggio ok";
+    msg.textContent = `Importate ${ok} carte.` + (mancanti.length ? ` Non trovate (controlla il nome in inglese): ${mancanti.join(", ")}.` : "");
+    if (!mancanti.length) $("incolla").value = "";
+  } catch (e) { msg.className = "messaggio err"; msg.textContent = e.message + ". Riprova."; }
+};
+
+/* =================== Controlli =================== */
+function problemi() {
+  const p = [];
+  if (!$("giocatore").value.trim()) p.push("Scrivi nome e cognome.");
+  if (!$("mazzo").value.trim()) p.push("Scrivi il nome del mazzo.");
+  if (!$("piazzamento").value.trim()) p.push("Indica il piazzamento.");
+  const main = tot("main"), side = tot("side");
+  if (main < 60) p.push(`Il main ha ${main} carte: ne servono almeno 60.`);
+  if (side > 15) p.push(`La sideboard ha ${side} carte: al massimo 15.`);
+  troppe().forEach(n => p.push(`${n}: più di 4 copie in totale tra main e sideboard.`));
+  return p;
+}
+const tot = z => carte.filter(c => c.zona === z).reduce((s, c) => s + c.n, 0);
+function troppe() {
+  const conta = {};
+  carte.forEach(c => { if (!c.libere) conta[c.nome] = (conta[c.nome] || 0) + c.n; });
+  return Object.keys(conta).filter(n => conta[n] > 4);
+}
+
+/* =================== Disegno =================== */
+function aggiorna() {
+  const main = tot("main"), side = tot("side"), eccesso = new Set(troppe());
+  $("contatori").innerHTML = `
+    <span class="contatore ${main >= 60 ? "ok" : "no"}">Main ${main} / 60</span>
+    <span class="contatore ${side <= 15 ? "ok" : "no"}">Sideboard ${side} / 15</span>`;
+  const gruppo = (z, titolo) => {
+    const voci = carte.map((c, i) => ({ c, i })).filter(x => x.c.zona === z);
+    return `<div class="gruppo"><h3>${titolo} (${z === "main" ? main : side})</h3>${voci.length ? voci.map(({ c, i }) => `
+      <div class="carta ${eccesso.has(c.nome) ? "troppe" : ""}">
+        ${c.img ? `<img src="${esc(c.img)}" data-grande="${esc(c.imgGrande)}" alt="${esc(c.nome)}" loading="lazy">` : `<span class="senza"></span>`}
+        <div>
+          <div class="nome">${esc(c.nome)}</div>
+          <div class="tipo">${esc(c.tipo)}</div>
+          ${!c.legale ? `<div class="avviso">⚠ Non risulta legale in Premodern</div>` : ""}
+        </div>
+        <div>
+          <div class="qta"><button data-a="meno" data-i="${i}" aria-label="Una copia in meno">−</button><span>${c.n}</span><button data-a="piu" data-i="${i}" aria-label="Una copia in più">+</button></div>
+          <div class="comandi">
+            <button class="piccolo" data-a="sposta" data-i="${i}" title="${z === "main" ? "Sposta in sideboard" : "Sposta nel main"}">${z === "main" ? "→ SB" : "→ Main"}</button>
+            <button class="piccolo" data-a="togli" data-i="${i}" aria-label="Togli">✕</button>
+          </div>
+        </div>
+      </div>`).join("") : `<div class="vuota">Ancora nessuna carta.</div>`}</div>`;
+  };
+  $("lista").innerHTML = gruppo("main", "Main deck") + gruppo("side", "Sideboard");
+  const p = problemi();
+  $("problemi").className = p.length ? "problemi" : "problemi tutto-ok";
+  $("problemi").innerHTML = p.length ? p.map(x => `<li>${esc(x)}</li>`).join("") : "<li>✓ Tutto in regola: puoi generare il testo.</li>";
+  $("genera").disabled = !!p.length;
+  if (p.length) $("risultato").classList.add("nascosto");
+  salvaBozza();
+}
+["giocatore", "mazzo", "piazzamento"].forEach(id => $(id).addEventListener("input", aggiorna));
+
+/* =================== Testo finale, nel formato richiesto =================== */
+function testo() {
+  const riga = c => `${c.zona === "side" ? "SB: " : ""}${c.n} ${c.nome}`;
+  return [$("giocatore").value.trim(), $("mazzo").value.trim(), $("piazzamento").value.trim(), "",
+          ...carte.filter(c => c.zona === "main").map(riga), ...carte.filter(c => c.zona === "side").map(riga)].join("\n");
+}
+$("genera").onclick = () => {
+  $("testo-finale").value = testo();
+  $("risultato").classList.remove("nascosto");
+  $("copia").textContent = "Copia il testo";
+  $("risultato").scrollIntoView({ behavior: "smooth", block: "start" });
+};
+$("copia").onclick = async () => {
+  const t = $("testo-finale");
+  try { await navigator.clipboard.writeText(t.value); }
+  catch { t.focus(); t.select(); try { document.execCommand("copy"); } catch {} }
+  $("copia").textContent = "Copiato ✓ ora incollalo su WhatsApp";
+};
+
+/* =================== Avvio: riprende la bozza =================== */
+const bozza = memo.leggi();
+if (bozza) {
+  ["giocatore", "mazzo", "piazzamento"].forEach(id => $(id).value = bozza[id] || "");
+  carte = Array.isArray(bozza.carte) ? bozza.carte.filter(c => c && c.nome && c.n > 0) : [];
+}
+aggiorna();
+</script>
+</body>
+</html>

@@ -388,9 +388,10 @@ const SEZIONI = {
   classifica: { nome: "Classifica", aggiungi: "Aggiungi giocatore" },
   decklist: {
     nome: "Decklist", aggiungi: "Nuova decklist", inCima: true,
-    campi: [["torneo", "text", "Torneo"], ["piazzamento", "text", "Piazzamento"], ["giocatore", "text", "Giocatore"],
-            ["mazzo", "text", "Mazzo"], ["lista", "lista", "Lista del mazzo (incolla il testo)", "largo"]],
-    nuovo: () => ({ torneo: "", giocatore: "", mazzo: "", piazzamento: "1° posto", lista: "" }),
+    campi: [["torneo", "tappa", "Tappa / torneo"], ["piazzamento", "text", "Piazzamento"], ["giocatore", "text", "Giocatore"],
+            ["mazzo", "text", "Nome del mazzo"], ["archetipo", "archetipo", "Archetipo (per raggruppare: es. Burn, Stasis)"],
+            ["lista", "lista", "Lista del mazzo", "largo"]],
+    nuovo: () => ({ torneo: "", giocatore: "", mazzo: "", archetipo: "", piazzamento: "1° posto", lista: "" }),
   },
   info: {
     nome: "Info utili", aggiungi: "Nuova info",
@@ -405,6 +406,7 @@ const SEZIONI = {
     nuovo: () => ({ nome: "", testo: "", link: "" }),
   },
   regolamento: { nome: "Regolamento" },
+  privacy: { nome: "Privacy" },
   generale: { nome: "Testata" },
   versioni: { nome: "↺ Versioni" },
 };
@@ -423,6 +425,7 @@ function disegna() {
   if (schedaAttiva === "classifica") return disegnaClassifica(p);
   if (schedaAttiva === "versioni") return disegnaVersioni(p);
   if (schedaAttiva === "regolamento") return disegnaRegolamento(p);
+  if (schedaAttiva === "privacy") return disegnaPrivacy(p);
   disegnaLista(p, schedaAttiva);
 }
 
@@ -446,6 +449,7 @@ function contaClassifica(t) {
                      : `${righe.length} righe: sul sito verranno mostrate come testo.`;
 }
 
+const suggeriti = { tappa: "elenco-tappe", archetipo: "elenco-archetipi" };   // caselle con suggerimenti
 function campo(oggetto, chiave, tipo, etichetta, extra) {
   const id = "f" + Math.random().toString(36).slice(2);
   const wrap = document.createElement("div");
@@ -454,11 +458,11 @@ function campo(oggetto, chiave, tipo, etichetta, extra) {
   if (tipo === "allegati") { disegnaAllegati(wrap, oggetto, etichetta); return wrap; }
 
   const valore = oggetto[chiave] ?? "";
-  const testoLungo = tipo === "textarea" || tipo === "lista" || tipo === "classifica" || tipo === "riga" || tipo === "regola";
+  const testoLungo = tipo === "textarea" || tipo === "lista" || tipo === "classifica" || tipo === "riga" || tipo === "regola" || tipo === "lungo";
   const mono = tipo === "lista" || tipo === "classifica";
   wrap.innerHTML = `<label for="${id}">${esc(etichetta)}</label>` +
-    (testoLungo ? `<textarea id="${id}" class="${mono ? "mono" : tipo === "riga" || tipo === "regola" ? tipo : ""}" ${tipo === "riga" ? 'rows="1"' : ""} spellcheck="${!mono}">${esc(valore)}</textarea>`
-                : `<input id="${id}" type="${tipo}" value="${esc(valore)}">`);
+    (testoLungo ? `<textarea id="${id}" class="${mono ? "mono" : tipo === "riga" || tipo === "regola" ? tipo : tipo === "lungo" ? "regola" : ""}" ${tipo === "riga" ? 'rows="1"' : ""} spellcheck="${!mono}">${esc(valore)}</textarea>`
+                : `<input id="${id}" type="${suggeriti[tipo] ? "text" : tipo}" ${suggeriti[tipo] ? `list="${suggeriti[tipo]}" autocomplete="off"` : ""} value="${esc(valore)}">`);
   const aiuto = { lista: contaLista, classifica: contaClassifica, regola: riepilogoBlocchi }[tipo];
   let nota;
   if (aiuto) { nota = document.createElement("div"); nota.className = "aiuto"; nota.textContent = aiuto(valore); wrap.appendChild(nota); }
@@ -542,6 +546,7 @@ function disegnaLista(p, k) {
     nuova?.scrollIntoView({ behavior: "smooth", block: "center" });
     nuova?.querySelector("input,textarea")?.focus();
   };
+  if (k === "decklist") disegnaImportaLista(p);
   if (!lista.length) p.insertAdjacentHTML("beforeend", `<div class="card muted">Ancora niente qui.</div>`);
 
   lista.forEach((voce, i) => {
@@ -817,6 +822,103 @@ function disegnaAllegati(wrap, info, etichetta) {
     box.appendChild(add);
   };
   ridisegna();
+}
+
+/* ======================= Decklist: importazione dal messaggio ricevuto ======================= */
+// Formato: Nome cognome / Nome del mazzo / Piazzamento, riga vuota, poi "4 Carta" e "SB: 2 Carta"
+const RIGA_CARTA = /^(SB:\s*)?(\d+)\s*x?\s+(.+?)\s*$/i;
+function leggiMessaggio(testo) {
+  const intestazione = [], carte = []; let inSide = false;
+  String(testo || "").replace(/\r/g, "").split("\n").map(r => r.trim()).forEach(r => {
+    if (!r) return;
+    if (/^(sideboard|side|sb)\s*:?\s*$/i.test(r)) { inSide = true; return; }
+    const m = r.match(RIGA_CARTA);
+    if (m) carte.push(`${m[1] || inSide ? "SB: " : ""}${m[2]} ${m[3]}`);
+    else if (!carte.length) intestazione.push(r);
+  });
+  return { giocatore: intestazione[0] || "", mazzo: intestazione[1] || "", piazzamento: intestazione[2] || "", lista: carte.join("\n") };
+}
+function disegnaImportaLista(p) {
+  const tappe = [...dati.eventi].sort((x, y) => String(y.data).localeCompare(String(x.data)));
+  const archetipi = [...new Set(dati.decklist.map(x => x.archetipo || x.mazzo).filter(Boolean))].sort();
+  p.insertAdjacentHTML("beforeend", `
+    <datalist id="elenco-tappe">${tappe.map(e => `<option value="${esc(e.nome)}">`).join("")}</datalist>
+    <datalist id="elenco-archetipi">${archetipi.map(x => `<option value="${esc(x)}">`).join("")}</datalist>
+    <div class="card">
+      <h2>Importa una lista ricevuta</h2>
+      <p class="muted" style="margin-top:0">Incolla qui il messaggio del giocatore (quello generato dalla pagina «Compila lista»): nome, mazzo, piazzamento e carte si compilano da soli.</p>
+      <div class="campi">
+        <div><label for="imp-tappa">Tappa / torneo</label><input id="imp-tappa" list="elenco-tappe" autocomplete="off" value="${esc(tappe[0] ? tappe[0].nome : "")}"></div>
+        <div><label for="imp-archetipo">Archetipo (facoltativo)</label><input id="imp-archetipo" list="elenco-archetipi" autocomplete="off"></div>
+        <div class="largo"><label for="imp-testo">Messaggio</label><textarea id="imp-testo" class="mono" spellcheck="false" placeholder="Mario Rossi&#10;Burn&#10;1° posto&#10;&#10;4 Lightning Bolt&#10;20 Mountain&#10;SB: 3 Pyroblast"></textarea></div>
+      </div>
+      <div class="aiuto" id="imp-esito"></div>
+      <div class="azioni" style="justify-content:flex-start"><button class="primario" id="imp-vai">Importa come nuova decklist</button></div>
+    </div>`);
+  const anteprima = () => {
+    const m = leggiMessaggio($("imp-testo").value);
+    $("imp-esito").className = "aiuto";
+    $("imp-esito").textContent = $("imp-testo").value.trim()
+      ? `${m.giocatore || "(manca il nome)"} · ${m.mazzo || "(manca il mazzo)"} · ${m.piazzamento || "(manca il piazzamento)"} — ${contaLista(m.lista).split(".")[0]}`
+      : "";
+  };
+  $("imp-testo").addEventListener("input", anteprima);
+  $("imp-vai").onclick = () => {
+    const m = leggiMessaggio($("imp-testo").value);
+    if (!m.lista) { $("imp-esito").className = "aiuto"; $("imp-esito").style.color = "var(--err)"; $("imp-esito").textContent = "Non trovo righe del tipo «4 Lightning Bolt»."; return; }
+    dati.decklist.unshift({ torneo: $("imp-tappa").value.trim(), giocatore: m.giocatore, mazzo: m.mazzo,
+      archetipo: $("imp-archetipo").value.trim(), piazzamento: m.piazzamento, lista: m.lista });
+    segnaModificato(); disegna();
+    stato(`Lista di ${m.giocatore || "un giocatore"} importata: controllala e premi Pubblica.`, "mod");
+    p.querySelector(".voce")?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+}
+
+/* ======================= Informativa privacy ======================= */
+const BOZZA_PRIVACY = `## Chi tratta i dati
+I dati sono trattati dagli organizzatori della lega «Premodern delle Lande Desolate»: [Nome Cognome] e [Nome Cognome], contattabili a [e-mail o altro contatto].
+
+## Quali dati pubblichiamo
+- nome e cognome, oppure il nickname, dei partecipanti nella classifica generale e nelle classifiche delle tappe;
+- le liste dei mazzi (decklist) dei giocatori arrivati in top 8, con nome, mazzo e piazzamento;
+- foto scattate durante le tappe.
+
+## Perché e su quale base
+Pubblichiamo risultati, classifiche e liste perché fanno parte dell'organizzazione della lega a cui scegli di partecipare (art. 6, par. 1, lett. b e f del Regolamento UE 2016/679, «GDPR»).
+Le foto in cui sei riconoscibile vengono pubblicate solo con il tuo consenso (art. 6, par. 1, lett. a). Puoi dirci in ogni momento che non vuoi essere fotografato o pubblicato.
+Per i partecipanti minorenni serve il consenso di un genitore o di chi ne esercita la responsabilità per la pubblicazione delle foto [e del nome].
+
+## La pagina «Compila lista»
+La pagina non salva e non invia nulla: il testo viene creato sul tuo dispositivo e sei tu a copiarlo nella chat. La bozza resta salvata solo nel tuo browser.
+Per mostrare suggerimenti e immagini delle carte, il browser contatta il servizio Scryfall (scryfall.com), che riceve il tuo indirizzo IP e i nomi delle carte cercate.
+
+## Il sito
+Il sito è ospitato su GitHub Pages (GitHub, Inc., Stati Uniti), che registra dati tecnici come l'indirizzo IP per motivi di sicurezza. I caratteri tipografici sono caricati da Google Fonts (Google). Le immagini delle carte nelle decklist provengono da Scryfall.
+Il sito non usa cookie di profilazione né strumenti di statistica. Nel tuo browser vengono salvate solo preferenze tecniche (per esempio suono acceso o spento, bozza della lista), che puoi cancellare quando vuoi.
+
+## Per quanto tempo
+Classifiche, risultati e liste restano pubblicati per la stagione in corso e come archivio della lega, salvo tua richiesta di rimozione. [Da completare]
+
+## I tuoi diritti
+Puoi chiedere in qualsiasi momento di accedere ai tuoi dati, correggerli o cancellarli, di comparire solo con il nickname o di togliere una foto, scrivendo a [contatto]. Hai anche il diritto di presentare reclamo al Garante per la protezione dei dati personali (www.garanteprivacy.it).`;
+
+function disegnaPrivacy(p) {
+  if (!dati.privacy) {
+    dati.privacy = { aggiornata: "", testo: BOZZA_PRIVACY };
+    segnaModificato();
+    stato("Bozza dell'informativa caricata: completa le parti tra [ ] e premi Pubblica.", "mod");
+  }
+  p.innerHTML = `<div class="intesta"><h2 style="color:var(--gold)">Informativa privacy</h2></div>
+    <div class="card muted" style="margin-bottom:12px">
+      Sul sito compare come collegamento «Privacy» in fondo alla pagina. Completa le parti tra <strong>[ ]</strong> prima di pubblicare.
+      Scrittura: una riga vuota separa i paragrafi, <strong>## </strong> all'inizio della riga crea un titoletto, <strong>- </strong> crea un elenco.
+      È una bozza: per la versione definitiva è consigliabile farla rivedere da una persona competente.
+    </div>
+    <div class="card"><div class="campi" id="campi-privacy"></div></div>`;
+  $("campi-privacy").appendChild(campo(dati.privacy, "aggiornata", "riga", "Aggiornata il (es. 6 novembre 2026)"));
+  $("campi-privacy").appendChild(campo(dati.privacy, "testo", "lungo", "Testo", "largo"));
+  const rimasti = (dati.privacy.testo.match(/\[[^\]]+\]/g) || []).length;
+  if (rimasti) $("campi-privacy").insertAdjacentHTML("beforeend", `<div class="aiuto largo" style="color:var(--err)">Restano ${rimasti} parti da completare tra [ ].</div>`);
 }
 
 /* ======================= Versioni precedenti ======================= */
