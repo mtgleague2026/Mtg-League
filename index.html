@@ -1494,16 +1494,21 @@ window.SuoniLega = (function () {
   $("cerca-deck").addEventListener("input", () => { if (D) disegnaDecklist(); });
 
   /* ================= Compila la tua decklist (aperta sopra il sito) ================= */
+  let listaNellaStoria = false;      // true se l'apertura ha aggiunto un passo alla cronologia
   function apriLista(dallaStoria) {
     const f = $("finestra-lista");
     if (!f.firstChild) f.innerHTML = `<iframe src="lista.html?dentro=1" title="Compila la tua decklist"></iframe>`;   // creata una volta: la bozza resta
     f.classList.add("aperta"); document.documentElement.classList.add("lista-aperta");
-    if (!dallaStoria) history.pushState({ lista: true }, "", "#compila");
+    if (!dallaStoria) { history.pushState({ lista: true }, "", "#compila"); listaNellaStoria = true; }
   }
   function chiudiLista(dallaStoria) {
     if (!$("finestra-lista").classList.contains("aperta")) return;
     $("finestra-lista").classList.remove("aperta"); document.documentElement.classList.remove("lista-aperta");
-    if (!dallaStoria && location.hash === "#compila") history.back();   // il tasto "indietro" resta coerente
+    if (!dallaStoria && location.hash === "#compila") {
+      if (listaNellaStoria) history.back();                      // il tasto "indietro" resta coerente
+      else history.replaceState(null, "", location.pathname + location.search);   // arrivati dal QR: si resta sul sito
+    }
+    listaNellaStoria = false;
     mostra("decklist");
   }
   document.addEventListener("click", e => {
