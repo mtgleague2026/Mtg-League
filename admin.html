@@ -396,7 +396,7 @@ const SEZIONI = {
   info: {
     nome: "Info utili", aggiungi: "Nuova info",
     campi: [["titolo", "riga", "Titolo (es. Come inviare la lista per la top 8)", "largo"],
-            ["testo", "textarea", "Testo — lascia una riga vuota per andare a capo con un nuovo paragrafo; link ed e-mail diventano cliccabili", "largo"],
+            ["testo", "textarea", "Testo — lascia una riga vuota per andare a capo con un nuovo paragrafo; **parola** diventa grassetto; link ed e-mail diventano cliccabili", "largo"],
             ["allegati", "allegati", "File scaricabili (PDF, Word, Excel…)", "largo"]],
     nuovo: () => ({ titolo: "", testo: "", allegati: [] }),
   },
@@ -718,6 +718,7 @@ function disegnaRegolamento(p) {
         <tr><td>Presenti | Turni\n2 | 1\n3-4 | 2</td><td>tabella: colonne separate da | , la prima riga è l'intestazione</td></tr>
         <tr><td>= Punti = A + B</td><td>formula in evidenza</td></tr>
         <tr><td>Esempio: 3 + 9 = 12</td><td>esempio in corsivo</td></tr>
+        <tr><td>**parola**</td><td><strong>grassetto</strong>, anche in mezzo alla frase</td></tr>
         <tr><td>qualsiasi altro testo</td><td>paragrafo normale</td></tr>
       </table>
       <p class="muted" style="margin-bottom:0">Sotto ogni casella vedi cosa è stato riconosciuto. Il numero delle sezioni si aggiorna da solo.</p>
@@ -913,7 +914,7 @@ function disegnaPrivacy(p) {
   p.innerHTML = `<div class="intesta"><h2 style="color:var(--gold)">Informativa privacy</h2></div>
     <div class="card muted" style="margin-bottom:12px">
       Sul sito compare come collegamento «Privacy» in fondo alla pagina. Completa le parti tra <strong>[ ]</strong> prima di pubblicare.
-      Scrittura: una riga vuota separa i paragrafi, <strong>## </strong> all'inizio della riga crea un titoletto, <strong>- </strong> crea un elenco.
+      Scrittura: una riga vuota separa i paragrafi, <strong>## </strong> all'inizio della riga crea un titoletto, <strong>- </strong> crea un elenco, <strong>**parola**</strong> scrive in grassetto.
       È una bozza: per la versione definitiva è consigliabile farla rivedere da una persona competente.
     </div>
     <div class="card"><div class="campi" id="campi-privacy"></div></div>`;

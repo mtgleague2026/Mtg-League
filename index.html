@@ -1124,7 +1124,9 @@ window.SuoniLega = (function () {
   const linkSicuro = u => { u = String(u || "").trim(); if (!u) return ""; return /^https?:\/\//i.test(u) ? u : "https://" + u; };
   const normalizza = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
   // Testo con a capo e link cliccabili (indirizzi web ed e-mail)
-  const collega = s => s
+  // **testo** = grassetto
+  const stile = s => s.replace(/\*\*(?=\S)(.+?)\*\*/g, "<strong>$1</strong>");
+  const collega = s => stile(s)
       .replace(/(https?:\/\/[^\s<]+|www\.[^\s<]+)/g, u => `<a href="${linkSicuro(u.replace(/[.,;:)]+$/, ""))}" target="_blank" rel="noopener">${u}</a>`)
       .replace(/([\w.+-]+@[\w-]+\.[\w.-]+\w)/g, m => `<a href="mailto:${m}">${m}</a>`);
   // paragrafi separati da una riga vuota; "## " = titoletto, righe con "- " = elenco
@@ -1327,18 +1329,18 @@ window.SuoniLega = (function () {
 
   function disegnaRegolamento(reg) {
     if (!reg) { $("contenuto-regolamento").innerHTML = ""; return; }
-    const lista = voci => voci.map(v => `<li>${esc(v)}</li>`).join("");
+    const lista = voci => voci.map(v => `<li>${stile(esc(v))}</li>`).join("");
     const blocco = b => {
       switch (b.tipo) {
-        case "paragrafo":      return `<p class="acapo">${esc(b.testo)}</p>`;
+        case "paragrafo":      return `<p class="acapo">${stile(esc(b.testo))}</p>`;
         case "sottotitolo":    return `<h4>${esc(b.testo)}</h4>`;
         case "elenco":         return `<ul>${lista(b.voci)}</ul>`;
         case "elencoNumerato": return `<ol>${lista(b.voci)}</ol>`;
         case "formula":        return `<p class="formula">${esc(b.testo)}</p>`;
-        case "esempio":        return `<p class="esempio"><strong>Esempio:</strong> ${esc(b.testo)}</p>`;
+        case "esempio":        return `<p class="esempio"><strong>Esempio:</strong> ${stile(esc(b.testo))}</p>`;
         case "tabella":        return `<div class="scroll"><table class="tab-reg">
           <thead><tr>${b.intestazioni.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead>
-          <tbody>${b.righe.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody>
+          <tbody>${b.righe.map(r => `<tr>${r.map(c => `<td>${stile(esc(c))}</td>`).join("")}</tr>`).join("")}</tbody>
           </table></div>`;
         default: return "";
       }
@@ -1401,7 +1403,7 @@ window.SuoniLega = (function () {
       return `
       <div class="card ${passato ? "passato" : ""}"><strong>${esc(e.nome)}</strong>
       <div class="meta">${dataBreve(e.data)} · ${T("ore")} ${esc(e.ora)} · ${esc(e.formato)}</div>
-      <div class="acapo">${esc(e.luogo)}${note ? (e.luogo ? " — " : "") + esc(note) : ""}</div>
+      <div class="acapo">${stile(esc(e.luogo))}${note ? (e.luogo ? " — " : "") + stile(esc(note)) : ""}</div>
       ${e.classifica || e.linkDecklist ? `<div class="azioni">
         ${e.classifica ? `<button class="btn" data-evento="${i}">${T("btn_classifica")}</button>` : ""}
         ${e.linkDecklist ? `<a class="btn" href="${esc(linkSicuro(e.linkDecklist))}" target="_blank" rel="noopener">${T("btn_decklist_evento")}</a>` : ""}
