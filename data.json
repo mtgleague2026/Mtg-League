@@ -1,8 +1,14 @@
 {
   "nomeLega": "Premodern delle\nLande Desolate",
   "sottotitolo": "Classifica, eventi e decklist della nostra community",
-  "ultimoAggiornamento": "2026-11-06",
+  "ultimoAggiornamento": "2026-11-07",
   "news": [
+    {
+      "data": "2026-11-07",
+      "titolo": "LEGA PREMODERN MTG – UFFICIALIZZATE LE DATE DELLE 6 TAPPE!",
+      "testo": "Ci siamo! Possiamo finalmente svelarvi il calendario ufficiale della nostra **Lega Premodern di Magic: The Gathering**, che prenderà il via a gennaio!\n\nPer questa prima stagione abbiamo previsto **6 appuntamenti**, tutti di sabato. Una scelta pensata per permettere a tutti di vivere al meglio le giornate di torneo, lasciandosi alle spalle gli impegni della settimana lavorativa e dedicando qualche ora alla nostra passione: giocare a Magic, ritrovare vecchi amici e conoscere nuovi avversari, il tutto all'insegna del divertimento e della sana competizione.\n\n📅 **Ecco il calendario delle 6 tappe:**\n\n- **9 gennaio**\n- **30 gennaio**\n- **20 febbraio**\n- **13 marzo**\n- **3 aprile**\n- **24 aprile**\n\nSalvo eventuali imprevisti, queste saranno le date dei nostri appuntamenti. Qualsiasi variazione verrà tempestivamente comunicata attraverso tutti i nostri canali ufficiali.\n\nPreparate i vostri mazzi, rispolverate le vostre vecchie glorie e scaldate le mani: **la Lega Premodern sta per cominciare!**\n\nCi vediamo ai tavoli! 🧙‍♂️",
+      "foto": []
+    },
     {
       "data": "2026-11-05",
       "titolo": "WINTER LEAGUE!",
@@ -25,7 +31,7 @@
       "ora": "13:30",
       "nome": "S1E1",
       "formato": "Premodern",
-      "luogo": "Soresina, 26015.\nStiamo lavorando sulla location, vi teniamo aggiornati. 🔥",
+      "luogo": "Bocciodromo\nVia Dello Stadio\n26015 - Soresina (CR)",
       "note": "Iscrizioni aperte da dicembre.\nLimite massimo di 30 player."
     }
   ],
@@ -50,7 +56,7 @@
           },
           {
             "tipo": "paragrafo",
-            "testo": "Quota di partecipazione a ciascuna tappa: SEZIONE IN ALLESTIMENTO.\nPremi: SEZIONE IN ALLESTIMENTO."
+            "testo": "Info sulle quote di iscrizione e sui premi direttamente in chat di Whatsapp."
           }
         ]
       },
@@ -439,6 +445,11 @@
     }
   ],
   "info": [
+    {
+      "titolo": "Dove giochiamo: il Bocciodromo di Soresina",
+      "testo": "Tutte le tappe della lega, finale compresa, si giocano al Bocciodromo di Soresina.\n\n## Indirizzo\n- Bocciodromo di Soresina, Via dello Stadio, 26015 Soresina (CR)\n\nAmpio parcheggio gratuito.\n\n## Hai dubbi?\nPer qualsiasi dubbio sulla location scrivici nella chat WhatsApp della lega: ti risponderemo il prima possibile.",
+      "allegati": []
+    },
     {
       "titolo": "Inviaci la tua decklist!",
       "testo": "Se arrivi in Top 8, devi inviarci la tua decklist entro 2 giorni dalla tappa giocata. Le liste della Top 8 vengono pubblicate sul sito nella sezione Decklist.\n\n## Come fare\n- Vai nella sezione Decklist e tocca «Compila la tua decklist».\n- Inserisci nome e cognome, nome del mazzo e piazzamento.\n- Aggiungi le carte cercandole per nome in inglese, scegliendo per ognuna se va nel main o in sideboard. Se hai già la lista scritta, puoi incollarla.\n- Quando la lista è completa (almeno 60 carte nel main e al massimo 15 in sideboard) tocca «Genera il testo» e poi «Copia il testo».\n- Avvisa gli admin tramite la chat WhatsApp della lega che la tua lista è pronta, ti chiederanno di inviargliela privatamente.\n\n## Da sapere\n- Non modificare il testo a mano: è già nel formato che usiamo per pubblicare le liste.\n- I nomi delle carte devono essere in inglese.\n- La lista resta salvata sul tuo telefono finché non la invii: puoi completarla con calma.",
