@@ -1,7 +1,7 @@
 {
   "nomeLega": "Premodern delle\nLande Desolate",
   "sottotitolo": "Classifica, eventi e decklist della nostra community",
-  "ultimoAggiornamento": "2026-11-10",
+  "ultimoAggiornamento": "2026-11-12",
   "news": [
     {
       "data": "2026-11-05",
@@ -437,6 +437,17 @@
       "titolo": "Inviaci la tua decklist!",
       "testo": "Se arrivi in Top 8, devi inviarci la tua decklist entro 2 giorni dalla tappa giocata. Le liste della Top 8 vengono pubblicate sul sito nella sezione Decklist.\n\n## Come fare\n- Vai nella sezione Decklist e tocca «Compila la tua decklist».\n- Inserisci nome e cognome, nome del mazzo e piazzamento.\n- Aggiungi le carte cercandole per nome in inglese, scegliendo per ognuna se va nel main o in sideboard. Se hai già la lista scritta, puoi incollarla.\n- Quando la lista è completa (almeno 60 carte nel main e al massimo 15 in sideboard) tocca «Genera il testo» e poi «Copia il testo».\n- Avvisa gli admin tramite la chat WhatsApp della lega che la tua lista è pronta, ti chiederanno di inviargliela privatamente.\n\n## Da sapere\n- Non modificare il testo a mano: è già nel formato che usiamo per pubblicare le liste.\n- I nomi delle carte devono essere in inglese.\n- La lista resta salvata sul tuo telefono finché non la invii: puoi completarla con calma.",
       "allegati": []
+    },
+    {
+      "titolo": "Dove giochiamo: GameLover, Crema",
+      "testo": "Tutte le tappe della lega si giocano da **GameLover**, in **Via Castello 10, Crema**.\n\nUn negozio di giochi e carte che ogni settimana ospita tornei: l'ambiente perfetto per il nostro Premodern.\n\nApri su Google Maps: https://www.google.com/maps/search/?api=1&query=GameLover%20Via%20Castello%2010%20Crema\n\nPer qualsiasi dubbio su come arrivare, parcheggio o orari, scrivici nella chat WhatsApp della lega.",
+      "allegati": [
+        {
+          "nome": "logo glo",
+          "file": "file/2026-11-12-026b-logo-glo.png",
+          "dimensione": 113044
+        }
+      ]
     }
   ],
   "privacy": {
