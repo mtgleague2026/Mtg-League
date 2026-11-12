@@ -146,7 +146,8 @@
     position: relative; padding: 0; border: 0; cursor: zoom-in; background: var(--bg);
     aspect-ratio: 1; overflow: hidden; display: block;
   }
-  .foto.n1 button { aspect-ratio: 16 / 10; }
+  .foto.n1 button { aspect-ratio: auto; }                       /* foto singola: si vede intera, nelle sue proporzioni */
+  .foto.n1 img { height: auto; max-height: 80vh; object-fit: contain; margin: 0 auto; }
   .foto img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s; }
   .foto button:hover img { transform: scale(1.04); }
   .foto .altre {
@@ -323,7 +324,7 @@
   }
 
   /* Info utili */
-  .info-testo { white-space: normal; }
+  .info-testo { white-space: normal; overflow-wrap: anywhere; }
   .info-testo p { margin: 0 0 8px; }
   .info-testo p:last-child { margin-bottom: 0; }
   /* Info utili a tendina: si vede solo il titolo, il testo si apre al clic */
@@ -1074,7 +1075,7 @@ window.SuoniLega = (function () {
 
 <footer>
   <div class="aggiornato" id="aggiornato"></div>
-  <a class="partner" href="https://www.google.com/maps/search/?api=1&amp;query=GameLover%20Via%20Castello%2010%20Crema" target="_blank" rel="noopener" title="GameLover · Via Castello 10, Crema">
+  <a class="partner" href="https://www.game-lover.it/" target="_blank" rel="noopener" title="GameLover · Via Castello 10, Crema – vai al sito">
     <span>Si gioca da</span>
     <img src="gamelover.png?v=1" alt="GameLover" width="600" height="120">
   </a>
@@ -1140,9 +1141,24 @@ window.SuoniLega = (function () {
   // Testo con a capo e link cliccabili (indirizzi web ed e-mail)
   // **testo** = grassetto
   const stile = s => s.replace(/\*\*(?=\S)(.+?)\*\*/g, "<strong>$1</strong>");
-  const collega = s => stile(s)
-      .replace(/(https?:\/\/[^\s<]+|www\.[^\s<]+)/g, u => `<a href="${linkSicuro(u.replace(/[.,;:)]+$/, ""))}" target="_blank" rel="noopener">${u}</a>`)
-      .replace(/([\w.+-]+@[\w-]+\.[\w.-]+\w)/g, m => `<a href="mailto:${m}">${m}</a>`);
+  // [testo](link) = link con un testo a scelta; i link lunghi scritti per intero vengono accorciati
+  const etichettaLink = u => {
+    const v = u.replace(/^https?:\/\//, "").replace(/^www\./, "");
+    return v.length <= 40 ? v.replace(/\/$/, "") : v.split(/[/?#]/)[0] + "/…";
+  };
+  const collega = s => {
+    const pronti = [];
+    const tieni = html => "\u0000" + (pronti.push(html) - 1) + "\u0000";
+    return stile(s)
+      .replace(/\[([^\]\n]+)\]\((https?:\/\/[^\s)<]+|www\.[^\s)<]+)\)/g, (m, t, u) =>
+        tieni(`<a href="${linkSicuro(u)}" target="_blank" rel="noopener">${t}</a>`))
+      .replace(/(https?:\/\/[^\s<\u0000]+|www\.[^\s<\u0000]+)/g, u => {
+        const pulito = u.replace(/[.,;:)]+$/, ""), resto = u.slice(pulito.length);
+        return tieni(`<a href="${linkSicuro(pulito)}" target="_blank" rel="noopener" title="${pulito}">${etichettaLink(pulito)}</a>`) + resto;
+      })
+      .replace(/([\w.+-]+@[\w-]+\.[\w.-]+\w)/g, m => `<a href="mailto:${m}">${m}</a>`)
+      .replace(/\u0000(\d+)\u0000/g, (m, i) => pronti[i]);
+  };
   // paragrafi separati da una riga vuota; "## " = titoletto, righe con "- " = elenco
   const testoRicco = s => esc(s).split(/\n{2,}/).map(par => {
     let righe = par.split("\n"), html = "";
