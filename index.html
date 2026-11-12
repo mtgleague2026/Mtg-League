@@ -310,6 +310,9 @@
 
   footer { text-align: center; color: var(--muted); font-size: .8rem; padding: 0 16px 84px; }   /* spazio per il pulsante del suono */
   footer .aggiornato { margin-bottom: 4px; }
+  footer .partner { display: inline-flex; flex-direction: column; align-items: center; gap: 8px; margin: 10px 0 18px; text-decoration: none; color: var(--muted); font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; }
+  footer .partner img { width: 170px; height: auto; display: block; opacity: .9; transition: opacity .2s; }
+  footer .partner:hover img { opacity: 1; }
   .errore { background: #2a1212; border-color: #b3261e; color: #ffd9d4; }
 
   @media (max-width: 520px) {
@@ -323,12 +326,19 @@
   .info-testo { white-space: normal; }
   .info-testo p { margin: 0 0 8px; }
   .info-testo p:last-child { margin-bottom: 0; }
-  details.privacy summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; }
-  details.privacy summary::-webkit-details-marker { display: none; }
-  details.privacy summary h3 { margin: 0; }
-  details.privacy .apri { margin-left: auto; color: var(--muted); font-size: .85rem; white-space: nowrap; }
-  details.privacy[open] .apri { visibility: hidden; }
-  details.privacy[open] summary { margin-bottom: 8px; }
+  /* Info utili a tendina: si vede solo il titolo, il testo si apre al clic */
+  details.tendina summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; -webkit-tap-highlight-color: transparent; }
+  details.tendina summary::-webkit-details-marker { display: none; }
+  details.tendina summary h3 { margin: 0; flex: 1; transition: color .2s; }
+  details.tendina summary:hover h3, details.tendina summary:focus-visible h3 { color: #fff; }
+  details.tendina .chevron { flex: none; width: 28px; height: 28px; display: grid; place-items: center; border: 1px solid var(--line, #3a3a38); border-radius: 50%;
+                             color: var(--muted); font-size: 1.05rem; line-height: 1; transition: transform .25s ease, color .2s, border-color .2s; }
+  details.tendina summary:hover .chevron { color: #fff; border-color: #888; }
+  details.tendina[open] .chevron { transform: rotate(90deg); color: #fff; }
+  details.tendina .corpo { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.08); }
+  details.tendina[open] .corpo { animation: tendina-apri .28s ease-out; }
+  @keyframes tendina-apri { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { details.tendina[open] .corpo { animation: none; } details.tendina .chevron { transition: none; } }
   #privacy { scroll-margin-top: 80px; }
   .info-testo h4 { margin: 16px 0 6px; font-size: .95rem; color: var(--gold-hi); font-family: Inter, sans-serif; }
   .info-testo h4:first-child { margin-top: 0; }
@@ -1064,7 +1074,11 @@ window.SuoniLega = (function () {
 
 <footer>
   <div class="aggiornato" id="aggiornato"></div>
-  <div>Soresina · Premodern Magic: The Gathering<span id="link-privacy-box" hidden> · <a href="#privacy" id="link-privacy">Privacy</a></span></div>
+  <a class="partner" href="https://www.google.com/maps/search/?api=1&amp;query=GameLover%20Via%20Castello%2010%20Crema" target="_blank" rel="noopener" title="GameLover · Via Castello 10, Crema">
+    <span>Si gioca da</span>
+    <img src="gamelover.png?v=1" alt="GameLover" width="600" height="120">
+  </a>
+  <div>Crema · Premodern Magic: The Gathering<span id="link-privacy-box" hidden> · <a href="#privacy" id="link-privacy">Privacy</a></span></div>
 </footer>
 
 <!-- Finestra popup (decklist e classifiche di tappa) -->
@@ -1425,10 +1439,11 @@ window.SuoniLega = (function () {
     // Info utili
     const info = d.info || [], pv = d.privacy && String(d.privacy.testo || "").trim() ? d.privacy : null;
     $("lista-info").innerHTML = (info.length || pv
-      ? info.map(x => `<div class="card"><h3 class="acapo">${esc(tr(x, "titolo"))}</h3><div class="info-testo">${testoRicco(tr(x, "testo"))}</div>${elencoAllegati(x.allegati)}</div>`).join("")
+      ? info.map(x => `<details class="card tendina"><summary><h3 class="acapo">${esc(tr(x, "titolo"))}</h3><span class="chevron" aria-hidden="true">›</span></summary>
+          <div class="corpo"><div class="info-testo">${testoRicco(tr(x, "testo"))}</div>${elencoAllegati(x.allegati)}</div></details>`).join("")
       : vuoto(T("info_vuote")))
-      + (pv ? `<details class="card privacy" id="privacy"><summary><h3>Informativa privacy</h3><span class="apri">Leggi ›</span></summary>
-          ${pv.aggiornata ? `<div class="meta">Aggiornata il ${esc(pv.aggiornata)}</div>` : ""}<div class="info-testo">${testoRicco(pv.testo)}</div></details>` : "");
+      + (pv ? `<details class="card tendina privacy" id="privacy"><summary><h3>Informativa privacy</h3><span class="chevron" aria-hidden="true">›</span></summary>
+          <div class="corpo">${pv.aggiornata ? `<div class="meta">Aggiornata il ${esc(pv.aggiornata)}</div>` : ""}<div class="info-testo">${testoRicco(pv.testo)}</div></div></details>` : "");
 
     // Contatti
     $("contenuto-contatti").innerHTML = `
