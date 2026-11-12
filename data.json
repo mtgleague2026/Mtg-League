@@ -106,18 +106,38 @@
         "titolo": "Come si gioca una tappa",
         "blocchi": [
           {
+            "tipo": "paragrafo",
+            "testo": "Ogni tappa si gioca con il sistema svizzero, seguito da una Top Cut a eliminazione diretta quando i presenti sono abbastanza."
+          },
+          {
+            "tipo": "sottotitolo",
+            "testo": "Iscrizione e app Companion"
+          },
+          {
+            "tipo": "paragrafo",
+            "testo": "Abbinamenti, risultati e classifica di ogni tappa sono gestiti tramite l'app **Magic: The Gathering Companion**, a cura di GameLover."
+          },
+          {
+            "tipo": "elenco",
+            "voci": [
+              "Scarica l'app e crea il tuo profilo prima della tappa.",
+              "Registrati con **nome e cognome**: è il nome con cui comparirai nella classifica della lega.",
+              "A ogni turno l'app ti indica tavolo e avversario. A fine incontro inserite il risultato e confermatelo entrambi."
+            ]
+          },
+          {
             "tipo": "sottotitolo",
             "testo": "Svizzera"
           },
           {
             "tipo": "paragrafo",
-            "testo": "A ogni turno si affrontano giocatori con punteggi simili, e nessuno incontra due volte lo stesso avversario finché è possibile. Il primo turno è sorteggiato."
+            "testo": "A ogni turno si affrontano giocatori con punteggi simili e, finché è possibile, nessuno incontra due volte lo stesso avversario."
           },
           {
             "tipo": "elenco",
             "voci": [
               "Ogni incontro si gioca al meglio delle tre partite, in 50 minuti.",
-              "Con un numero dispari di presenti, un giocatore riceve il bye: non gioca e vince il turno 2-0. Il bye va all'ultimo in classifica che non l'ha ancora avuto."
+              "Con un numero dispari di presenti, un giocatore riceve il bye: non gioca e vince il turno 2-0."
             ]
           },
           {
@@ -178,7 +198,7 @@
           },
           {
             "tipo": "paragrafo",
-            "testo": "Al termine della svizzera, i primi 4 o 8 giocano a eliminazione diretta, al meglio delle tre partite, senza pareggi. Il 1° affronta l'ultimo qualificato, il 2° il penultimo e così via."
+            "testo": "Al termine della svizzera, i primi 4 o 8 giocano a eliminazione diretta, al meglio delle tre partite e senza pareggi. Il 1° affronta l'ultimo qualificato, il 2° il penultimo e così via."
           },
           {
             "tipo": "sottotitolo",
@@ -186,7 +206,7 @@
           },
           {
             "tipo": "paragrafo",
-            "testo": "Nella svizzera la vittoria vale 3 punti, il pareggio 1, la sconfitta 0, il bye 3. A parità di punti contano, nell'ordine, gli spareggi dei tornei ufficiali:"
+            "testo": "Nella svizzera la vittoria vale 3 punti, il pareggio 1, la sconfitta 0, il bye 3. A parità di punti contano, nell'ordine, gli spareggi dei tornei ufficiali, calcolati dall'app:"
           },
           {
             "tipo": "elencoNumerato",
@@ -198,7 +218,7 @@
           },
           {
             "tipo": "paragrafo",
-            "testo": "Ogni percentuale ha un minimo del 33%, e il bye non conta tra gli avversari. Questi spareggi servono solo per la classifica di tappa e per l'accesso alla Top Cut, non per la classifica generale."
+            "testo": "Questi spareggi servono solo per la classifica di tappa e per l'accesso alla Top Cut, non per la classifica generale della lega."
           }
         ]
       },
