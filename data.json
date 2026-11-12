@@ -20,11 +20,41 @@
   "eventi": [
     {
       "data": "2027-01-09",
-      "ora": "00:00",
+      "ora": "13:30",
       "nome": "S1E1",
       "formato": "Premodern",
       "luogo": "GameLover - Via Castello, 10, 26013 Crema CR",
       "note": "Iscrizioni aperte da dicembre."
+    },
+    {
+      "data": "2027-02-06",
+      "ora": "13:30",
+      "nome": "S1E2",
+      "formato": "Premodern",
+      "luogo": "GameLover - Via Castello, 10, 26013 Crema CR",
+      "note": "",
+      "linkDecklist": "",
+      "classifica": ""
+    },
+    {
+      "data": "2027-02-27",
+      "ora": "13:30",
+      "nome": "S1E3",
+      "formato": "Premodern",
+      "luogo": "GameLover - Via Castello, 10, 26013 Crema CR",
+      "note": "",
+      "linkDecklist": "",
+      "classifica": ""
+    },
+    {
+      "data": "2027-03-20",
+      "ora": "13:30",
+      "nome": "S1E4",
+      "formato": "Premodern",
+      "luogo": "GameLover - Via Castello, 10, 26013 Crema CR",
+      "note": "",
+      "linkDecklist": "",
+      "classifica": ""
     }
   ],
   "decklist": [],
